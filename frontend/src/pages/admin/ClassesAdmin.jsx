@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
+import { createPortal } from 'react-dom'
 import toast from 'react-hot-toast'
 import { Plus, Edit2, Trash2, School, Clock, Users, Calendar } from 'lucide-react'
 
@@ -112,7 +113,7 @@ export default function ClassesAdmin() {
                 }
             </div>
 
-            {modal && (
+            {modal && createPortal(
                 <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
                     <div className="modal-box max-w-lg p-6">
                         <h2 className="text-xl font-black text-white mb-6 uppercase tracking-tight">
@@ -170,7 +171,8 @@ export default function ClassesAdmin() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

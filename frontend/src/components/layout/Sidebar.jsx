@@ -1,6 +1,8 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import { useAuth } from '../../context/AuthContext'
+import {createPortal} from 'react-dom'
+import api from '../../api/axios'
 import {
     LayoutDashboard, Users, Package, CreditCard, CalendarDays,
     ShoppingBag, ClipboardList, ScanLine, LogOut, Dumbbell, Ticket, School, MessageSquare, Award, Settings, User as UserIcon, Save, X
@@ -117,7 +119,8 @@ export default function Sidebar() {
                 </div>
             </div>
 
-            {profileModal && (
+            {profileModal && 
+            createPortal(
                 <div className="modal-overlay z-[1000]" onClick={e => e.target === e.currentTarget && setProfileModal(false)}>
                     <div className="modal-box p-6 max-w-md bg-[#0a0a0a] border border-zinc-800">
                         <div className="flex items-center justify-between mb-6">
@@ -159,7 +162,8 @@ export default function Sidebar() {
                             </button>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </aside>
     )

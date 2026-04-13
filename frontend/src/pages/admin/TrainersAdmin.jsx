@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
+import {createPortal} from 'react-dom'
 import { Plus, User, Edit2, Trash2, Award, BookOpen } from 'lucide-react'
 
 const EMPTY = { user_id: '', specialization: '', bio: '', experience_years: 0 }
@@ -122,7 +123,7 @@ export default function TrainersAdmin() {
                 }
             </div>
 
-            {modal && (
+            {modal && createPortal(
                 <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
                     <div className="modal-box max-w-lg p-6">
                         <h2 className="text-lg font-bold text-white mb-6 flex items-center gap-2">
@@ -172,7 +173,8 @@ export default function TrainersAdmin() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

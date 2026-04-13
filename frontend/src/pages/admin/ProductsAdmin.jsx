@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
+import {createPortal} from 'react-dom'
 import { Plus, Edit2, Trash2, Tag } from 'lucide-react'
 
 const EMPTY = { name: '', description: '', category: 'supplement', price: '', stock_qty: '', image_url: '' }
@@ -72,9 +73,9 @@ export default function ProductsAdmin() {
                 ))}
             </div>
 
-            <div className="card p-0 overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="tbl">
+            <div className="card w-full p-0 overflow-hidden">
+                <div className="max-h-[70vh] overflow-x-auto">
+                    <table className="tbl w-full">
                         <thead><tr><th>Sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Tồn kho</th><th>Thao tác</th></tr></thead>
                         <tbody>
                             {products.map(p => (
@@ -117,7 +118,7 @@ export default function ProductsAdmin() {
                 </div>
             </div>
 
-            {modal && (
+            {modal && createPortal(
                 <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
                     <div className="modal-box p-6">
                         <h2 className="text-lg font-bold text-white mb-4">{editing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</h2>
@@ -164,7 +165,8 @@ export default function ProductsAdmin() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
+import {createPortal} from 'react-dom'
 import { Plus, CheckCircle } from 'lucide-react'
 
 const EMPTY = { member_id: '', package_id: '', start_date: '', is_paid: false }
@@ -101,7 +102,7 @@ export default function Subscriptions() {
                 </div>
             </div>
 
-            {modal && (
+            {modal && createPortal(
                 <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
                     <div className="modal-box p-6">
                         <h2 className="text-lg font-bold text-white mb-4">Đăng Ký Gói Tập</h2>
@@ -139,7 +140,8 @@ export default function Subscriptions() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

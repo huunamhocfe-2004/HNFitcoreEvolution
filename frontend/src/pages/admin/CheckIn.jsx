@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 import { ScanLine, Search } from 'lucide-react'
 import toast from 'react-hot-toast'
+import SearchInput from '../../components/layout/searchInput'
 import { QRCodeSVG } from 'qrcode.react'
 
 export default function CheckIn() {

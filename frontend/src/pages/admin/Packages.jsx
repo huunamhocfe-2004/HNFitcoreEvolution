@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
+import {createPortal} from 'react-dom'
 import { Plus, Edit2, Trash2, Package } from 'lucide-react'
 
 const EMPTY = { title: '', description: '', duration_days: 30, price: '', package_type: 'standard' }
@@ -78,7 +79,7 @@ export default function Packages() {
                 ))}
             </div>
 
-            {modal && (
+            {modal && createPortal(
                 <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
                     <div className="modal-box p-6">
                         <h2 className="text-lg font-bold text-white mb-4">{editing ? 'Cập nhật gói tập' : 'Thêm gói tập mới'}</h2>
@@ -114,7 +115,8 @@ export default function Packages() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )
