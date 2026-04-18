@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { CartProvider } from './context/CartContext'
 
 // Pages
+import LandingPage from './pages/auth/LandingPage'
 import LoginPage from './pages/auth/LoginPage'
 import AdminLayout from './components/layout/AdminLayout'
 import Dashboard from './pages/admin/Dashboard'
@@ -38,7 +39,7 @@ const ProtectedRoute = ({ children, roles }) => {
     )
     if (!user) return <Navigate to="/login" replace />
     if (roles && !roles.includes(user.role)) {
-        return <Navigate to={user.role === 'member' ? '/member' : '/'} replace />
+        return <Navigate to={user.role === 'member' ? '/member' : '/admin'} replace />
     }
     return children
 }
@@ -49,11 +50,11 @@ const AppRoutes = () => {
     return (
         <Routes>
             <Route path="/login" element={
-                user ? <Navigate to={user.role === 'member' ? '/member' : '/'} replace /> : <LoginPage />
+                user ? <Navigate to={user.role === 'member' ? '/member' : '/admin'} replace /> : <LoginPage />
             } />
-
+            <Route path='/' element={<LandingPage/>} />
             {/* Admin / Staff routes */}
-            <Route path="/" element={
+            <Route path="/admin" element={
                 <ProtectedRoute roles={['admin', 'staff']}>
                     <AdminLayout />
                 </ProtectedRoute>

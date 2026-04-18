@@ -39,7 +39,7 @@ export default function Store() {
                 </button>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {products.map(p => (
                     <div key={p.id} className="card bg-zinc-900/50 border-zinc-800 p-0 overflow-hidden flex flex-col group hover:border-yellow-500/30 transition-all">
                         <div className="aspect-square bg-zinc-950 flex items-center justify-center overflow-hidden relative">

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
 import { useAuth } from '../../context/AuthContext'
+import { createPortal } from "react-dom";
 import toast from 'react-hot-toast'
 import { Line } from 'react-chartjs-2'
 import {
@@ -170,9 +171,9 @@ export default function Progress() {
                 </div>
             </div>
 
-            {modal && (
+            {modal && createPortal(
                 <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
-                    <div className="modal-box max-w-sm">
+                    <div className="modal-box max-w-sm p-6">
                         <h2 className="text-lg font-bold text-white mb-4">Cập Nhật Chỉ Số Cơ Thể</h2>
                         <form onSubmit={submit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
@@ -199,7 +200,8 @@ export default function Progress() {
                             </div>
                         </form>
                     </div>
-                </div>
+                </div>,
+                document.body
             )}
         </div>
     )

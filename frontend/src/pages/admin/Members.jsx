@@ -126,7 +126,7 @@ export default function Members() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-black text-white">Quản lý Hộ i viên</h1>
+          <h1 className="text-2xl font-black text-white">Quản lý Hội viên</h1>
           <p className="text-sm text-gray-500 mt-1">
             {members.length} hội viên trong hệ thống
           </p>
