@@ -10,17 +10,17 @@ import {
 import toast from 'react-hot-toast'
 
 const links = [
-    { to: '/', icon: LayoutDashboard, label: 'Dashboard', end: true },
-    { to: '/members', icon: Users, label: 'Hội Viên' },
-    { to: '/packages', icon: Package, label: 'Gói Tập' },
-    { to: '/subscriptions', icon: CreditCard, label: 'Đăng Ký' },
-    { to: '/bookings', icon: CalendarDays, label: 'Đặt Lịch' },
-    { to: '/classes-mgmt', icon: School, label: 'Lớp Học', roles: ['admin'] },
-    { to: '/products', icon: ShoppingBag, label: 'Sản Phẩm', roles: ['admin'] },
-    { to: '/orders', icon: ClipboardList, label: 'Đơn Hàng' },
-    { to: '/trainers', icon: Award, label: 'Huấn Luyện Viên' },
-    { to: '/feedback', icon: MessageSquare, label: 'Phản Hồi' },
-    { to: '/checkin', icon: ScanLine, label: 'Check-in' },
+    { to: '/admin', icon: LayoutDashboard, label: 'Dashboard', end: true },
+    { to: '/admin/members', icon: Users, label: 'Hội Viên' },
+    { to: '/admin/packages', icon: Package, label: 'Gói Tập' },
+    { to: '/admin/subscriptions', icon: CreditCard, label: 'Đăng Ký' },
+    { to: '/admin/bookings', icon: CalendarDays, label: 'Đặt Lịch' },
+    { to: '/admin/classes-mgmt', icon: School, label: 'Lớp Học', roles: ['admin'] },
+    { to: '/admin/products', icon: ShoppingBag, label: 'Sản Phẩm', roles: ['admin'] },
+    { to: '/admin/orders', icon: ClipboardList, label: 'Đơn Hàng' },
+    { to: '/admin/trainers', icon: Award, label: 'Huấn Luyện Viên' },
+    { to: '/admin/feedback', icon: MessageSquare, label: 'Phản Hồi' },
+    { to: '/admin/checkin', icon: ScanLine, label: 'Check-in' },
 ]
 
 export default function Sidebar() {

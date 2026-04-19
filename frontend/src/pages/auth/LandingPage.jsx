@@ -13,6 +13,7 @@ import {
   User,
   ChevronLeft,
   ChevronRight,
+  X,
 } from "lucide-react";
 // Import Swiper React components
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -27,6 +28,8 @@ export default function LandingPage() {
   //   const [page, setPage] = useState("landing");
   const [show, setShow] = useState(false);
   const [isAnnual, setIsAnnual] = useState(false);
+  const [isVideoOpen, setIsVideoOpen] = useState(false);
+  const [selectedTrainer, setSelectedTrainer] = useState(null);
 
   const [introRef, heroVisible] = useInview();
   const [getReadyRef, getReadyVisible] = useInview();
@@ -34,6 +37,7 @@ export default function LandingPage() {
   const [programRef, programVisible] = useInview();
   const [memberRef, memberVisible] = useInview();
   const [contactRef, contactVisible] = useInview();
+
   useEffect(() => {
     const timer = setTimeout(() => {
       setShow(true);
@@ -105,6 +109,19 @@ export default function LandingPage() {
       status: "HN Fitcore",
       badge: "available",
       skills: ["Gym", "Nutrition", "Bulking", "+2"],
+      // Các trường bổ sung:
+      email: "nam.bui@hnfitcore.com",
+      phone: "0367 397 104",
+      address: "Cơ sở 1 - Cầu Giấy, Hà Nội",
+      certifications: [
+        "NASM Certified Personal Trainer",
+        "Chứng nhận chuyên gia Dinh dưỡng Thể thao (ISSA)",
+      ],
+      teaching: [
+        "Bodybuilding Advanced",
+        "Strength Training",
+        "Kiểm soát cân nặng",
+      ],
     },
     {
       name: "Alex Johnson",
@@ -115,6 +132,14 @@ export default function LandingPage() {
       status: "Freelancer",
       badge: "",
       skills: ["Yoga", "Meditation", "Flexibility", "+1"],
+      email: "alex.j@gmail.com",
+      phone: "0988 123 456",
+      address: "Cơ sở 2 - Quận 1, TP.HCM",
+      certifications: [
+        "200-Hour RYT Yoga Alliance",
+        "Chứng chỉ Trị liệu Thiền định",
+      ],
+      teaching: ["Hatha Yoga", "Vinyasa Flow", "Meditation Core"],
     },
     {
       name: "Minh Tuấn",
@@ -125,6 +150,14 @@ export default function LandingPage() {
       status: "HN Fitcore",
       badge: "hot",
       skills: ["Powerlifting", "Crossfit", "Cardio", "+3"],
+      email: "tuan.minh@hnfitcore.com",
+      phone: "0912 345 678",
+      address: "Cơ sở 1 - Cầu Giấy, Hà Nội",
+      certifications: [
+        "CSCS (Certified Strength and Conditioning Specialist)",
+        "Cử nhân Giáo dục Thể chất",
+      ],
+      teaching: ["Powerlifting", "Crossfit", "Huấn luyện Thể lực chuyên sâu"],
     },
     {
       name: "Sarah Kim",
@@ -135,6 +168,14 @@ export default function LandingPage() {
       status: "Freelancer",
       badge: "available",
       skills: ["Diet", "HIIT", "Pilates", "+1"],
+      email: "sarah.kim@gmail.com",
+      phone: "0933 555 777",
+      address: "Cơ sở 3 - Đống Đa, Hà Nội",
+      certifications: [
+        "ACE Weight Management Specialist",
+        "Chứng chỉ HLV Pilates Quốc tế",
+      ],
+      teaching: ["Weight Loss Bootcamp", "Pilates", "HIIT Cardio"],
     },
     {
       name: "Linda",
@@ -145,6 +186,14 @@ export default function LandingPage() {
       status: "HN Fitcore",
       badge: "",
       skills: ["Boxing", "Muay Thai", "Fitness", "+2"],
+      email: "linda.fight@hnfitcore.com",
+      phone: "0977 888 999",
+      address: "Cơ sở 1 - Cầu Giấy, Hà Nội",
+      certifications: [
+        "Đai đen Taekwondo",
+        "Huấn luyện viên Muay Thai chuyên nghiệp",
+      ],
+      teaching: ["Kickboxing", "Muay Thai Cơ Bản", "Phản xạ tự vệ"],
     },
     {
       name: "Ngọc Diệp",
@@ -155,6 +204,18 @@ export default function LandingPage() {
       status: "Freelancer",
       badge: "free trial",
       skills: ["Planning", "Anatomy", "Recovery", "+4"],
+      email: "diep.ngoc@gmail.com",
+      phone: "0909 111 222",
+      address: "Cơ sở 2 - Quận 1, TP.HCM",
+      certifications: [
+        "Chứng chỉ Phục hồi chức năng",
+        "Chuyên gia Phân tích Vận động",
+      ],
+      teaching: [
+        "Thiết kế Lộ trình Dinh dưỡng",
+        "Bài tập Phục hồi (Recovery)",
+        "Posture Correction",
+      ],
     },
   ];
   return (
@@ -225,12 +286,15 @@ export default function LandingPage() {
 
           <div className="mt-8 flex flex-wrap items-center gap-4">
             <button
-              onClick={() => setPage("login")}
-              className="rounded-xl bg-red-600 px-6 py-3 font-semibold transition hover:bg-red-500"
+              onClick={() => navigate("/login")}
+              className="cursor-pointer rounded-xl bg-red-600 px-6 py-3 font-semibold transition hover:bg-red-500"
             >
               Get Started
             </button>
-            <button className="flex items-center gap-3 text-slate-300 hover:text-white">
+            <button
+              onClick={() => setIsVideoOpen(true)}
+              className="flex items-center gap-3 text-slate-300 hover:text-white"
+            >
               <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-lg">
                 ▶
               </span>
@@ -240,16 +304,18 @@ export default function LandingPage() {
 
           <div className="mt-10 grid max-w-md grid-cols-3 gap-6">
             <div>
-              <div className="text-3xl font-extrabold">105+</div>
-              <div className="mt-1 text-sm text-slate-300">Expert Trainers</div>
+              <div className="text-3xl font-extrabold">65+</div>
+              <div className="mt-1 text-sm text-slate-300">
+                HLV chuyên nghiệp
+              </div>
             </div>
             <div>
               <div className="text-3xl font-extrabold">978+</div>
-              <div className="mt-1 text-sm text-slate-300">Member Joined</div>
+              <div className="mt-1 text-sm text-slate-300">Hội viên</div>
             </div>
             <div>
-              <div className="text-3xl font-extrabold">243+</div>
-              <div className="mt-1 text-sm text-slate-300">Programs</div>
+              <div className="text-3xl font-extrabold">200+</div>
+              <div className="mt-1 text-sm text-slate-300">Chương trình</div>
             </div>
           </div>
         </div>
@@ -261,9 +327,9 @@ export default function LandingPage() {
             className={`absolute bottom-8 right-10 h-56 w-56 rounded-full bg-red-600/20 blur-3xl`}
           />
           <img
-            src="../../../public/intro.jpg"
+            src="/intro.jpg"
             alt="Gym members"
-            className={`relative z-10 h-[540px] w-full max-w-[520px] rounded-[28px] object-cover shadow-2xl shadow-black/40`}
+            className={`relative z-10 h-135 w-full max-w-130 rounded-[28px] object-cover shadow-2xl shadow-black/40`}
           />
         </div>
       </section>
@@ -274,12 +340,12 @@ export default function LandingPage() {
         className="mx-auto grid max-w-7xl items-center gap-10 bg-[#4a4545] px-6 py-16 lg:grid-cols-[420px_1fr] lg:px-10"
       >
         <div
-          className={`mx-auto w-full max-w-[360px] overflow-hidden rounded-[28px] transition-all duration-700 ease-out ${getReadyVisible ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"}`}
+          className={`mx-auto w-full max-w-90 overflow-hidden rounded-[28px] transition-all duration-700 ease-out ${getReadyVisible ? "translate-x-0 opacity-100" : "-translate-x-20 opacity-0"}`}
         >
           <img
             src="../../../public/gym.webp"
             alt="Fitness woman"
-            className="h-[360px] w-full object-cover"
+            className="h-90 w-full object-cover"
           />
         </div>
 
@@ -287,8 +353,8 @@ export default function LandingPage() {
           className={`transition-all duration-700 ease-out ${show ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"}`}
         >
           <h2 className="text-4xl font-extrabold leading-tight">
-            Get Ready to Reach Your{" "}
-            <span className="text-red-500">Fitness</span> Goals
+            Hãy sẵn sàng để đạt được mục tiêu{" "}
+            <span className="text-red-500">thể chất</span> của bạn!
           </h2>
           <p className="mt-5 max-w-2xl text-base leading-7 text-slate-200">
             Tối ưu vận hành phòng gym với dashboard quản lý tập trung. Theo dõi
@@ -314,7 +380,7 @@ export default function LandingPage() {
             <h2
               className={`text-4xl font-extrabold leading-tight transition-all duration-700 ${programVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-20"}`}
             >
-              The Best Program <br /> We Offer For You
+              Chương trình tốt nhất <br /> Chúng tôi cung cấp cho bạn
             </h2>
           </div>
         </div>
@@ -351,77 +417,6 @@ export default function LandingPage() {
         </div>
       </section>
 
-      {/* <section
-        ref={memberRef}
-        id="membership"
-        className="bg-[#3f3a3a] px-6 py-16 lg:px-10"
-      >
-        <div className="mx-auto max-w-7xl">
-          <div
-            className={`text-center transition-all duration-700 ${memberVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
-          >
-            <h2 className="text-4xl font-extrabold">Choose the Best plan</h2>
-            <p className="mt-3 text-slate-300">
-              Chọn gói phù hợp cho mô hình phòng gym của bạn.
-            </p>
-            <div className="mx-auto mt-6 inline-flex rounded-full bg-[#5a5555] p-1">
-              <button className="rounded-full bg-red-600 px-5 py-2 text-sm font-semibold">
-                Monthly
-              </button>
-              <button className="rounded-full px-5 py-2 text-sm text-slate-200">
-                Annual
-              </button>
-            </div>
-          </div>
-
-          <div className="mt-12 grid gap-6 md:grid-cols-3">
-            {pricing.map((plan, index) => (
-              <div
-                key={plan.name}
-                className={`rounded-[24px] p-8  transition-all duration-700 ${
-                  plan.highlight
-                    ? "bg-red-600 shadow-2xl shadow-red-950/30"
-                    : "bg-[#5a5555]"
-                } ${
-                  memberVisible
-                    ? "translate-y-0 opacity-100"
-                    : "translate-y-20 opacity-0"
-                }
-                `}
-                style={{ transitionDelay: `${index * 350}ms` }}
-              >
-                <div className="text-center">
-                  <h3 className="text-2xl font-bold">{plan.name}</h3>
-                  <div className="mt-4 text-5xl font-extrabold">
-                    {plan.price}
-                  </div>
-                  <div className="mt-2 text-sm text-slate-200">/ Per Month</div>
-                </div>
-
-                <ul className="mt-8 space-y-4 text-sm">
-                  {plan.features.map((feature) => (
-                    <li key={feature} className="flex items-center gap-3">
-                      <span>✓</span>
-                      <span>{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-
-                <button
-                  onClick={() => setPage("login")}
-                  className={`mt-8 w-full rounded-full px-5 py-3 font-semibold transition cursor-pointer ${
-                    plan.highlight
-                      ? "bg-white text-red-600 hover:bg-slate-100"
-                      : "border border-white/40 hover:bg-white/10"
-                  }`}
-                >
-                  Choose plan
-                </button>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section> */}
       <section
         ref={memberRef}
         id="membership"
@@ -467,7 +462,7 @@ export default function LandingPage() {
             {pricing.map((plan, index) => (
               <div
                 key={plan.name}
-                className={`rounded-[24px] p-8 transition-all duration-700 ${
+                className={`rounded-3xl p-8 transition-all duration-700 ${
                   plan.highlight
                     ? "bg-red-600 shadow-2xl shadow-red-950/30"
                     : "bg-[#5a5555]"
@@ -558,8 +553,8 @@ export default function LandingPage() {
           >
             {trainers.map((trainer, index) => (
               <SwiperSlide key={index}>
-                <div className="bg-gradient-to-b from-gray-100 via-gray-200 to-[#ffffff] group flex flex-col overflow-hidden rounded-[10px] bg-[#3f3a3a] shadow-lg transition-all duration-300 hover:scale-98 hover:shadow-2xl hover:shadow-black/50">
-                  <div className="relative flex flex-grow flex-col items-center p-8">
+                <div className="bg-linear-to-b from-gray-100 via-gray-200 to-[#ffffff] group flex flex-col overflow-hidden rounded-[10px] bg-[#3f3a3a] shadow-lg transition-all duration-300 hover:scale-98 hover:shadow-2xl hover:shadow-black/50">
+                  <div className="relative flex grow flex-col items-center p-8">
                     {/* Avatar */}
                     <div className="relative">
                       <img
@@ -599,7 +594,12 @@ export default function LandingPage() {
                   </div>
 
                   {/* Bottom Button (Full Width) */}
-                  <button className="mx-auto w-fit px-6 cursor-pointer rounded-4xl inline-block bg-[#2c4af5] py-3 mb-4 text-xs font-bold uppercase tracking-[0.2em] text-slate-300 transition-all group-hover:bg-blue-600 group-hover:text-white">
+                  <button
+                    onClick={() => {
+                      setSelectedTrainer(trainer);
+                    }}
+                    className="mx-auto w-fit px-6 cursor-pointer rounded-4xl inline-block bg-[#011dbd] py-3 mb-4 text-xs font-bold uppercase tracking-[0.2em] text-slate-300 transition-all group-hover:bg-blue-600 group-hover:text-white"
+                  >
                     Xem chi tiết
                   </button>
                 </div>
@@ -615,41 +615,6 @@ export default function LandingPage() {
           </Swiper>
         </div>
       </section>
-
-      {/* <section id="contact" className="mx-auto max-w-7xl px-6 py-16 lg:px-10">
-        <div className="grid gap-8 rounded-[32px] bg-[#4a4545] p-8 lg:grid-cols-2 lg:p-10">
-          <div>
-            <p className="text-sm uppercase tracking-[0.24em] text-red-400">
-              Book a demo
-            </p>
-            <h2 className="mt-3 text-4xl font-extrabold">
-              Sẵn sàng triển khai cho phòng gym của bạn?
-            </h2>
-            <p className="mt-4 max-w-xl leading-7 text-slate-200">
-              Chạy landing page ngay trên Vite, sau đó có thể mở rộng sang login
-              thật, dashboard, hội viên, gói tập và kết nối API backend Node.js.
-            </p>
-          </div>
-          <div className="flex flex-col gap-4">
-            <input
-              type="text"
-              placeholder="Tên phòng gym"
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-slate-300"
-            />
-            <input
-              type="email"
-              placeholder="Email quản trị"
-              className="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 outline-none placeholder:text-slate-300"
-            />
-            <button
-              onClick={() => setPage("login")}
-              className="rounded-2xl bg-red-600 px-5 py-3.5 font-semibold transition hover:bg-red-500"
-            >
-              Trải nghiệm demo
-            </button>
-          </div>
-        </div>
-      </section> */}
       <section
         ref={contactRef}
         id="contact"
@@ -657,7 +622,7 @@ export default function LandingPage() {
       >
         {/* Container chính: Thêm Gradient, Shadow lớn và Border siêu mỏng */}
         <div
-          className={`border relative overflow-hidden rounded-[32px] bg-gradient-to-br from-[#4a4545] to-[#2d2a2a] p-8 shadow-2xl sm:p-10 lg:grid lg:grid-cols-2 lg:gap-16 lg:p-14 border border-white/10 transition-all duration-700 ${contactVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-20 opacity-0 scale-0"}`}
+          className={`relative overflow-hidden rounded-4xl bg-linear-to-br from-[#4a4545] to-[#2d2a2a] p-8 shadow-2xl sm:p-10 lg:grid lg:grid-cols-2 lg:gap-16 lg:p-14 border border-white/10 transition-all duration-700 ${contactVisible ? "translate-y-0 opacity-100 scale-100" : "translate-y-20 opacity-0 scale-0"}`}
         >
           {/* Vệt sáng trang trí (Glow effect) tạo cảm giác năng động của Gym */}
           <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-red-600/15 blur-3xl"></div>
@@ -678,7 +643,7 @@ export default function LandingPage() {
 
             <h2 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
               Sẵn sàng bứt phá cho{" "}
-              <span className="bg-gradient-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
                 HN Fitcore Evolution
               </span>{" "}
             </h2>
@@ -729,7 +694,7 @@ export default function LandingPage() {
           {/* Cột 2: Form nhập liệu */}
           <div className="relative z-10 mt-12 lg:mt-0 flex items-center">
             {/* Khối nền mờ (Glassmorphism) ôm trọn Form */}
-            <div className="w-full rounded-[24px] bg-black/20 p-6 backdrop-blur-md border border-white/5 sm:p-8">
+            <div className="w-full rounded-3xl bg-black/20 p-6 backdrop-blur-md border border-white/5 sm:p-8">
               <div className="flex flex-col gap-5">
                 {/* Ô nhập Tên phòng gym */}
                 <div className="relative">
@@ -866,6 +831,153 @@ export default function LandingPage() {
           <Copyright className="w-4 h-4" /> Copyright by HuuNam
         </p>
       </footer>
+      {isVideoOpen && (
+        <div
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md transition-opacity"
+          onClick={() => setIsVideoOpen(false)} // Click ra ngoài để đóng
+        >
+          {/* Ngăn chặn sự kiện click lan truyền khi bấm vào khu vực video */}
+          <div
+            className="relative w-full max-w-4xl animate-[pulse_0.3s_ease-out_1]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Nút đóng */}
+            <button
+              onClick={() => setIsVideoOpen(false)}
+              className="absolute -right-4 -top-12 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 text-slate-300 transition-all hover:bg-red-600 hover:text-white hover:scale-110"
+            >
+              <X className="h-6 w-6" />
+            </button>
+
+            <div className="relative w-full aspect-video overflow-hidden rounded-3xl shadow-2xl shadow-black/80 border border-white/10 bg-black">
+              <video
+                className="w-full h-full object-cover"
+                src="/vidAd.mp4"
+                controls
+                autoPlay
+                playsInline
+              >
+                Trình duyệt của bạn không hỗ trợ thẻ video.
+              </video>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- POPUP TRAINER PROFILE MODAL --- */}
+      {/* --- POPUP TRAINER PROFILE MODAL (LIGHT TONE) --- */}
+      {selectedTrainer && (
+        <div 
+          className="fixed inset-0 z-100 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm transition-opacity"
+          onClick={() => setSelectedTrainer(null)}
+        >
+          {/* Container chính: Đổi bg-[#2b2626] thành bg-white và thêm animate-scale-in */}
+          <div 
+            className="animate-scale-in relative w-full max-w-3xl overflow-hidden rounded-4xl bg-white shadow-[0_20px_50px_rgba(0,0,0,0.2)] transition-all" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Nút đóng: Đổi màu icon cho dễ nhìn trên nền trắng */}
+            <button
+              onClick={() => setSelectedTrainer(null)}
+              className="absolute right-5 top-5 z-10 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-all hover:bg-red-500 hover:text-white hover:rotate-90"
+            >
+              <X className="h-5 w-5" />
+            </button>
+            
+            <div className="flex flex-col md:flex-row">
+              {/* Cột trái: Thông tin cơ bản - Dùng màu xám nhạt (bg-slate-50) */}
+              <div className={`flex w-full flex-col items-center justify-center bg-slate-50 p-10 text-center md:w-2/5 animate-slide-in-left`}>
+                <div className="relative">
+                  <div className="absolute -inset-1 rounded-full bg-linear-to-tr from-red-600 to-orange-400 blur opacity-25"></div>
+                  <img 
+                    src={selectedTrainer.img} 
+                    alt={selectedTrainer.name} 
+                    className="relative h-40 w-40 rounded-full border-4 border-white object-cover shadow-xl" 
+                  />
+                </div>
+                
+                <h3 className="mt-6 text-2xl font-black text-slate-900">{selectedTrainer.name}</h3>
+                <p className="font-bold uppercase tracking-widest text-red-600 text-[11px] mt-1">{selectedTrainer.role}</p>
+                
+                <div className="mt-6 flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-xs font-bold text-emerald-700 border border-emerald-100">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                  {selectedTrainer.status}
+                </div>
+                
+                <div className="mt-8 w-full border-t border-slate-200 pt-6">
+                  <p className="text-[10px] uppercase tracking-widest text-slate-400 font-bold">Học phí dự kiến</p>
+                  <p className="text-xl font-black text-slate-900">{selectedTrainer.rate}</p>
+                </div>
+              </div>
+
+              {/* Cột phải: Chi tiết chuyên môn - Dùng nền trắng thuần */}
+              <div className="flex w-full flex-col gap-8 p-10 md:w-3/5 bg-white animate-slide-in-right">
+                
+                {/* Contact: Đổi text sang màu tối */}
+                <div>
+                  <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-5">
+                    <span className="h-1 w-5 bg-red-600"></span> Thông tin liên lạc
+                  </h4>
+                  <div className="grid gap-4 text-sm font-medium text-slate-600">
+                    <div className="flex items-center gap-4 group">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                        <Mail size={18}/>
+                      </div>
+                      {selectedTrainer.email}
+                    </div>
+                    <div className="flex items-center gap-4 group">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                        <Phone size={18}/>
+                      </div>
+                      {selectedTrainer.phone}
+                    </div>
+                    <div className="flex items-center gap-4 group">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 group-hover:bg-red-600 group-hover:text-white transition-colors">
+                        <MapPinHouse size={18}/>
+                      </div>
+                      {selectedTrainer.address}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Certifications: Dùng icon màu xanh lá để tạo cảm giác uy tín */}
+                <div>
+                  <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-4">
+                    <span className="h-1 w-5 bg-red-600"></span> Bằng cấp chuyên môn
+                  </h4>
+                  <div className="space-y-3 pl-1">
+                    {selectedTrainer.certifications.map((cert, index) => (
+                      <div key={index} className="flex items-start gap-3 text-sm text-slate-600">
+                        <div className="mt-1 flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-emerald-600">
+                          <span className="text-[10px]">✔</span>
+                        </div>
+                        <span className="font-semibold">{cert}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Teaching: Các tag màu đỏ nhạt trên nền trắng */}
+                <div>
+                  <h4 className="flex items-center gap-2 text-xs font-black uppercase tracking-[0.2em] text-slate-900 mb-4">
+                    <span className="h-1 w-5 bg-red-600"></span> Chương trình dạy
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedTrainer.teaching.map((program, index) => (
+                      <span 
+                        key={index} 
+                        className="rounded-xl bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 border border-slate-200 hover:border-red-300 hover:text-red-600 transition-all cursor-default"
+                      >
+                        {program}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
