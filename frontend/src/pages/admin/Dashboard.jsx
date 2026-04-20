@@ -12,7 +12,7 @@ import { Bar, Doughnut } from 'react-chartjs-2'
 ChartJS.register(CategoryScale, LinearScale, BarElement, LineElement, PointElement, ArcElement, Tooltip, Legend, Filler)
 
 const StatCard = ({ icon: Icon, label, value, color, sub }) => (
-    <div className="card relative bg-[#111] border-[#1f1f1f] p-6 group hover:border-yellow-500/30 transition-all duration-300">
+    <div className="card relative bg-[#111] border-border-base p-6 group hover:border-yellow-500/30 transition-all duration-300">
         <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
             <Icon size={48} color={color} />
         </div>
@@ -95,19 +95,19 @@ export default function Dashboard() {
 
             {/* Charts Row */}
             <div className="grid lg:grid-cols-3 gap-6">
-                <div className="card lg:col-span-2 bg-[#0d0d0d] border-[#1a1a1a] p-6">
+                <div className="card lg:col-span-2 bg-surface-base border-[#1a1a1a] p-6">
                     <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-yellow-500" /> BIỂU ĐỒ DOANH THU 6 THÁNG
                     </h3>
-                    <div className="h-[300px]">
+                    <div className="h-75">
                         <Bar data={revenueData} options={{ maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { display: false }, ticks: { color: '#444', font: { size: 10, weight: 'bold' } } }, y: { grid: { color: '#111' }, ticks: { color: '#444', font: { size: 10, weight: 'bold' } } } } }} />
                     </div>
                 </div>
-                <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-6">
+                <div className="card bg-surface-base border-[#1a1a1a] p-6">
                     <h3 className="text-xs font-black text-zinc-500 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-red-500" /> PHÂN BỔ GÓI TẬP
                     </h3>
-                    <div className="h-[300px] flex items-center">
+                    <div className="h-75 flex items-center">
                         <Doughnut data={packageData} options={{ maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: '#666', font: { size: 10, weight: 'bold' }, padding: 20, usePointStyle: true } } } }} />
                     </div>
                 </div>
@@ -115,7 +115,7 @@ export default function Dashboard() {
 
             {/* Expiring Soon */}
             {stats?.expiringSoon?.length > 0 && (
-                <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-0 overflow-hidden">
+                <div className="card bg-surface-base border-[#1a1a1a] p-0 overflow-hidden">
                     <div className="p-6 border-b border-zinc-900 flex items-center gap-2 text-yellow-500">
                         <AlertTriangle size={18} />
                         <h3 className="text-xs font-black uppercase tracking-widest">Hội viên sắp hết hạn (7 ngày tới)</h3>
@@ -124,10 +124,10 @@ export default function Dashboard() {
                         <table className="tbl">
                             <thead>
                                 <tr className="bg-zinc-950/50">
-                                    <th className="!text-[10px] font-black uppercase tracking-widest">Hội viên</th>
-                                    <th className="!text-[10px] font-black uppercase tracking-widest">Số điện thoại</th>
-                                    <th className="!text-[10px] font-black uppercase tracking-widest">Ngày hết hạn</th>
-                                    <th className="!text-[10px] font-black uppercase tracking-widest">Thao tác</th>
+                                    <th className="text-[10px]! font-black uppercase tracking-widest">Hội viên</th>
+                                    <th className="text-[10px]! font-black uppercase tracking-widest">Số điện thoại</th>
+                                    <th className="text-[10px]! font-black uppercase tracking-widest">Ngày hết hạn</th>
+                                    <th className="text-[10px]! font-black uppercase tracking-widest">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>

@@ -177,7 +177,7 @@ export default function Cart() {
                                     value={shippingAddress}
                                     onChange={(e) => setShippingAddress(e.target.value)}
                                     placeholder="Nhập địa chỉ nhận hàng..."
-                                    className="input-dark text-xs min-h-[80px] resize-none"
+                                    className="input-dark text-xs min-h-20 resize-none"
                                 />
                             </div>
                         )}

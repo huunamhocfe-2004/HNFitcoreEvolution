@@ -59,7 +59,7 @@ export default function Sidebar() {
             style={{ background: '#080808', borderRight: '1px solid #111', height: '100vh', position: 'sticky', top: 0 }}>
 
             {/* Logo */}
-            <div className="flex items-center gap-3 px-6 py-8 border-b-1 border-amber-100">
+            <div className="flex items-center gap-3 px-6 py-8 border-b border-amber-100">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-900/20"
                     style={{ background: 'linear-gradient(135deg,#ca8a04,#eab308)' }}>
                     <Dumbbell size={20} color="#000" />
@@ -121,7 +121,7 @@ export default function Sidebar() {
 
             {profileModal && 
             createPortal(
-                <div className="modal-overlay z-[1000]" onClick={e => e.target === e.currentTarget && setProfileModal(false)}>
+                <div className="modal-overlay z-1000" onClick={e => e.target === e.currentTarget && setProfileModal(false)}>
                     <div className="modal-box p-6 max-w-md bg-[#0a0a0a] border border-zinc-800">
                         <div className="flex items-center justify-between mb-6">
                             <h2 className="text-lg font-black text-white uppercase italic tracking-tight">Cập nhật hồ sơ</h2>

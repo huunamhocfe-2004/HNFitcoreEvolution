@@ -176,7 +176,7 @@ export default function Members() {
                     <tr key={m.id}>
                       <td>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center font-bold text-sm flex-shrink-0 bg-zinc-900 border border-zinc-800">
+                          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center font-bold text-sm shrink-0 bg-zinc-900 border border-zinc-800">
                             {m.avatar ? (
                               <img
                                 src={m.avatar}

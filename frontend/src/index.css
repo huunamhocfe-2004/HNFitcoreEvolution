@@ -377,13 +377,13 @@ input[type="radio"] {
 
 /* animate popup */
 @keyframes scaleIn {
-  from { 
-    opacity: 0; 
-    transform: scale(0.5) translateY(10px); 
+  from {
+    opacity: 0;
+    transform: scale(0.5) translateY(10px);
   }
-  to { 
-    opacity: 1; 
-    transform: scale(1) translateY(0); 
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 
@@ -393,32 +393,118 @@ input[type="radio"] {
 
 /* Animation cho cột bên trái (Trượt từ trái sang) */
 @keyframes slideInLeft {
-  from { 
-    opacity: 0; 
-    transform: translateX(-30px); 
+  from {
+    opacity: 0;
+    transform: translateX(-30px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
 .animate-slide-in-left {
-  animation: slideInLeft .5s ease-out forwards;
+  animation: slideInLeft 0.5s ease-out forwards;
 }
 
 /* Tùy chọn: Animation cho cột bên phải (Trượt từ phải sang) */
 @keyframes slideInRight {
-  from { 
-    opacity: 0; 
-    transform: translateX(30px); 
+  from {
+    opacity: 0;
+    transform: translateX(30px);
   }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
+  to {
+    opacity: 1;
+    transform: translateX(0);
   }
 }
 
 .animate-slide-in-right {
-  animation: slideInRight .5s ease-out forwards;
+  animation: slideInRight 0.5s ease-out forwards;
+}
+
+/* Animate hero image */
+@keyframes slideOutLeft {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0px);
+  }
+  100% {
+    transform: translateX(-80px);
+    opacity: 0;
+    filter: blur(4px);
+  }
+}
+
+@keyframes slideInRight {
+  0% {
+    transform: translateX(80px);
+    opacity: 0;
+    filter: blur(4px);
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0px);
+  }
+}
+
+.animate-slideOutLeft {
+  animation: slideOutLeft 1s ease forwards;
+}
+
+.animate-slideInRight {
+  animation: slideInRight 1s ease forwards;
+}
+
+/* Animate BMI */
+@keyframes bmiPanelIn {
+  from {
+    opacity: 0;
+    transform: translateY(30px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bmiVisualSwap {
+  from {
+    opacity: 0;
+    transform: translateX(-24px) scale(0.96);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+@keyframes bmiCardRise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes bmiNumberPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
