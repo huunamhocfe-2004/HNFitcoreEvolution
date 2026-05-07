@@ -1,0 +1,2290 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>HN Fitcore Evolution | Quản lý phòng gym trực tuyến</title>
+
+  <style>
+    :root {
+      --bg: #080b12;
+      --bg-soft: #111827;
+      --bg-card: rgba(255, 255, 255, 0.075);
+      --primary: #ff3d00;
+      --primary-2: #ff7a18;
+      --accent: #22c55e;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: rgba(255, 255, 255, 0.12);
+      --shadow: 0 20px 60px rgba(0, 0, 0, 0.35);
+      --radius: 22px;
+      --max: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(255, 61, 0, 0.25), transparent 30%),
+        radial-gradient(circle at top right, rgba(34, 197, 94, 0.14), transparent 30%),
+        var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+
+    img {
+      max-width: 100%;
+      display: block;
+    }
+
+    .container {
+      width: min(var(--max), calc(100% - 32px));
+      margin: 0 auto;
+    }
+
+    .section {
+      padding: 86px 0;
+    }
+
+    .section-title {
+      margin-bottom: 34px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .section-title h2 {
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.15;
+    }
+
+    .section-title p {
+      color: var(--muted);
+      max-width: 560px;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fed7aa;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+
+    .btn {
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 13px 20px;
+      border-radius: 999px;
+      color: #fff;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      font-weight: 700;
+      transition: 0.25s ease;
+      box-shadow: 0 14px 30px rgba(255, 61, 0, 0.25);
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 18px 40px rgba(255, 61, 0, 0.35);
+    }
+
+    .btn.secondary {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .btn.small {
+      padding: 9px 14px;
+      font-size: 0.9rem;
+    }
+
+    .glass {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 99;
+      background: rgba(8, 11, 18, 0.78);
+      backdrop-filter: blur(18px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 900;
+      letter-spacing: 0.4px;
+    }
+
+    .logo-mark {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: grid;
+      place-items: center;
+      box-shadow: 0 12px 30px rgba(255, 61, 0, 0.3);
+    }
+
+    .logo span:last-child {
+      font-size: 1.05rem;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+    }
+
+    .nav-links a {
+      transition: 0.2s;
+      white-space: nowrap;
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active {
+      color: #fff;
+    }
+
+    .menu-btn {
+      display: none;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: #fff;
+      border-radius: 12px;
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    /* Hero */
+    .hero {
+      min-height: calc(100vh - 76px);
+      display: grid;
+      place-items: center;
+      padding: 70px 0;
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 0.9fr;
+      align-items: center;
+      gap: 36px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.65rem, 6vw, 5.6rem);
+      line-height: 0.98;
+      letter-spacing: -2px;
+      margin-bottom: 22px;
+    }
+
+    .hero h1 strong {
+      background: linear-gradient(135deg, #fff, #fed7aa 35%, var(--primary-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      color: #cbd5e1;
+      font-size: 1.08rem;
+      max-width: 650px;
+      margin-bottom: 28px;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 34px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .stat {
+      padding: 18px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+    }
+
+    .stat h3 {
+      color: #fff;
+      font-size: 1.55rem;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    .hero-card {
+      position: relative;
+      padding: 24px;
+      overflow: hidden;
+    }
+
+    .hero-card::before {
+      content: "";
+      position: absolute;
+      inset: -120px -80px auto auto;
+      width: 260px;
+      height: 260px;
+      background: rgba(255, 61, 0, 0.25);
+      border-radius: 50%;
+      filter: blur(10px);
+    }
+
+    .mock-phone {
+      position: relative;
+      border-radius: 34px;
+      padding: 18px;
+      background: #0f172a;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      max-width: 420px;
+      margin: auto;
+    }
+
+    .phone-screen {
+      border-radius: 24px;
+      padding: 20px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035)),
+        #111827;
+      min-height: 520px;
+    }
+
+    .dashboard-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .avatar-row {
+      display: flex;
+      margin-top: 12px;
+    }
+
+    .avatar-row span {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      border: 2px solid #111827;
+      margin-left: -8px;
+      font-size: 0.85rem;
+    }
+
+    .avatar-row span:first-child {
+      margin-left: 0;
+    }
+
+    .mini-card {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 14px;
+    }
+
+    .progress {
+      height: 9px;
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-top: 12px;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, var(--primary), var(--accent));
+    }
+
+    .class-chip {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      margin-top: 10px;
+    }
+
+    /* About */
+    .about-grid {
+      display: grid;
+      grid-template-columns: 0.9fr 1.1fr;
+      gap: 26px;
+    }
+
+    .feature-list {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .feature {
+      padding: 20px;
+      border-radius: 20px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+    }
+
+    .feature .icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      background: rgba(255, 61, 0, 0.16);
+      display: grid;
+      place-items: center;
+      margin-bottom: 12px;
+      font-size: 1.3rem;
+    }
+
+    .feature h3 {
+      margin-bottom: 6px;
+    }
+
+    .feature p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .about-panel {
+      padding: 26px;
+    }
+
+    .about-panel p {
+      color: #cbd5e1;
+      margin-bottom: 16px;
+    }
+
+    .about-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .about-tags span {
+      padding: 8px 12px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      border: 1px solid var(--border);
+      font-size: 0.9rem;
+    }
+
+    /* Branches */
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .input,
+    .select,
+    textarea {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.075);
+      color: #fff;
+      padding: 13px 14px;
+      outline: none;
+      font-family: inherit;
+    }
+
+    .select option {
+      color: #111827;
+    }
+
+    .input::placeholder,
+    textarea::placeholder {
+      color: #94a3b8;
+    }
+
+    .toolbar .input {
+      max-width: 360px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .card {
+      padding: 22px;
+      border-radius: var(--radius);
+      background: rgba(255, 255, 255, 0.065);
+      border: 1px solid var(--border);
+      transition: 0.25s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .card h3 {
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .card-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 16px 0;
+    }
+
+    .card-meta span {
+      font-size: 0.82rem;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.22);
+    }
+
+    /* Pricing */
+    .pricing-tabs,
+    .class-tabs,
+    .schedule-tabs {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 22px;
+    }
+
+    .tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.07);
+      color: #e2e8f0;
+      padding: 10px 15px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .tab-btn.active {
+      color: #fff;
+      border-color: rgba(255, 122, 24, 0.8);
+      background: rgba(255, 61, 0, 0.22);
+    }
+
+    .price-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .price-card.popular {
+      border-color: rgba(255, 122, 24, 0.65);
+      box-shadow: 0 20px 60px rgba(255, 61, 0, 0.13);
+    }
+
+    .popular-label {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      font-size: 0.78rem;
+      padding: 6px 10px;
+      border-radius: 99px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      font-weight: 700;
+    }
+
+    .price {
+      font-size: 2.2rem;
+      font-weight: 900;
+      margin: 14px 0 4px;
+    }
+
+    .price small {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+
+    .benefits {
+      list-style: none;
+      margin: 20px 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .benefits li {
+      color: #cbd5e1;
+    }
+
+    .benefits li::before {
+      content: "✓";
+      color: var(--accent);
+      margin-right: 8px;
+      font-weight: bold;
+    }
+
+    /* Classes */
+    .class-card {
+      min-height: 230px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .class-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      align-items: start;
+    }
+
+    .class-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 1.6rem;
+      background: rgba(255, 61, 0, 0.15);
+      border: 1px solid rgba(255, 61, 0, 0.25);
+    }
+
+    .level {
+      font-size: 0.8rem;
+      padding: 6px 9px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #e2e8f0;
+      white-space: nowrap;
+    }
+
+    /* Schedule */
+    .schedule-box {
+      overflow: hidden;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      padding: 16px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    th {
+      color: #fed7aa;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    td {
+      color: #e2e8f0;
+    }
+
+    .schedule-pill {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 999px;
+      background: rgba(34, 197, 94, 0.12);
+      color: #bbf7d0;
+      font-size: 0.8rem;
+      margin-top: 5px;
+    }
+
+    /* Trainers */
+    .trainer-card {
+      padding: 0;
+      overflow: hidden;
+    }
+
+    .trainer-photo {
+      height: 220px;
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 30% 30%, rgba(255, 122, 24, 0.45), transparent 34%),
+        linear-gradient(135deg, #1e293b, #0f172a);
+      font-size: 4rem;
+    }
+
+    .trainer-content {
+      padding: 22px;
+    }
+
+    .trainer-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 14px 0;
+    }
+
+    .trainer-tags span {
+      font-size: 0.78rem;
+      padding: 5px 9px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #cbd5e1;
+    }
+
+    /* Promotions */
+    .promo-card {
+      background:
+        linear-gradient(135deg, rgba(255, 61, 0, 0.24), rgba(34, 197, 94, 0.12)),
+        rgba(255, 255, 255, 0.065);
+    }
+
+    .promo-code {
+      display: inline-flex;
+      margin-top: 14px;
+      border: 1px dashed rgba(255, 255, 255, 0.35);
+      padding: 8px 12px;
+      border-radius: 12px;
+      color: #fed7aa;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    /* Blog */
+    .blog-card {
+      cursor: pointer;
+    }
+
+    .blog-date {
+      color: #fed7aa;
+      font-size: 0.88rem;
+      margin-bottom: 8px;
+    }
+
+    /* Forms */
+    .forms-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    form {
+      display: grid;
+      gap: 13px;
+    }
+
+    label {
+      color: #cbd5e1;
+      font-size: 0.92rem;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .form-message {
+      display: none;
+      border-radius: 14px;
+      padding: 12px 14px;
+      margin-top: 8px;
+      background: rgba(34, 197, 94, 0.13);
+      color: #bbf7d0;
+      border: 1px solid rgba(34, 197, 94, 0.25);
+    }
+
+    /* FAQ */
+    .faq-list {
+      display: grid;
+      gap: 12px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .faq-item {
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      overflow: hidden;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .faq-question {
+      width: 100%;
+      border: none;
+      background: transparent;
+      color: #fff;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      text-align: left;
+    }
+
+    .faq-answer {
+      display: none;
+      padding: 0 20px 18px;
+      color: var(--muted);
+    }
+
+    .faq-item.open .faq-answer {
+      display: block;
+    }
+
+    .faq-item.open .faq-question span {
+      transform: rotate(45deg);
+    }
+
+    .faq-question span {
+      transition: 0.2s;
+      font-size: 1.4rem;
+    }
+
+    /* Testimonials */
+    .testimonial-wrap {
+      max-width: 850px;
+      margin: 0 auto;
+      text-align: center;
+      padding: 34px;
+    }
+
+    .testimonial-stars {
+      color: #fbbf24;
+      font-size: 1.4rem;
+      margin-bottom: 14px;
+    }
+
+    .testimonial-text {
+      font-size: 1.25rem;
+      color: #e2e8f0;
+      margin-bottom: 18px;
+    }
+
+    .testimonial-user {
+      color: #fed7aa;
+      font-weight: 800;
+    }
+
+    .testimonial-actions {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 22px;
+    }
+
+    /* Policies */
+    .policy-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    .policy-box h3 {
+      margin-bottom: 12px;
+    }
+
+    .policy-box p,
+    .policy-box li {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    .policy-box ul {
+      padding-left: 18px;
+      display: grid;
+      gap: 8px;
+    }
+
+    /* Footer */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 34px 0;
+      background: rgba(255, 255, 255, 0.035);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr 0.8fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    footer p,
+    footer a {
+      color: var(--muted);
+      font-size: 0.95rem;
+    }
+
+    footer h4 {
+      margin-bottom: 10px;
+    }
+
+    .footer-links {
+      display: grid;
+      gap: 7px;
+    }
+
+    /* Modal */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.68);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 999;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-box {
+      width: min(720px, 100%);
+      max-height: 86vh;
+      overflow: auto;
+      padding: 26px;
+      position: relative;
+    }
+
+    .modal-close {
+      position: absolute;
+      right: 16px;
+      top: 14px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+      color: #fff;
+      border-radius: 12px;
+      width: 38px;
+      height: 38px;
+      cursor: pointer;
+    }
+
+    .modal-content h3 {
+      margin-bottom: 10px;
+      font-size: 1.7rem;
+    }
+
+    .modal-content p {
+      color: #cbd5e1;
+      margin-bottom: 12px;
+    }
+
+    /* Back to top */
+    .back-top {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--primary), var(--primary-2));
+      color: #fff;
+      display: none;
+      place-items: center;
+      cursor: pointer;
+      z-index: 90;
+      box-shadow: var(--shadow);
+    }
+
+    .back-top.show {
+      display: grid;
+    }
+
+    /* Responsive */
+    @media (max-width: 980px) {
+      .hero-grid,
+      .about-grid,
+      .forms-grid,
+      .policy-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .nav-links {
+        position: fixed;
+        top: 76px;
+        left: 0;
+        right: 0;
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        padding: 18px;
+        background: rgba(8, 11, 18, 0.96);
+        border-bottom: 1px solid var(--border);
+      }
+
+      .nav-links.show {
+        display: flex;
+      }
+
+      .nav-links a {
+        padding: 10px 0;
+      }
+
+      .menu-btn {
+        display: inline-flex;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .section {
+        padding: 64px 0;
+      }
+
+      .grid-3,
+      .feature-list,
+      .form-row,
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .section-title {
+        align-items: start;
+        flex-direction: column;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        font-size: 0.88rem;
+      }
+
+      .hero h1 {
+        letter-spacing: -1px;
+      }
+
+      .phone-screen {
+        min-height: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <div class="container nav">
+      <a href="#home" class="logo">
+        <span class="logo-mark">🏋️</span>
+        <span>HN Fitcore Evolution</span>
+      </a>
+
+      <nav class="nav-links" id="navLinks">
+        <a href="#home">Trang chủ</a>
+        <a href="#about">Giới thiệu</a>
+        <a href="#branches">Chi nhánh</a>
+        <a href="#pricing">Bảng giá</a>
+        <a href="#classes">Lớp học</a>
+        <a href="#schedule">Lịch lớp</a>
+        <a href="#trainers">HLV</a>
+        <a href="#register">Đăng ký</a>
+        <a href="#contact">Liên hệ</a>
+      </nav>
+
+      <button class="menu-btn" id="menuBtn">☰</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- Trang chủ -->
+    <section id="home" class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="badge">🔥 Nền tảng quản lý phòng gym trực tuyến</div>
+          <h1>Train smarter with <strong>HN Fitcore Evolution</strong></h1>
+          <p>
+            Website công khai dành cho khách chưa đăng nhập: xem gói tập, lịch lớp,
+            chi nhánh, hồ sơ huấn luyện viên, ưu đãi và đăng ký tư vấn/tập thử trực tuyến.
+          </p>
+
+          <div class="hero-actions">
+            <a class="btn" href="#register">Đăng ký tập thử</a>
+            <a class="btn secondary" href="#pricing">Xem bảng giá</a>
+          </div>
+
+          <div class="stats">
+            <div class="stat">
+              <h3>12K+</h3>
+              <span>Hội viên</span>
+            </div>
+            <div class="stat">
+              <h3>08</h3>
+              <span>Chi nhánh Hà Nội</span>
+            </div>
+            <div class="stat">
+              <h3>35+</h3>
+              <span>Huấn luyện viên</span>
+            </div>
+            <div class="stat">
+              <h3>120+</h3>
+              <span>Lớp mỗi tuần</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card glass">
+          <div class="mock-phone">
+            <div class="phone-screen">
+              <div class="dashboard-top">
+                <div>
+                  <strong>Fitcore Dashboard</strong>
+                  <p style="color: var(--muted); font-size: 0.9rem;">Hôm nay, 06/05/2026</p>
+                </div>
+                <span>⚡</span>
+              </div>
+
+              <div class="mini-card">
+                <p style="color: var(--muted);">Tỷ lệ lấp đầy lớp</p>
+                <h2>78%</h2>
+                <div class="progress"><span style="width: 78%;"></span></div>
+              </div>
+
+              <div class="mini-card">
+                <p style="color: var(--muted);">Lớp sắp diễn ra</p>
+                <div class="class-chip">
+                  <div>
+                    <strong>HIIT Burn</strong>
+                    <p style="color: var(--muted); font-size: 0.85rem;">18:30 • Cầu Giấy</p>
+                  </div>
+                  <span>24/30</span>
+                </div>
+                <div class="class-chip">
+                  <div>
+                    <strong>Yoga Flow</strong>
+                    <p style="color: var(--muted); font-size: 0.85rem;">19:15 • Ba Đình</p>
+                  </div>
+                  <span>18/25</span>
+                </div>
+              </div>
+
+              <div class="mini-card">
+                <p style="color: var(--muted);">Hội viên mới hôm nay</p>
+                <h2>+46</h2>
+                <div class="avatar-row">
+                  <span>AN</span>
+                  <span>MN</span>
+                  <span>KH</span>
+                  <span>TP</span>
+                  <span>+9</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Giới thiệu -->
+    <section id="about" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Về chúng tôi</div>
+            <h2>Giới thiệu phòng gym</h2>
+          </div>
+          <p>
+            HN Fitcore Evolution kết hợp không gian tập luyện hiện đại,
+            huấn luyện cá nhân và công nghệ quản lý trực tuyến.
+          </p>
+        </div>
+
+        <div class="about-grid">
+          <div class="about-panel glass">
+            <h3>Sứ mệnh</h3>
+            <p>
+              Tạo ra hệ sinh thái luyện tập thông minh cho người bận rộn tại Hà Nội:
+              dễ xem lịch, dễ đăng ký, dễ chọn gói tập và dễ kết nối với huấn luyện viên.
+            </p>
+            <p>
+              Demo này mô phỏng website công khai cho khách chưa đăng nhập.
+              Các thao tác đăng ký chỉ hiển thị thông báo thành công trên giao diện,
+              chưa kết nối cơ sở dữ liệu.
+            </p>
+
+            <div class="about-tags">
+              <span>Gym</span>
+              <span>Yoga</span>
+              <span>HIIT</span>
+              <span>Personal Training</span>
+              <span>Nutrition Coaching</span>
+              <span>Online Booking</span>
+            </div>
+          </div>
+
+          <div class="feature-list">
+            <div class="feature">
+              <div class="icon">📅</div>
+              <h3>Lịch lớp thông minh</h3>
+              <p>Xem lịch theo ngày hoặc theo tuần, nắm rõ giờ học, địa điểm và số chỗ.</p>
+            </div>
+            <div class="feature">
+              <div class="icon">💳</div>
+              <h3>Gói tập linh hoạt</h3>
+              <p>Bảng giá rõ ràng, có gói theo tháng, quý, năm và gói PT riêng.</p>
+            </div>
+            <div class="feature">
+              <div class="icon">👨‍🏫</div>
+              <h3>Hồ sơ HLV</h3>
+              <p>Khách có thể xem chuyên môn, kinh nghiệm và chọn HLV phù hợp.</p>
+            </div>
+            <div class="feature">
+              <div class="icon">🎁</div>
+              <h3>Ưu đãi liên tục</h3>
+              <p>Cập nhật khuyến mãi theo mùa, mã giảm giá và combo hội viên mới.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chi nhánh -->
+    <section id="branches" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Hệ thống</div>
+            <h2>Danh sách chi nhánh</h2>
+          </div>
+          <p>Tìm chi nhánh gần bạn theo khu vực tại Hà Nội.</p>
+        </div>
+
+        <div class="toolbar">
+          <input id="branchSearch" class="input" type="text" placeholder="Tìm theo tên chi nhánh, quận..." />
+          <select id="branchDistrict" class="select" style="max-width: 220px;">
+            <option value="all">Tất cả khu vực</option>
+            <option value="Cầu Giấy">Cầu Giấy</option>
+            <option value="Ba Đình">Ba Đình</option>
+            <option value="Hai Bà Trưng">Hai Bà Trưng</option>
+            <option value="Thanh Xuân">Thanh Xuân</option>
+          </select>
+        </div>
+
+        <div class="grid-3" id="branchList"></div>
+      </div>
+    </section>
+
+    <!-- Bảng giá -->
+    <section id="pricing" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Membership</div>
+            <h2>Bảng giá gói tập</h2>
+          </div>
+          <p>Chọn chu kỳ thanh toán để xem giá demo tương ứng.</p>
+        </div>
+
+        <div class="pricing-tabs">
+          <button class="tab-btn active" data-price-mode="monthly">Theo tháng</button>
+          <button class="tab-btn" data-price-mode="quarterly">Theo quý</button>
+          <button class="tab-btn" data-price-mode="yearly">Theo năm</button>
+        </div>
+
+        <div class="grid-3" id="pricingList"></div>
+      </div>
+    </section>
+
+    <!-- Lớp học -->
+    <section id="classes" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Training classes</div>
+            <h2>Danh sách lớp học</h2>
+          </div>
+          <p>Lọc nhanh theo nhóm lớp để khách dễ chọn buổi tập phù hợp.</p>
+        </div>
+
+        <div class="class-tabs">
+          <button class="tab-btn active" data-class-filter="all">Tất cả</button>
+          <button class="tab-btn" data-class-filter="strength">Sức mạnh</button>
+          <button class="tab-btn" data-class-filter="cardio">Cardio</button>
+          <button class="tab-btn" data-class-filter="mindbody">Yoga & phục hồi</button>
+          <button class="tab-btn" data-class-filter="dance">Dance</button>
+        </div>
+
+        <div class="grid-3" id="classList"></div>
+      </div>
+    </section>
+
+    <!-- Lịch lớp -->
+    <section id="schedule" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Booking preview</div>
+            <h2>Lịch lớp theo ngày/tuần</h2>
+          </div>
+          <p>Demo lịch lớp dành cho khách xem trước. Khi đăng nhập, hội viên có thể đặt chỗ trực tuyến.</p>
+        </div>
+
+        <div class="schedule-tabs">
+          <button class="tab-btn active" data-schedule-view="day">Theo ngày</button>
+          <button class="tab-btn" data-schedule-view="week">Theo tuần</button>
+        </div>
+
+        <div class="toolbar" id="dayPickerWrap">
+          <select id="scheduleDay" class="select" style="max-width: 240px;">
+            <option value="Thứ 2">Thứ 2</option>
+            <option value="Thứ 3">Thứ 3</option>
+            <option value="Thứ 4" selected>Thứ 4</option>
+            <option value="Thứ 5">Thứ 5</option>
+            <option value="Thứ 6">Thứ 6</option>
+            <option value="Thứ 7">Thứ 7</option>
+            <option value="Chủ nhật">Chủ nhật</option>
+          </select>
+        </div>
+
+        <div class="schedule-box glass">
+          <table>
+            <thead id="scheduleHead"></thead>
+            <tbody id="scheduleBody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- HLV -->
+    <section id="trainers" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Coaching team</div>
+            <h2>Hồ sơ huấn luyện viên</h2>
+          </div>
+          <p>Xem nhanh chuyên môn, kinh nghiệm và đặt lịch tư vấn với HLV.</p>
+        </div>
+
+        <div class="grid-3" id="trainerList"></div>
+      </div>
+    </section>
+
+    <!-- Ưu đãi -->
+    <section id="promotions" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Hot deals</div>
+            <h2>Ưu đãi / khuyến mãi</h2>
+          </div>
+          <p>Các chương trình ưu đãi demo cho hội viên mới và nhóm bạn tập.</p>
+        </div>
+
+        <div class="grid-3">
+          <div class="card promo-card">
+            <h3>Giảm 30% gói 6 tháng</h3>
+            <p>Áp dụng cho khách đăng ký mới trong tháng này tại mọi chi nhánh.</p>
+            <div class="promo-code">FITCORE30</div>
+          </div>
+          <div class="card promo-card">
+            <h3>Tập thử miễn phí 3 ngày</h3>
+            <p>Khách hàng mới được trải nghiệm gym, yoga và HIIT không mất phí.</p>
+            <div class="promo-code">TRY3DAYS</div>
+          </div>
+          <div class="card promo-card">
+            <h3>Đi 2 tính tiền 1</h3>
+            <p>Rủ bạn thân đăng ký cùng để nhận ưu đãi nhóm trong tuần khai trương.</p>
+            <div class="promo-code">BUDDYFIT</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Blog -->
+    <section id="blog" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Knowledge hub</div>
+            <h2>Blog / tin tức</h2>
+          </div>
+          <p>Bài viết demo về tập luyện, dinh dưỡng và thói quen sống khỏe.</p>
+        </div>
+
+        <div class="grid-3" id="blogList"></div>
+      </div>
+    </section>
+
+    <!-- Đăng ký tư vấn & tập thử -->
+    <section id="register" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Start now</div>
+            <h2>Form đăng ký tư vấn & tập thử</h2>
+          </div>
+          <p>Thông tin gửi form sẽ được xử lý demo ngay trên trình duyệt.</p>
+        </div>
+
+        <div class="forms-grid">
+          <div class="card">
+            <h3>Đăng ký tư vấn</h3>
+            <p style="margin-bottom: 18px;">Nhận tư vấn gói tập, PT và lịch phù hợp.</p>
+
+            <form id="consultForm">
+              <div class="form-row">
+                <div>
+                  <label>Họ tên</label>
+                  <input class="input" name="name" type="text" placeholder="Nguyễn Văn A" required />
+                </div>
+                <div>
+                  <label>Số điện thoại</label>
+                  <input class="input" name="phone" type="tel" placeholder="09xxxxxxxx" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div>
+                  <label>Mục tiêu</label>
+                  <select class="select" name="goal" required>
+                    <option value="">Chọn mục tiêu</option>
+                    <option>Giảm mỡ</option>
+                    <option>Tăng cơ</option>
+                    <option>Cải thiện sức khỏe</option>
+                    <option>Tập phục hồi</option>
+                  </select>
+                </div>
+                <div>
+                  <label>Chi nhánh mong muốn</label>
+                  <select class="select" name="branch" required>
+                    <option value="">Chọn chi nhánh</option>
+                    <option>Cầu Giấy</option>
+                    <option>Ba Đình</option>
+                    <option>Hai Bà Trưng</option>
+                    <option>Thanh Xuân</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn" type="submit">Gửi đăng ký tư vấn</button>
+              <div class="form-message"></div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3>Đăng ký tập thử</h3>
+            <p style="margin-bottom: 18px;">Đặt lịch trải nghiệm miễn phí tại HN Fitcore Evolution.</p>
+
+            <form id="trialForm">
+              <div class="form-row">
+                <div>
+                  <label>Họ tên</label>
+                  <input class="input" name="name" type="text" placeholder="Trần Minh Anh" required />
+                </div>
+                <div>
+                  <label>Email</label>
+                  <input class="input" name="email" type="email" placeholder="email@example.com" required />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div>
+                  <label>Ngày muốn tập thử</label>
+                  <input class="input" name="date" type="date" required />
+                </div>
+                <div>
+                  <label>Lớp muốn thử</label>
+                  <select class="select" name="class" required>
+                    <option value="">Chọn lớp</option>
+                    <option>HIIT Burn</option>
+                    <option>Yoga Flow</option>
+                    <option>Strength Foundation</option>
+                    <option>Zumba Energy</option>
+                  </select>
+                </div>
+              </div>
+
+              <button class="btn" type="submit">Đặt lịch tập thử</button>
+              <div class="form-message"></div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faq" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Support</div>
+            <h2>Câu hỏi thường gặp</h2>
+          </div>
+          <p>Giải đáp nhanh các câu hỏi phổ biến trước khi khách đăng ký.</p>
+        </div>
+
+        <div class="faq-list" id="faqList"></div>
+      </div>
+    </section>
+
+    <!-- Đánh giá -->
+    <section id="reviews" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Member voice</div>
+            <h2>Đánh giá của hội viên</h2>
+          </div>
+          <p>Carousel đánh giá demo từ hội viên HN Fitcore Evolution.</p>
+        </div>
+
+        <div class="testimonial-wrap glass">
+          <div class="testimonial-stars">★★★★★</div>
+          <p class="testimonial-text" id="testimonialText"></p>
+          <div class="testimonial-user" id="testimonialUser"></div>
+          <div class="testimonial-actions">
+            <button class="btn secondary small" id="prevReview">← Trước</button>
+            <button class="btn small" id="nextReview">Tiếp →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Liên hệ -->
+    <section id="contact" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Contact</div>
+            <h2>Form liên hệ</h2>
+          </div>
+          <p>Khách có thể gửi góp ý, câu hỏi hoặc yêu cầu hợp tác.</p>
+        </div>
+
+        <div class="forms-grid">
+          <div class="card">
+            <h3>Gửi tin nhắn</h3>
+            <form id="contactForm" style="margin-top: 18px;">
+              <div class="form-row">
+                <div>
+                  <label>Họ tên</label>
+                  <input class="input" name="name" type="text" placeholder="Họ tên của bạn" required />
+                </div>
+                <div>
+                  <label>Email</label>
+                  <input class="input" name="email" type="email" placeholder="email@example.com" required />
+                </div>
+              </div>
+
+              <div>
+                <label>Chủ đề</label>
+                <input class="input" name="subject" type="text" placeholder="Tôi cần hỗ trợ về..." required />
+              </div>
+
+              <div>
+                <label>Nội dung</label>
+                <textarea name="message" rows="5" placeholder="Nhập nội dung liên hệ..." required></textarea>
+              </div>
+
+              <button class="btn" type="submit">Gửi liên hệ</button>
+              <div class="form-message"></div>
+            </form>
+          </div>
+
+          <div class="card">
+            <h3>Thông tin liên hệ</h3>
+            <p style="margin: 14px 0;">📍 Trụ sở demo: 88 Trần Thái Tông, Cầu Giấy, Hà Nội</p>
+            <p style="margin-bottom: 10px;">📞 Hotline: 1900 6868</p>
+            <p style="margin-bottom: 10px;">✉️ Email: hello@hnfitcore.vn</p>
+            <p style="margin-bottom: 20px;">🕘 Giờ mở cửa: 05:30 - 22:30 mỗi ngày</p>
+
+            <div class="mini-card">
+              <strong>Bản đồ demo</strong>
+              <p style="color: var(--muted); margin-top: 6px;">
+                Khu vực bản đồ có thể thay bằng Google Maps iframe khi triển khai thật.
+              </p>
+              <div style="
+                height: 220px;
+                border-radius: 18px;
+                margin-top: 14px;
+                background:
+                  linear-gradient(135deg, rgba(255,61,0,0.3), rgba(34,197,94,0.22)),
+                  repeating-linear-gradient(45deg, rgba(255,255,255,0.06) 0 8px, transparent 8px 16px);
+                display: grid;
+                place-items: center;
+                color: #fff;
+                font-weight: 900;
+              ">
+                MAP HN FITCORE
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Chính sách -->
+    <section id="policies" class="section">
+      <div class="container">
+        <div class="section-title">
+          <div>
+            <div class="badge">Legal</div>
+            <h2>Chính sách bảo mật & điều khoản sử dụng</h2>
+          </div>
+          <p>Nội dung demo, nên thay bằng văn bản pháp lý chính thức khi triển khai thật.</p>
+        </div>
+
+        <div class="policy-grid">
+          <div class="card policy-box">
+            <h3>Chính sách bảo mật</h3>
+            <ul>
+              <li>Thông tin khách hàng được sử dụng để tư vấn, chăm sóc và hỗ trợ đặt lịch.</li>
+              <li>Không chia sẻ dữ liệu cá nhân cho bên thứ ba nếu chưa có sự đồng ý.</li>
+              <li>Khách hàng có quyền yêu cầu cập nhật hoặc xóa thông tin cá nhân.</li>
+              <li>Hệ thống thật cần mã hóa dữ liệu và phân quyền truy cập nội bộ.</li>
+            </ul>
+          </div>
+
+          <div class="card policy-box">
+            <h3>Điều khoản sử dụng</h3>
+            <ul>
+              <li>Khách cần cung cấp thông tin chính xác khi đăng ký tư vấn hoặc tập thử.</li>
+              <li>Lịch lớp, giá và ưu đãi có thể thay đổi theo từng thời điểm.</li>
+              <li>Hội viên cần tuân thủ nội quy phòng tập và hướng dẫn của huấn luyện viên.</li>
+              <li>Website demo chưa thực hiện thanh toán hoặc xác nhận đặt chỗ thật.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container footer-grid">
+      <div>
+        <div class="logo" style="margin-bottom: 12px;">
+          <span class="logo-mark">🏋️</span>
+          <span>HN Fitcore Evolution</span>
+        </div>
+        <p>
+          Demo website công khai cho hệ thống quản lý phòng gym trực tuyến.
+          Thiết kế gồm đầy đủ các chức năng cơ bản dành cho khách chưa đăng nhập.
+        </p>
+      </div>
+
+      <div>
+        <h4>Menu nhanh</h4>
+        <div class="footer-links">
+          <a href="#pricing">Bảng giá</a>
+          <a href="#classes">Lớp học</a>
+          <a href="#schedule">Lịch lớp</a>
+          <a href="#trainers">Huấn luyện viên</a>
+        </div>
+      </div>
+
+      <div>
+        <h4>Hỗ trợ</h4>
+        <div class="footer-links">
+          <a href="#faq">FAQ</a>
+          <a href="#contact">Liên hệ</a>
+          <a href="#policies">Chính sách</a>
+          <a href="#register">Đăng ký tập thử</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-top" id="backTop">↑</button>
+
+  <!-- Modal xem bài viết -->
+  <div class="modal" id="modal">
+    <div class="modal-box glass">
+      <button class="modal-close" id="modalClose">×</button>
+      <div class="modal-content" id="modalContent"></div>
+    </div>
+  </div>
+
+  <script>
+    const branches = [
+      {
+        name: "HN Fitcore Cầu Giấy",
+        district: "Cầu Giấy",
+        address: "88 Trần Thái Tông, Cầu Giấy, Hà Nội",
+        time: "05:30 - 22:30",
+        features: ["Gym", "Yoga", "PT", "Xông hơi"]
+      },
+      {
+        name: "HN Fitcore Ba Đình",
+        district: "Ba Đình",
+        address: "21 Kim Mã, Ba Đình, Hà Nội",
+        time: "06:00 - 22:00",
+        features: ["Gym", "HIIT", "Boxing", "PT"]
+      },
+      {
+        name: "HN Fitcore Hai Bà Trưng",
+        district: "Hai Bà Trưng",
+        address: "102 Bạch Mai, Hai Bà Trưng, Hà Nội",
+        time: "05:30 - 22:30",
+        features: ["Gym", "Yoga", "Dance", "Locker"]
+      },
+      {
+        name: "HN Fitcore Thanh Xuân",
+        district: "Thanh Xuân",
+        address: "56 Nguyễn Trãi, Thanh Xuân, Hà Nội",
+        time: "06:00 - 22:30",
+        features: ["Gym", "Pilates", "PT", "Café"]
+      },
+      {
+        name: "HN Fitcore Mỹ Đình",
+        district: "Cầu Giấy",
+        address: "18 Hàm Nghi, Nam Từ Liêm, Hà Nội",
+        time: "05:30 - 23:00",
+        features: ["Gym", "Strength", "Cardio", "PT"]
+      },
+      {
+        name: "HN Fitcore Phố Huế",
+        district: "Hai Bà Trưng",
+        address: "74 Phố Huế, Hai Bà Trưng, Hà Nội",
+        time: "06:00 - 22:00",
+        features: ["Gym", "Yoga", "Zumba", "PT"]
+      }
+    ];
+
+    const pricing = [
+      {
+        name: "Basic",
+        monthly: 650000,
+        quarterly: 1750000,
+        yearly: 6200000,
+        desc: "Phù hợp người mới bắt đầu.",
+        benefits: ["Tập gym không giới hạn", "Tủ đồ theo buổi", "Đo chỉ số cơ thể", "Hỗ trợ app lịch lớp"]
+      },
+      {
+        name: "Plus",
+        monthly: 950000,
+        quarterly: 2550000,
+        yearly: 9200000,
+        desc: "Gói được chọn nhiều nhất.",
+        popular: true,
+        benefits: ["Tất cả quyền lợi Basic", "Tham gia lớp nhóm", "1 buổi PT định hướng", "Ưu tiên giữ chỗ lớp hot"]
+      },
+      {
+        name: "Elite PT",
+        monthly: 2800000,
+        quarterly: 7600000,
+        yearly: 28500000,
+        desc: "Tập luyện 1-1 cùng HLV.",
+        benefits: ["Tất cả quyền lợi Plus", "8 buổi PT / tháng", "Thực đơn cá nhân hóa", "Theo dõi tiến độ hàng tuần"]
+      }
+    ];
+
+    const classes = [
+      {
+        title: "Strength Foundation",
+        type: "strength",
+        icon: "🏋️",
+        level: "Cơ bản",
+        duration: "60 phút",
+        desc: "Xây nền kỹ thuật squat, deadlift, bench press và tăng sức mạnh an toàn."
+      },
+      {
+        title: "HIIT Burn",
+        type: "cardio",
+        icon: "🔥",
+        level: "Trung bình",
+        duration: "45 phút",
+        desc: "Đốt mỡ cường độ cao, cải thiện tim mạch và sức bền."
+      },
+      {
+        title: "Yoga Flow",
+        type: "mindbody",
+        icon: "🧘",
+        level: "Mọi trình độ",
+        duration: "60 phút",
+        desc: "Tăng độ linh hoạt, giảm căng thẳng, cải thiện hơi thở và phục hồi."
+      },
+      {
+        title: "Zumba Energy",
+        type: "dance",
+        icon: "💃",
+        level: "Vui khỏe",
+        duration: "50 phút",
+        desc: "Lớp dance cardio sôi động, phù hợp người thích âm nhạc và vận động."
+      },
+      {
+        title: "Core Evolution",
+        type: "strength",
+        icon: "⚡",
+        level: "Trung bình",
+        duration: "45 phút",
+        desc: "Tập trung cơ bụng, lưng dưới, thăng bằng và kiểm soát chuyển động."
+      },
+      {
+        title: "Mobility Recovery",
+        type: "mindbody",
+        icon: "🌿",
+        level: "Phục hồi",
+        duration: "40 phút",
+        desc: "Giãn cơ, tăng biên độ khớp và phục hồi sau các buổi tập nặng."
+      }
+    ];
+
+    const schedule = [
+      { day: "Thứ 2", time: "06:30", className: "Yoga Flow", trainer: "HLV Mai Anh", branch: "Ba Đình", slot: "18/25" },
+      { day: "Thứ 2", time: "18:30", className: "HIIT Burn", trainer: "HLV Đức Anh", branch: "Cầu Giấy", slot: "24/30" },
+      { day: "Thứ 3", time: "07:00", className: "Strength Foundation", trainer: "HLV Minh Quân", branch: "Thanh Xuân", slot: "15/20" },
+      { day: "Thứ 3", time: "19:30", className: "Zumba Energy", trainer: "HLV Linh Chi", branch: "Hai Bà Trưng", slot: "26/30" },
+      { day: "Thứ 4", time: "06:30", className: "Core Evolution", trainer: "HLV Đức Anh", branch: "Cầu Giấy", slot: "17/22" },
+      { day: "Thứ 4", time: "18:30", className: "HIIT Burn", trainer: "HLV Minh Quân", branch: "Cầu Giấy", slot: "24/30" },
+      { day: "Thứ 4", time: "19:15", className: "Yoga Flow", trainer: "HLV Mai Anh", branch: "Ba Đình", slot: "18/25" },
+      { day: "Thứ 5", time: "07:00", className: "Mobility Recovery", trainer: "HLV Linh Chi", branch: "Hai Bà Trưng", slot: "12/18" },
+      { day: "Thứ 5", time: "20:00", className: "Strength Foundation", trainer: "HLV Minh Quân", branch: "Thanh Xuân", slot: "19/20" },
+      { day: "Thứ 6", time: "18:00", className: "Zumba Energy", trainer: "HLV Linh Chi", branch: "Hai Bà Trưng", slot: "28/30" },
+      { day: "Thứ 7", time: "08:30", className: "HIIT Burn", trainer: "HLV Đức Anh", branch: "Cầu Giấy", slot: "30/30" },
+      { day: "Chủ nhật", time: "09:00", className: "Yoga Flow", trainer: "HLV Mai Anh", branch: "Ba Đình", slot: "20/25" }
+    ];
+
+    const trainers = [
+      {
+        name: "Nguyễn Minh Quân",
+        role: "Strength Coach",
+        icon: "💪",
+        exp: "7 năm kinh nghiệm",
+        bio: "Chuyên tăng cơ, giảm mỡ, chỉnh kỹ thuật compound lift.",
+        tags: ["Strength", "Muscle Gain", "Fat Loss"]
+      },
+      {
+        name: "Trần Mai Anh",
+        role: "Yoga & Mobility Coach",
+        icon: "🧘‍♀️",
+        exp: "6 năm kinh nghiệm",
+        bio: "Chuyên yoga flow, phục hồi vận động và cải thiện tư thế.",
+        tags: ["Yoga", "Mobility", "Recovery"]
+      },
+      {
+        name: "Lê Đức Anh",
+        role: "HIIT & Performance Coach",
+        icon: "🔥",
+        exp: "8 năm kinh nghiệm",
+        bio: "Thiết kế chương trình cardio, HIIT, conditioning cho người bận rộn.",
+        tags: ["HIIT", "Endurance", "Performance"]
+      },
+      {
+        name: "Phạm Linh Chi",
+        role: "Dance Fitness Coach",
+        icon: "💃",
+        exp: "5 năm kinh nghiệm",
+        bio: "Dẫn lớp Zumba, dance cardio và chương trình giảm cân nhóm.",
+        tags: ["Zumba", "Dance", "Group Class"]
+      },
+      {
+        name: "Hoàng Tuấn Việt",
+        role: "Personal Trainer",
+        icon: "🏆",
+        exp: "9 năm kinh nghiệm",
+        bio: "Chuyên huấn luyện cá nhân, dinh dưỡng cơ bản và theo dõi tiến độ.",
+        tags: ["PT 1-1", "Nutrition", "Body Recomp"]
+      },
+      {
+        name: "Đỗ Khánh Huyền",
+        role: "Pilates Coach",
+        icon: "🌿",
+        exp: "4 năm kinh nghiệm",
+        bio: "Tập trung kiểm soát cơ lõi, cải thiện dáng và giảm đau lưng.",
+        tags: ["Pilates", "Core", "Posture"]
+      }
+    ];
+
+    const blogs = [
+      {
+        title: "5 nguyên tắc giảm mỡ bền vững cho người mới",
+        date: "02/05/2026",
+        intro: "Giảm mỡ không chỉ là ăn ít hơn, mà là xây dựng thói quen phù hợp.",
+        content: "Hãy bắt đầu từ ba việc quan trọng: duy trì thâm hụt calo vừa phải, ưu tiên protein trong bữa ăn và kết hợp tập sức mạnh với cardio. Người mới không nên ép cân quá nhanh vì dễ mất cơ và bỏ cuộc. HN Fitcore Evolution khuyến khích theo dõi chỉ số mỗi tuần để điều chỉnh kế hoạch."
+      },
+      {
+        title: "Nên chọn Gym, HIIT hay Yoga?",
+        date: "28/04/2026",
+        intro: "Mỗi nhóm lớp có mục tiêu khác nhau, hãy chọn theo thể trạng và lịch cá nhân.",
+        content: "Gym phù hợp để tăng cơ, cải thiện vóc dáng và sức mạnh. HIIT phù hợp với người muốn đốt năng lượng nhanh. Yoga hỗ trợ linh hoạt, hơi thở và phục hồi. Lịch tập tốt có thể kết hợp cả ba để cơ thể phát triển cân bằng."
+      },
+      {
+        title: "Cách đặt mục tiêu tập luyện trong 90 ngày",
+        date: "20/04/2026",
+        intro: "Một mục tiêu tốt cần đo được, vừa sức và có thời hạn rõ ràng.",
+        content: "Thay vì đặt mục tiêu chung chung như 'khỏe hơn', hãy đặt mục tiêu cụ thể như giảm 3kg mỡ, tăng 5kg mức squat hoặc duy trì 4 buổi tập mỗi tuần. Trong 90 ngày, bạn nên chia thành 3 giai đoạn: làm quen, tăng tải và tối ưu."
+      }
+    ];
+
+    const faqs = [
+      {
+        q: "Tôi có thể tập thử miễn phí không?",
+        a: "Có. Bạn có thể đăng ký tập thử qua form trên website. Nhân viên tư vấn sẽ liên hệ để xác nhận lịch phù hợp."
+      },
+      {
+        q: "Website demo này đã có đăng nhập hội viên chưa?",
+        a: "Chưa. Đây là phần website công khai cho khách chưa đăng nhập. Khi phát triển tiếp, bạn có thể thêm module đăng nhập, quản lý hội viên, thanh toán và đặt lịch thật."
+      },
+      {
+        q: "Gói Plus có được tham gia lớp nhóm không?",
+        a: "Có. Gói Plus bao gồm quyền tham gia lớp nhóm như HIIT, Yoga, Zumba và các lớp phục hồi."
+      },
+      {
+        q: "Tôi có thể chọn huấn luyện viên cá nhân không?",
+        a: "Có. Khách có thể xem hồ sơ HLV trên website và gửi yêu cầu tư vấn với HLV mong muốn."
+      },
+      {
+        q: "Lịch lớp có thay đổi không?",
+        a: "Có thể thay đổi theo chi nhánh, ngày lễ hoặc tình trạng lớp. Khi triển khai thật, lịch nên được quản trị từ hệ thống admin."
+      }
+    ];
+
+    const reviews = [
+      {
+        text: "Phòng tập sạch, máy mới, HLV hướng dẫn rất kỹ. Tôi thích nhất tính năng xem lịch lớp trước khi đến tập.",
+        user: "Ngọc Anh • Hội viên Plus"
+      },
+      {
+        text: "Sau 3 tháng tập PT, tôi giảm mỡ rõ rệt và biết cách ăn uống khoa học hơn. Rất đáng trải nghiệm.",
+        user: "Minh Hoàng • Gói Elite PT"
+      },
+      {
+        text: "Lớp Yoga Flow rất dễ theo, không gian thoải mái và lịch buổi tối phù hợp với dân văn phòng.",
+        user: "Thu Hà • Hội viên Yoga"
+      }
+    ];
+
+    const navLinks = document.getElementById("navLinks");
+    const menuBtn = document.getElementById("menuBtn");
+    const backTop = document.getElementById("backTop");
+
+    menuBtn.addEventListener("click", () => {
+      navLinks.classList.toggle("show");
+    });
+
+    document.querySelectorAll(".nav-links a").forEach(link => {
+      link.addEventListener("click", () => {
+        navLinks.classList.remove("show");
+      });
+    });
+
+    window.addEventListener("scroll", () => {
+      backTop.classList.toggle("show", window.scrollY > 500);
+
+      const sections = document.querySelectorAll("main section");
+      const links = document.querySelectorAll(".nav-links a");
+
+      let current = "";
+      sections.forEach(section => {
+        const top = section.offsetTop - 120;
+        if (window.scrollY >= top) {
+          current = section.getAttribute("id");
+        }
+      });
+
+      links.forEach(link => {
+        link.classList.remove("active");
+        if (link.getAttribute("href") === "#" + current) {
+          link.classList.add("active");
+        }
+      });
+    });
+
+    backTop.addEventListener("click", () => {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+
+    function formatVND(number) {
+      return new Intl.NumberFormat("vi-VN").format(number) + "đ";
+    }
+
+    function renderBranches() {
+      const keyword = document.getElementById("branchSearch").value.toLowerCase();
+      const district = document.getElementById("branchDistrict").value;
+      const list = document.getElementById("branchList");
+
+      const filtered = branches.filter(item => {
+        const matchKeyword =
+          item.name.toLowerCase().includes(keyword) ||
+          item.address.toLowerCase().includes(keyword) ||
+          item.district.toLowerCase().includes(keyword);
+
+        const matchDistrict = district === "all" || item.district === district;
+        return matchKeyword && matchDistrict;
+      });
+
+      list.innerHTML = filtered.map(item => `
+        <div class="card">
+          <h3>${item.name}</h3>
+          <p>${item.address}</p>
+          <p style="margin-top: 8px;">🕘 ${item.time}</p>
+          <div class="card-meta">
+            ${item.features.map(f => `<span>${f}</span>`).join("")}
+          </div>
+          <a class="btn small" href="#contact">Liên hệ chi nhánh</a>
+        </div>
+      `).join("");
+
+      if (filtered.length === 0) {
+        list.innerHTML = `<div class="card"><h3>Không tìm thấy chi nhánh</h3><p>Hãy thử từ khóa hoặc khu vực khác.</p></div>`;
+      }
+    }
+
+    document.getElementById("branchSearch").addEventListener("input", renderBranches);
+    document.getElementById("branchDistrict").addEventListener("change", renderBranches);
+
+    let priceMode = "monthly";
+
+    function getPriceSuffix(mode) {
+      if (mode === "monthly") return "/ tháng";
+      if (mode === "quarterly") return "/ quý";
+      return "/ năm";
+    }
+
+    function renderPricing() {
+      const list = document.getElementById("pricingList");
+
+      list.innerHTML = pricing.map(item => `
+        <div class="card price-card ${item.popular ? "popular" : ""}">
+          ${item.popular ? `<div class="popular-label">Phổ biến</div>` : ""}
+          <h3>${item.name}</h3>
+          <p>${item.desc}</p>
+          <div class="price">${formatVND(item[priceMode])} <small>${getPriceSuffix(priceMode)}</small></div>
+          <ul class="benefits">
+            ${item.benefits.map(b => `<li>${b}</li>`).join("")}
+          </ul>
+          <a class="btn" href="#register">Đăng ký gói này</a>
+        </div>
+      `).join("");
+    }
+
+    document.querySelectorAll("[data-price-mode]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-price-mode]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        priceMode = btn.dataset.priceMode;
+        renderPricing();
+      });
+    });
+
+    function renderClasses(filter = "all") {
+      const list = document.getElementById("classList");
+      const filtered = filter === "all" ? classes : classes.filter(item => item.type === filter);
+
+      list.innerHTML = filtered.map(item => `
+        <div class="card class-card">
+          <div>
+            <div class="class-top">
+              <div class="class-icon">${item.icon}</div>
+              <span class="level">${item.level}</span>
+            </div>
+            <h3 style="margin-top: 16px;">${item.title}</h3>
+            <p>${item.desc}</p>
+          </div>
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 18px;">
+            <span style="color: #fed7aa;">⏱ ${item.duration}</span>
+            <a class="btn small" href="#schedule">Xem lịch</a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    document.querySelectorAll("[data-class-filter]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-class-filter]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderClasses(btn.dataset.classFilter);
+      });
+    });
+
+    let scheduleView = "day";
+
+    function renderSchedule() {
+      const head = document.getElementById("scheduleHead");
+      const body = document.getElementById("scheduleBody");
+      const dayPickerWrap = document.getElementById("dayPickerWrap");
+
+      if (scheduleView === "day") {
+        dayPickerWrap.style.display = "flex";
+        const selectedDay = document.getElementById("scheduleDay").value;
+        const rows = schedule.filter(item => item.day === selectedDay);
+
+        head.innerHTML = `
+          <tr>
+            <th>Giờ</th>
+            <th>Lớp</th>
+            <th>HLV</th>
+            <th>Chi nhánh</th>
+            <th>Số chỗ</th>
+          </tr>
+        `;
+
+        body.innerHTML = rows.map(item => `
+          <tr>
+            <td>${item.time}</td>
+            <td><strong>${item.className}</strong></td>
+            <td>${item.trainer}</td>
+            <td>${item.branch}</td>
+            <td><span class="schedule-pill">${item.slot}</span></td>
+          </tr>
+        `).join("");
+
+        if (rows.length === 0) {
+          body.innerHTML = `<tr><td colspan="5">Ngày này chưa có lớp trong dữ liệu demo.</td></tr>`;
+        }
+      } else {
+        dayPickerWrap.style.display = "none";
+        head.innerHTML = `
+          <tr>
+            <th>Ngày</th>
+            <th>Lịch lớp nổi bật</th>
+          </tr>
+        `;
+
+        const days = ["Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7", "Chủ nhật"];
+
+        body.innerHTML = days.map(day => {
+          const rows = schedule.filter(item => item.day === day);
+          return `
+            <tr>
+              <td><strong>${day}</strong></td>
+              <td>
+                ${
+                  rows.length
+                    ? rows.map(item => `
+                      <div style="margin-bottom: 10px;">
+                        <strong>${item.time} • ${item.className}</strong>
+                        <div style="color: var(--muted);">${item.trainer} • ${item.branch} • ${item.slot}</div>
+                      </div>
+                    `).join("")
+                    : `<span style="color: var(--muted);">Chưa có lớp</span>`
+                }
+              </td>
+            </tr>
+          `;
+        }).join("");
+      }
+    }
+
+    document.querySelectorAll("[data-schedule-view]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll("[data-schedule-view]").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        scheduleView = btn.dataset.scheduleView;
+        renderSchedule();
+      });
+    });
+
+    document.getElementById("scheduleDay").addEventListener("change", renderSchedule);
+
+    function renderTrainers() {
+      const list = document.getElementById("trainerList");
+
+      list.innerHTML = trainers.map(item => `
+        <div class="card trainer-card">
+          <div class="trainer-photo">${item.icon}</div>
+          <div class="trainer-content">
+            <h3>${item.name}</h3>
+            <p style="color: #fed7aa;">${item.role}</p>
+            <p>${item.exp}</p>
+            <p style="margin-top: 8px;">${item.bio}</p>
+            <div class="trainer-tags">
+              ${item.tags.map(tag => `<span>${tag}</span>`).join("")}
+            </div>
+            <a class="btn small" href="#register" onclick="prefillTrainer('${item.name}')">Tư vấn với HLV</a>
+          </div>
+        </div>
+      `).join("");
+    }
+
+    function prefillTrainer(name) {
+      setTimeout(() => {
+        const goalSelect = document.querySelector("#consultForm select[name='goal']");
+        const message = document.querySelector("#consultForm .form-message");
+        goalSelect.value = "Cải thiện sức khỏe";
+        message.style.display = "block";
+        message.textContent = "Bạn đang quan tâm tư vấn với HLV " + name + ". Vui lòng điền thông tin để gửi yêu cầu.";
+      }, 300);
+    }
+
+    function renderBlogs() {
+      const list = document.getElementById("blogList");
+
+      list.innerHTML = blogs.map((item, index) => `
+        <div class="card blog-card" onclick="openBlog(${index})">
+          <div class="blog-date">${item.date}</div>
+          <h3>${item.title}</h3>
+          <p style="margin-top: 10px;">${item.intro}</p>
+          <button class="btn small" style="margin-top: 18px;">Đọc bài viết</button>
+        </div>
+      `).join("");
+    }
+
+    const modal = document.getElementById("modal");
+    const modalContent = document.getElementById("modalContent");
+    const modalClose = document.getElementById("modalClose");
+
+    function openBlog(index) {
+      const item = blogs[index];
+      modalContent.innerHTML = `
+        <div class="blog-date">${item.date}</div>
+        <h3>${item.title}</h3>
+        <p><strong>${item.intro}</strong></p>
+        <p>${item.content}</p>
+        <p>Nội dung này là dữ liệu demo. Khi triển khai thật, bài viết nên được quản lý từ trang quản trị.</p>
+      `;
+      modal.classList.add("show");
+    }
+
+    modalClose.addEventListener("click", () => modal.classList.remove("show"));
+    modal.addEventListener("click", event => {
+      if (event.target === modal) {
+        modal.classList.remove("show");
+      }
+    });
+
+    function renderFAQ() {
+      const list = document.getElementById("faqList");
+
+      list.innerHTML = faqs.map((item, index) => `
+        <div class="faq-item ${index === 0 ? "open" : ""}">
+          <button class="faq-question">
+            ${item.q}
+            <span>+</span>
+          </button>
+          <div class="faq-answer">${item.a}</div>
+        </div>
+      `).join("");
+
+      document.querySelectorAll(".faq-question").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const item = btn.parentElement;
+          item.classList.toggle("open");
+        });
+      });
+    }
+
+    let reviewIndex = 0;
+
+    function renderReview() {
+      document.getElementById("testimonialText").textContent = reviews[reviewIndex].text;
+      document.getElementById("testimonialUser").textContent = reviews[reviewIndex].user;
+    }
+
+    document.getElementById("nextReview").addEventListener("click", () => {
+      reviewIndex = (reviewIndex + 1) % reviews.length;
+      renderReview();
+    });
+
+    document.getElementById("prevReview").addEventListener("click", () => {
+      reviewIndex = (reviewIndex - 1 + reviews.length) % reviews.length;
+      renderReview();
+    });
+
+    setInterval(() => {
+      reviewIndex = (reviewIndex + 1) % reviews.length;
+      renderReview();
+    }, 5000);
+
+    function handleDemoForm(formId, successText) {
+      const form = document.getElementById(formId);
+      const message = form.querySelector(".form-message");
+
+      form.addEventListener("submit", event => {
+        event.preventDefault();
+
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        message.style.display = "block";
+        message.textContent = successText;
+        form.reset();
+      });
+    }
+
+    handleDemoForm("consultForm", "Gửi đăng ký tư vấn thành công! Nhân viên HN Fitcore Evolution sẽ liên hệ lại với bạn.");
+    handleDemoForm("trialForm", "Đặt lịch tập thử thành công! Đây là thông báo demo, chưa lưu vào cơ sở dữ liệu.");
+    handleDemoForm("contactForm", "Gửi liên hệ thành công! Cảm ơn bạn đã liên hệ HN Fitcore Evolution.");
+
+    function setMinTrialDate() {
+      const dateInput = document.querySelector("#trialForm input[type='date']");
+      const today = new Date();
+      const yyyy = today.getFullYear();
+      const mm = String(today.getMonth() + 1).padStart(2, "0");
+      const dd = String(today.getDate()).padStart(2, "0");
+      dateInput.min = `${yyyy}-${mm}-${dd}`;
+    }
+
+    renderBranches();
+    renderPricing();
+    renderClasses();
+    renderSchedule();
+    renderTrainers();
+    renderBlogs();
+    renderFAQ();
+    renderReview();
+    setMinTrialDate();
+  </script>
+</body>
+</html>

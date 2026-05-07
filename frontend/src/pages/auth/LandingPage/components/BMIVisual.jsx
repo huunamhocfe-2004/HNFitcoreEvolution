@@ -13,7 +13,7 @@ import {
   ReferenceLine,
 } from "recharts";
 
-export default function BMIVisual({ result }) {
+export default function BMIVisual({ result, bmiResultRef, bmiResultVisible }) {
   const pieData = [
     { name: "BMI hiện tại", value: Number(result.bmi.toFixed(1)) },
     { name: "Mốc tham chiếu", value: Math.max(40 - result.bmi, 0.1) },
@@ -28,7 +28,10 @@ export default function BMIVisual({ result }) {
 
   return (
     <div className="animate-[fadeIn_0.7s_ease-out] space-y-5">
-      <div className="rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur-md">
+      <div
+        ref={bmiResultRef}
+        className={`rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur-md transition-all duration-700 ${bmiResultVisible ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"}`}
+      >
         <div className="flex items-center justify-between gap-4">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.24em] text-slate-400">
@@ -65,58 +68,80 @@ export default function BMIVisual({ result }) {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-md">
-          <p className="mb-3 text-sm font-bold text-white">Tỷ lệ BMI hiện tại</p>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <PieChart>
-                <Pie
-                  data={pieData}
-                  dataKey="value"
-                  innerRadius={55}
-                  outerRadius={82}
-                  paddingAngle={2}
-                >
-                  <Cell fill={result.color} />
-                  <Cell fill="#334155" />
-                </Pie>
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+        <div
+          className={`transition-all duration-700 ${bmiResultVisible ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-10"}`}
+        >
+          <div
+            className={`rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-md}`}
+          >
+            <p className="mb-3 text-sm font-bold text-white">
+              Tỷ lệ BMI hiện tại
+            </p>
+            <div className="h-56 min-h-56 w-full">
+              {bmiResultVisible && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      dataKey="value"
+                      innerRadius={55}
+                      outerRadius={82}
+                      paddingAngle={2}
+                    >
+                      <Cell fill={result.color} />
+                      <Cell fill="#334155" />
+                    </Pie>
+                    <Tooltip />
+                  </PieChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         </div>
-
-        <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-md">
-          <p className="mb-3 text-sm font-bold text-white">Thang phân loại BMI</p>
-          <div className="h-56">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart
-                data={rangeData}
-                layout="vertical"
-                margin={{ top: 8, right: 18, left: 10, bottom: 8 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-                <XAxis type="number" stroke="#94a3b8" />
-                <YAxis
-                  dataKey="name"
-                  type="category"
-                  stroke="#cbd5e1"
-                  width={78}
-                />
-                <Tooltip />
-                <ReferenceLine
-                  x={Number(result.bmi.toFixed(1))}
-                  stroke={result.color}
-                  strokeWidth={3}
-                />
-                <Bar dataKey="value" radius={[0, 10, 10, 0]} fill="#64748b" />
-              </BarChart>
-            </ResponsiveContainer>
+        <div
+          className={`transition-all duration-700 ${bmiResultVisible ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}
+        >
+          <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-md">
+            <p className="mb-3 text-sm font-bold text-white">
+              Thang phân loại BMI
+            </p>
+            <div className="h-56 min-h-56 w-full">
+              {bmiResultVisible && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart
+                    data={rangeData}
+                    layout="vertical"
+                    margin={{ top: 8, right: 18, left: 10, bottom: 8 }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
+                    <XAxis type="number" stroke="#94a3b8" />
+                    <YAxis
+                      dataKey="name"
+                      type="category"
+                      stroke="#cbd5e1"
+                      width={78}
+                    />
+                    <Tooltip />
+                    <ReferenceLine
+                      x={Number(result.bmi.toFixed(1))}
+                      stroke={result.color}
+                      strokeWidth={3}
+                    />
+                    <Bar
+                      dataKey="value"
+                      radius={[0, 10, 10, 0]}
+                      fill="#64748b"
+                    />
+                  </BarChart>
+                </ResponsiveContainer>
+              )}
+            </div>
           </div>
         </div>
       </div>
-
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div
+        className={`grid gap-4 sm:grid-cols-2 transition-all duration-700 ${bmiResultVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
+      >
         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
           <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
             Cân nặng lý tưởng

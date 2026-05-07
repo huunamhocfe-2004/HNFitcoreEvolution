@@ -14,23 +14,50 @@ export default function Header({ navigate }) {
         </button>
       </div>
 
-      <nav className="hidden items-center gap-8 text-sm text-slate-200 md:flex">
-        <a href="#home" className="text-red-500">
+      <nav className="hidden items-center gap-4 text-sm text-slate-200 md:flex">
+        {/* Link Active (Trang chủ) */}
+        <a
+          href="#home"
+          className="text-red-500 text-xl font-bold px-4 py-2 transition-colors duration-300 hover:text-red-400"
+        >
           Home
         </a>
-        <a href="#about" className="hover:text-white">
+
+        {/* Các link bình thường với nền nhẹ */}
+        <a
+          href="#about"
+          className="px-4 py-2 rounded-full transition-colors duration-300 hover:text-white hover:bg-slate-700/50"
+        >
           About us
         </a>
-        <a href="#bmi" className="hover:text-white">
+        <a
+          href="#bmi"
+          className="px-4 py-2 rounded-full transition-colors duration-300 hover:text-white hover:bg-slate-700/50"
+        >
           BMI
         </a>
-        <a href="#program" className="hover:text-white">
+        <a
+          href="#program"
+          className="px-4 py-2 rounded-full transition-colors duration-300 hover:text-white hover:bg-slate-700/50"
+        >
           Program
         </a>
-        <a href="#membership" className="hover:text-white">
+        <a
+          href="#membership"
+          className="px-4 py-2 rounded-full transition-colors duration-300 hover:text-white hover:bg-slate-700/50"
+        >
           Membership
         </a>
-        <a href="#contact" className="hover:text-white">
+        <a
+          href="#blog"
+          className="px-4 py-2 rounded-full transition-colors duration-300 hover:text-white hover:bg-slate-700/50"
+        >
+          Blog
+        </a>
+        <a
+          href="#contact"
+          className="px-4 py-2 rounded-full transition-colors duration-300 hover:text-white hover:bg-slate-700/50"
+        >
           Contact
         </a>
       </nav>

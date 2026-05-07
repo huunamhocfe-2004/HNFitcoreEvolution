@@ -17,6 +17,8 @@ export default function BMISection({
   bmiForm,
   setBmiForm,
   handleCalculateBMI,
+  bmiResultRef,
+  bmiResultVisible,
 }) {
   return (
     <section
@@ -71,7 +73,11 @@ export default function BMISection({
             </div>
           </div>
         ) : (
-          <BMIVisual result={bmiResult} />
+          <BMIVisual
+            result={bmiResult}
+            bmiResultRef={bmiResultRef}
+            bmiResultVisible={bmiResultVisible}
+          />
         )}
       </div>
 

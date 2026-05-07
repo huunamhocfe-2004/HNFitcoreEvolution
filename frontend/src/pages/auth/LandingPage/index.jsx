@@ -9,11 +9,12 @@ import BMISection from "./components/BMISection";
 import ProgramSection from "./components/ProgramSection";
 import MembershipSection from "./components/MembershipSection";
 import TrainersSection from "./components/TrainersSection";
+import BlogSection from "./components/BlogSection";
 import TrainerModal from "./components/TrainerModal";
 import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
 
-import { words, heroImages, programs, pricing, trainers } from "./data";
+import { words, heroImages, programs, pricing, trainers, blogs } from "./data";
 import { getBMIData } from "./utils";
 
 import { X } from "lucide-react";
@@ -47,7 +48,9 @@ export default function LandingPage() {
   const [programRef, programVisible] = useInview();
   const [memberRef, memberVisible] = useInview();
   const [contactRef, contactVisible] = useInview();
+  const [blogRef, blogVisible] = useInview();
   const [bmiRef, bmiVisible] = useInview();
+  const [bmiResultRef, bmiResultVisible] = useInview();
 
   const currentWord = useMemo(() => words[wordIndex], [wordIndex]);
 
@@ -133,6 +136,8 @@ export default function LandingPage() {
         bmiForm={bmiForm}
         setBmiForm={setBmiForm}
         handleCalculateBMI={handleCalculateBMI}
+        bmiResultRef={bmiResultRef}
+        bmiResultVisible={bmiResultVisible}
       />
 
       <ProgramSection
@@ -156,6 +161,8 @@ export default function LandingPage() {
         trainers={trainers}
         setSelectedTrainer={setSelectedTrainer}
       />
+
+      <BlogSection blogRef={blogRef} blogVisible={blogVisible} blogs={blogs} />
 
       <ContactSection
         contactRef={contactRef}

@@ -14,7 +14,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-bold">Company</h4>
+          <h4 className="font-bold">Công ty</h4>
           <div className="mt-4 space-y-2 text-sm text-slate-200">
             <p>About us</p>
             <p>Why us</p>
@@ -24,7 +24,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-bold">Categories</h4>
+          <h4 className="font-bold">Danh mục</h4>
           <div className="mt-4 space-y-2 text-sm text-slate-200">
             <p>Strength Training</p>
             <p>Yoga</p>
@@ -34,7 +34,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-bold">Contact</h4>
+          <h4 className="font-bold">Liên hệ</h4>
           <div className="mt-4 space-y-2 text-sm text-slate-200">
             <div className="flex gap-2">
               <Phone className="h-5 w-5" />
@@ -52,7 +52,7 @@ export default function Footer() {
         </div>
 
         <div>
-          <h4 className="font-bold">Subscribe</h4>
+          <h4 className="font-bold">Đăng ký</h4>
           <div className="mt-4 flex overflow-hidden rounded-full bg-white/10">
             <input
               type="text"

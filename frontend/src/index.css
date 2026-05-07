@@ -35,6 +35,7 @@ body,
   background-color: var(--clr-bg);
   color: var(--clr-text);
   font-weight: 350;
+  scroll-behavior: smooth;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

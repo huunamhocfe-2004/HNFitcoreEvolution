@@ -73,7 +73,7 @@ export default function GenderDropdown({ value, onChange }) {
                 }}
                 className={`flex w-full items-center justify-between rounded-[18px] px-4 py-3 text-sm font-semibold transition-all duration-200 ${
                   active
-                    ? "bg-linear-to-r from-violet-500 to-purple-400 text-white shadow-[0_10px_25px_rgba(168,85,247,0.35)]"
+                    ? "bg-linear-to-r from-black to-purple-400 text-white shadow-[0_10px_25px_rgba(168,85,247,0.35)]"
                     : "text-[#5d4a82] hover:bg-white hover:text-violet-600"
                 }`}
               >
