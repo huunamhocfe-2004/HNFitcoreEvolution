@@ -93,7 +93,7 @@ export default function MemberBooking() {
                     {classes.map(cls => (
                         <div key={cls.id} className="card bg-zinc-900/50 border-zinc-800 p-6 hover:border-yellow-500/30 transition-all flex flex-col group">
                             <div className="flex justify-between items-start mb-4">
-                                <span className="badge badge-yellow uppercase !text-[10px] font-bold">{cls.class_type}</span>
+                                <span className="badge badge-yellow uppercase text-[10px]! font-bold">{cls.class_type}</span>
                                 <span className="text-[10px] font-bold text-zinc-600">{dayNames[cls.day_of_week]}</span>
                             </div>
                             <h3 className="text-lg font-bold text-white mb-1 group-hover:text-yellow-500 transition-colors">{cls.title}</h3>
@@ -134,18 +134,18 @@ export default function MemberBooking() {
                         <table className="tbl">
                             <thead>
                                 <tr className="bg-zinc-900/80">
-                                    <th className="!text-[10px] !font-bold uppercase tracking-widest">Loại lịch</th>
-                                    <th className="!text-[10px] !font-black uppercase tracking-widest">Chi tiết</th>
-                                    <th className="!text-[10px] !font-black uppercase tracking-widest">Ngày/Giờ</th>
-                                    <th className="!text-[10px] !font-black uppercase tracking-widest">Trạng thái</th>
-                                    <th className="!text-[10px] !font-black uppercase tracking-widest">Thao tác</th>
+                                    <th className="text-[10px]! font-bold!uppercase tracking-widest">Loại lịch</th>
+                                    <th className="text-[10px]! font-black! uppercase tracking-widest">Chi tiết</th>
+                                    <th className="text-[10px]! font-black! uppercase tracking-widest">Ngày/Giờ</th>
+                                    <th className="text-[10px]! font-black! uppercase tracking-widest">Trạng thái</th>
+                                    <th className="text-[10px]! font-black! uppercase tracking-widest">Thao tác</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {bookings.length > 0 ? bookings.map(b => (
                                     <tr key={b.id} className="border-zinc-900 hover:bg-zinc-900/20 transition-colors">
                                         <td>
-                                            <span className={`badge ${b.booking_type === 'pt' ? 'badge-yellow' : 'badge-blue'} !text-[10px] font-bold uppercase`}>
+                                            <span className={`badge ${b.booking_type === 'pt' ? 'badge-yellow' : 'badge-blue'} text-[10px]! font-bold uppercase`}>
                                                 {b.booking_type}
                                             </span>
                                         </td>

@@ -27,6 +27,7 @@ import Cart from './pages/member/Cart'
 import TrainersAdmin from './pages/admin/TrainersAdmin'
 import FeedbackAdmin from './pages/admin/FeedbackAdmin'
 import HirePT from './pages/member/HirePT'
+import TrialRequestsAdmin from './pages/admin/TrialRequestsAdmin'
 
 // Route guards
 const ProtectedRoute = ({ children, roles }) => {
@@ -71,6 +72,7 @@ const AppRoutes = () => {
                 <Route path="classes-mgmt" element={<ClassesAdmin />} />
                 <Route path="trainers" element={<TrainersAdmin />} />
                 <Route path="feedback" element={<FeedbackAdmin />} />
+                <Route path="trial-requests" element={<TrialRequestsAdmin />} />
             </Route>
 
             {/* Member routes */}

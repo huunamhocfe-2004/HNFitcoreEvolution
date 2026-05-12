@@ -1,6 +1,18 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
+const path = require('path');
 const pool = require('../config/db');
+
+const getExistingAvatar = (avatar) => {
+    if (!avatar) return null;
+    if (!avatar.startsWith('/uploads/')) return avatar;
+
+    const filename = path.basename(avatar);
+    const filePath = path.join(__dirname, '../../uploads', filename);
+
+    return fs.existsSync(filePath) ? avatar : null;
+};
 
 // POST /api/auth/login
 const login = async (req, res) => {
@@ -44,7 +56,7 @@ const login = async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 role: user.role,
-                avatar: user.avatar,
+                avatar: getExistingAvatar(user.avatar),
                 member_id: memberId,
             }
         });
@@ -65,7 +77,7 @@ const me = async (req, res) => {
         `, [req.user.id]);
 
         if (!rows.length) return res.status(404).json({ message: 'User not found' });
-        res.json(rows[0]);
+        res.json({ ...rows[0], avatar: getExistingAvatar(rows[0].avatar) });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });

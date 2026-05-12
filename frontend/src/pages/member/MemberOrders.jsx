@@ -70,7 +70,7 @@ export default function MemberOrders() {
                                     <div className="space-y-4 mb-6">
                                         {order.items?.map(item => (
                                             <div key={item.id} className="flex items-center gap-4">
-                                                <div className="w-16 h-16 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden flex-shrink-0">
+                                                <div className="w-16 h-16 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
                                                     {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <Package className="w-full h-full p-4 text-zinc-600" />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">

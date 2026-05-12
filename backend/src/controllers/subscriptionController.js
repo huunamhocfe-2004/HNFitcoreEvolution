@@ -17,13 +17,14 @@ const getAll = async (req, res) => {
         
         const [rows] = await pool.query(`
       SELECT s.*, u.name AS member_name, p.title AS package_title, p.duration_days,
-             tu.name AS trainer_name
+             tu.name AS trainer_name, cu.role AS created_by_role
       FROM subscriptions s
       JOIN members m ON m.id = s.member_id
       JOIN users u ON u.id = m.user_id
       JOIN packages p ON p.id = s.package_id
       LEFT JOIN trainers t ON t.id = s.trainer_id
       LEFT JOIN users tu ON tu.id = t.user_id
+      LEFT JOIN users cu ON cu.id = s.created_by
       ${where}
       ORDER BY s.created_at DESC
     `, params);
@@ -88,6 +89,14 @@ const create = async (req, res) => {
             await pool.query('UPDATE members SET status="active" WHERE id=?', [member_id]);
         }
 
+        if (req.user.role === 'member' && trainer_id && !isPaid && req.io) {
+            req.io.emit('new-pt-request', {
+                id: result.insertId,
+                member_id,
+                trainer_id,
+            });
+        }
+
         res.status(201).json({
             id: result.insertId,
             start_date: startD,
@@ -145,10 +154,91 @@ const markPaid = async (req, res) => {
         // Update member status to active
         await pool.query('UPDATE members SET status="active" WHERE id=?', [sub.member_id]);
 
+        if (sub.trainer_id && req.io) {
+            req.io.emit('pt-request-updated', {
+                id: req.params.id,
+                status: 'approved',
+            });
+        }
+
         res.json({ 
             message: 'Đã xác nhận thanh toán và kích hoạt gói tập',
             extended: latestPaid.length > 0 
         });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// PUT /api/subscriptions/:id/accept-renewal
+const acceptRenewal = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT s.*, m.user_id, cu.role AS created_by_role
+            FROM subscriptions s
+            JOIN members m ON m.id = s.member_id
+            LEFT JOIN users cu ON cu.id = s.created_by
+            WHERE s.id = ?
+            LIMIT 1
+        `, [req.params.id]);
+
+        if (!rows.length) return res.status(404).json({ message: 'Không tìm thấy đề xuất gia hạn' });
+        const sub = rows[0];
+        if (sub.user_id !== req.user.id) return res.status(403).json({ message: 'Bạn không có quyền xử lý đề xuất này' });
+        if (sub.is_paid) return res.status(400).json({ message: 'Gói tập này đã được kích hoạt' });
+        if (!['admin', 'staff'].includes(sub.created_by_role)) {
+            return res.status(400).json({ message: 'Yêu cầu này đã được gửi và đang chờ quản trị viên xác nhận' });
+        }
+
+        await pool.query('UPDATE subscriptions SET created_by = ? WHERE id = ?', [req.user.id, req.params.id]);
+        res.json({ message: 'Đã đồng ý gia hạn. Vui lòng chờ quản trị viên xác nhận thanh toán.' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// DELETE /api/subscriptions/:id/cancel-renewal
+const cancelRenewal = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT s.*, m.user_id, cu.role AS created_by_role
+            FROM subscriptions s
+            JOIN members m ON m.id = s.member_id
+            LEFT JOIN users cu ON cu.id = s.created_by
+            WHERE s.id = ?
+            LIMIT 1
+        `, [req.params.id]);
+
+        if (!rows.length) return res.status(404).json({ message: 'Không tìm thấy đề xuất gia hạn' });
+        const sub = rows[0];
+        if (sub.user_id !== req.user.id) return res.status(403).json({ message: 'Bạn không có quyền xử lý đề xuất này' });
+        if (sub.is_paid) return res.status(400).json({ message: 'Không thể hủy gói đã kích hoạt' });
+        if (!['admin', 'staff'].includes(sub.created_by_role)) {
+            return res.status(400).json({ message: 'Không thể hủy yêu cầu đang chờ quản trị viên xác nhận' });
+        }
+
+        await pool.query('DELETE FROM subscriptions WHERE id = ?', [req.params.id]);
+        res.json({ message: 'Đã hủy đề xuất gia hạn' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+// GET /api/subscriptions/pending-pt-count
+const getPendingPtCount = async (req, res) => {
+    try {
+        const [rows] = await pool.query(`
+            SELECT COUNT(*) AS count
+            FROM subscriptions s
+            LEFT JOIN users cu ON cu.id = s.created_by
+            WHERE s.trainer_id IS NOT NULL
+            AND s.is_paid = 0
+            AND cu.role = 'member'
+        `);
+        res.json({ hasNew: rows[0].count > 0, count: rows[0].count });
     } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Server error' });
@@ -253,4 +343,4 @@ const removePromo = async (req, res) => {
     }
 };
 
-module.exports = { getAll, create, markPaid, syncExpiredMembers, getPromos, validatePromo, createPromo, updatePromo, removePromo };
+module.exports = { getAll, create, markPaid, acceptRenewal, cancelRenewal, getPendingPtCount, syncExpiredMembers, getPromos, validatePromo, createPromo, updatePromo, removePromo };

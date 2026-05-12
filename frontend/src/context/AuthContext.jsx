@@ -11,8 +11,20 @@ export const AuthProvider = ({ children }) => {
         const stored = localStorage.getItem('fitcore_user')
         const token = localStorage.getItem('fitcore_token')
         if (stored && token) {
-            setUser(JSON.parse(stored))
+            const storedUser = JSON.parse(stored)
+            setUser({ ...storedUser, avatar: null })
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`
+            api.get('/auth/me')
+                .then(res => {
+                    const refreshedUser = { ...storedUser, ...res.data }
+                    localStorage.setItem('fitcore_user', JSON.stringify(refreshedUser))
+                    setUser(refreshedUser)
+                })
+                .catch(() => {
+                    const userWithoutAvatar = { ...storedUser, avatar: null }
+                    localStorage.setItem('fitcore_user', JSON.stringify(userWithoutAvatar))
+                    setUser(userWithoutAvatar)
+                })
         }
         setLoading(false)
     }, [])

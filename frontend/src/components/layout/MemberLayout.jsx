@@ -209,7 +209,7 @@ export default function MemberLayout() {
 
       {profileModal && (
         <div
-          className="modal-overlay z-[1000]"
+          className="modal-overlay z-1000"
           onClick={(e) =>
             e.target === e.currentTarget && setProfileModal(false)
           }
@@ -236,10 +236,10 @@ export default function MemberLayout() {
                 {/* Chỉ kích hoạt hover trong phạm vi box ảnh */}
                 <div className="relative group w-28 h-28">
                   {/* Glow Effect phía sau - Tone Đỏ */}
-                  <div className="absolute -inset-1 bg-gradient-to-tr from-red-600 to-red-400 rounded-[2.2rem] blur opacity-0 group-hover:opacity-40 transition duration-500"></div>
+                  <div className="absolute -inset-1 bg-linear-to-tr from-red-600 to-red-400 rounded-[2.2rem] blur opacity-0 group-hover:opacity-40 transition duration-500"></div>
 
                   {/* Image Container - Hình Squircle */}
-                  <div className="relative w-full h-full rounded-[2rem] bg-zinc-900 border border-zinc-800/50 overflow-hidden flex items-center justify-center shadow-2xl cursor-pointer">
+                  <div className="relative w-full h-full rounded-4xl bg-zinc-900 border border-zinc-800/50 overflow-hidden flex items-center justify-center shadow-2xl cursor-pointer">
                     {file ? (
                       <img
                         src={URL.createObjectURL(file)}
@@ -251,7 +251,7 @@ export default function MemberLayout() {
                         className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
                       />
                     ) : (
-                      <span className="font-black text-4xl bg-gradient-to-br from-red-400 to-red-700 bg-clip-text text-transparent">
+                      <span className="font-black text-4xl bg-linear-to-br from-red-400 to-red-700 bg-clip-text text-transparent">
                         {user?.name?.[0] || "?"}
                       </span>
                     )}
@@ -320,10 +320,10 @@ export default function MemberLayout() {
               <button
                 type="submit"
                 disabled={saving}
-                className="relative w-full group overflow-hidden rounded-2xl p-[1px] focus:outline-none disabled:opacity-70 disabled:cursor-wait"
+                className="relative w-full group overflow-hidden rounded-2xl p-px focus:outline-none disabled:opacity-70 disabled:cursor-wait"
               >
                 {/* Viền Gradient Đỏ */}
-                <div className="absolute inset-0 bg-gradient-to-r from-red-700 via-red-500 to-red-700"></div>
+                <div className="absolute inset-0 bg-linear-to-r from-red-700 via-red-500 to-red-700"></div>
 
                 <div className="cursor-pointer relative bg-zinc-950 group-hover:bg-transparent transition-colors duration-300 rounded-[15px] py-4 flex items-center justify-center gap-3">
                   {saving ? (

@@ -28,6 +28,7 @@ export default function MemberProfile() {
     const [submitting, setSubmitting] = useState(false)
     const [feedback, setFeedback] = useState({ rating: 5, comment: '' })
     const [sendingFeedback, setSendingFeedback] = useState(false)
+    const [renewalActionLoading, setRenewalActionLoading] = useState(false)
 
     const loadProfile = () => {
         if (user?.member_id) {
@@ -84,6 +85,24 @@ export default function MemberProfile() {
         }
     }
 
+    const handleRenewalProposal = async (subId, action) => {
+        setRenewalActionLoading(true)
+        try {
+            if (action === 'accept') {
+                const res = await api.put(`/subscriptions/${subId}/accept-renewal`)
+                toast.success(res.data.message || 'Đã đồng ý gia hạn')
+            } else {
+                const res = await api.delete(`/subscriptions/${subId}/cancel-renewal`)
+                toast.success(res.data.message || 'Đã hủy đề xuất gia hạn')
+            }
+            loadProfile()
+        } catch (err) {
+            toast.error(err.response?.data?.message || 'Không xử lý được đề xuất gia hạn')
+        } finally {
+            setRenewalActionLoading(false)
+        }
+    }
+
     if (loading) return (
         <div className="space-y-4">
             <div className="skeleton h-32 w-full rounded-2xl" />
@@ -97,7 +116,8 @@ export default function MemberProfile() {
     
     // Gym sub is the latest one without a trainer
     const gymSub = subscriptions.find(s => !s.trainer_id)
-    const isGymPending = gymSub && !gymSub.is_paid
+    const isGymRenewalProposal = gymSub && !gymSub.is_paid && ['admin', 'staff'].includes(gymSub.created_by_role)
+    const isGymPending = gymSub && !gymSub.is_paid && !isGymRenewalProposal
     const isGymExpired = gymSub && gymSub.is_paid && new Date(gymSub.end_date) < new Date()
     const isGymActive = gymSub && gymSub.is_paid && !isGymExpired
 
@@ -108,6 +128,7 @@ export default function MemberProfile() {
 
     // For backward compatibility in existing components if needed
     const currentSub = gymSub || ptSub
+    const isRenewalProposal = s => s && !s.is_paid && !s.trainer_id && ['admin', 'staff'].includes(s.created_by_role)
 
     return (
         <div className="max-w-4xl mx-auto space-y-8 pb-10">
@@ -136,6 +157,9 @@ export default function MemberProfile() {
                     <div className="text-center md:text-left flex-1">
                         <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
                             {statusBadge(profile.status)}
+                            {isGymRenewalProposal && (
+                                <span className="badge badge-yellow uppercase !text-[9px] font-bold animate-pulse">Đề xuất gia hạn</span>
+                            )}
                             {isGymPending && (
                                 <span className="badge badge-yellow uppercase !text-[9px] font-bold animate-pulse">Gói tập chờ duyệt</span>
                             )}
@@ -191,11 +215,44 @@ export default function MemberProfile() {
                                 <div>
                                     <div className="text-3xl font-bold text-white italic tracking-tight">{gymSub.title}</div>
                                     <div className="text-zinc-500 text-sm mt-1">{gymSub.description || 'Gói tập tiêu chuẩn tại Fitcore'}</div>
-                                    {!gymSub.is_paid && (
+                                    {!gymSub.is_paid && !isGymRenewalProposal && (
                                         <div className="mt-4 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20 flex items-center gap-3">
                                             <AlertCircle className="text-yellow-500" size={20} />
                                             <div className="text-xs text-yellow-500/80 font-bold uppercase tracking-widest">
                                                 Vui lòng đợi quản trị viên xác nhận thanh toán
+                                            </div>
+                                        </div>
+                                    )}
+                                    {isGymRenewalProposal && (
+                                        <div className="mt-4 p-4 rounded-xl bg-yellow-500/10 border border-yellow-500/20">
+                                            <div className="flex items-start gap-3">
+                                                <AlertCircle className="text-yellow-500 shrink-0 mt-0.5" size={20} />
+                                                <div>
+                                                    <div className="text-xs text-yellow-500/80 font-bold uppercase tracking-widest">
+                                                        Quản trị viên đề xuất gia hạn gói tập này
+                                                    </div>
+                                                    <div className="text-xs text-zinc-400 mt-2">
+                                                        Bạn có muốn gia hạn tiếp gói này không?
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="grid sm:grid-cols-2 gap-3 mt-4">
+                                                <button
+                                                    type="button"
+                                                    disabled={renewalActionLoading}
+                                                    onClick={() => handleRenewalProposal(gymSub.id, 'accept')}
+                                                    className="btn-gold text-xs py-3 uppercase font-black tracking-widest disabled:opacity-60"
+                                                >
+                                                    Đồng ý gia hạn
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    disabled={renewalActionLoading}
+                                                    onClick={() => handleRenewalProposal(gymSub.id, 'cancel')}
+                                                    className="btn-ghost text-xs py-3 uppercase font-black tracking-widest disabled:opacity-60"
+                                                >
+                                                    Không gia hạn
+                                                </button>
                                             </div>
                                         </div>
                                     )}
@@ -413,6 +470,8 @@ export default function MemberProfile() {
                                     <td className="text-center">
                                         {s.is_paid ? (
                                             <span className="text-[9px] font-black bg-green-500/10 text-green-500 px-2.5 py-1 rounded-full border border-green-500/20 uppercase">Thành công</span>
+                                        ) : isRenewalProposal(s) ? (
+                                            <span className="text-[9px] font-black bg-yellow-500/10 text-yellow-500 px-2.5 py-1 rounded-full border border-yellow-500/20 uppercase">Đề xuất gia hạn</span>
                                         ) : (
                                             <span className="text-[9px] font-black bg-yellow-500/10 text-yellow-500 px-2.5 py-1 rounded-full border border-yellow-500/20 uppercase">Chờ duyệt</span>
                                         )}

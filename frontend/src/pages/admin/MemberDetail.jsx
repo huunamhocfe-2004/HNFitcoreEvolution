@@ -34,7 +34,7 @@ export default function MemberDetail() {
 
             {/* Header card */}
             <div className="card mb-4 flex flex-col md:flex-row items-start md:items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black flex-shrink-0 bg-zinc-900 border border-zinc-800">
+                <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black shrink-0 bg-zinc-900 border border-zinc-800">
                     {member.avatar ? (
                         <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
                     ) : (
@@ -80,7 +80,7 @@ export default function MemberDetail() {
                             { label: 'Ngày tham gia', value: member.joined_date ? new Date(member.joined_date).toLocaleDateString('vi-VN') : '—', icon: Calendar },
                         ].map(({ label, value, icon: Icon }) => (
                             <div key={label} className="flex items-start gap-3 p-3 rounded-lg" style={{ background: '#111' }}>
-                                <Icon size={15} className="mt-0.5 flex-shrink-0" style={{ color: '#eab308' }} />
+                                <Icon size={15} className="mt-0.5 shrink-0" style={{ color: '#eab308' }} />
                                 <div>
                                     <div className="text-xs text-gray-500">{label}</div>
                                     <div className="font-medium text-white mt-0.5">{value}</div>

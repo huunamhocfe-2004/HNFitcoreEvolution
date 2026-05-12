@@ -1,8 +1,183 @@
-export default function ContactSection({
-  contactRef,
-  contactVisible,
-  navigate,
-}) {
+import { useEffect, useMemo, useRef, useState } from "react";
+import toast from "react-hot-toast";
+import api from "../../../../api/axios";
+
+const goalOptions = [
+  "Giảm mỡ",
+  "Tăng cơ",
+  "Cải thiện sức khỏe",
+  "Tập luyện cùng PT",
+  "Làm quen phòng tập",
+];
+
+const weekDays = ["T2", "T3", "T4", "T5", "T6", "T7", "CN"];
+const monthNames = [
+  "Tháng 1",
+  "Tháng 2",
+  "Tháng 3",
+  "Tháng 4",
+  "Tháng 5",
+  "Tháng 6",
+  "Tháng 7",
+  "Tháng 8",
+  "Tháng 9",
+  "Tháng 10",
+  "Tháng 11",
+  "Tháng 12",
+];
+
+const padDatePart = (value) => String(value).padStart(2, "0");
+
+const toDateValue = (date) => {
+  const year = date.getFullYear();
+  const month = padDatePart(date.getMonth() + 1);
+  const day = padDatePart(date.getDate());
+  return `${year}-${month}-${day}`;
+};
+
+const parseDateValue = (value) => {
+  if (!value) return null;
+
+  const [year, month, day] = value.split("-").map(Number);
+  if (!year || !month || !day) return null;
+
+  return new Date(year, month - 1, day);
+};
+
+const formatDisplayDate = (value) => {
+  if (!value) return "Chọn ngày tập thử";
+
+  const [year, month, day] = value.split("-");
+  return `${day}/${month}/${year}`;
+};
+
+const getCalendarDays = (monthDate) => {
+  const year = monthDate.getFullYear();
+  const month = monthDate.getMonth();
+  const firstDayOfMonth = new Date(year, month, 1);
+  const lastDayOfMonth = new Date(year, month + 1, 0);
+  const mondayBasedStartIndex = (firstDayOfMonth.getDay() + 6) % 7;
+  const totalCells = Math.ceil((mondayBasedStartIndex + lastDayOfMonth.getDate()) / 7) * 7;
+
+  return Array.from({ length: totalCells }, (_, index) => {
+    const dayNumber = index - mondayBasedStartIndex + 1;
+    const date = new Date(year, month, dayNumber);
+
+    return {
+      date,
+      value: toDateValue(date),
+      isCurrentMonth: date.getMonth() === month,
+    };
+  });
+};
+
+export default function ContactSection({ contactRef, contactVisible }) {
+  const dropdownRef = useRef(null);
+  const datePickerRef = useRef(null);
+
+  const [form, setForm] = useState({
+    name: "",
+    phone: "",
+    goal: goalOptions[0],
+    desired_date: "",
+  });
+  const [submitting, setSubmitting] = useState(false);
+  const [goalOpen, setGoalOpen] = useState(false);
+  const [dateOpen, setDateOpen] = useState(false);
+  const [visibleMonth, setVisibleMonth] = useState(() => {
+    const today = new Date();
+    return new Date(today.getFullYear(), today.getMonth(), 1);
+  });
+
+  const calendarDays = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
+  const todayValue = useMemo(() => toDateValue(new Date()), []);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleGoalSelect = (goal) => {
+    setForm((prev) => ({ ...prev, goal }));
+    setGoalOpen(false);
+  };
+
+  const handleDateSelect = (value) => {
+    setForm((prev) => ({ ...prev, desired_date: value }));
+    setDateOpen(false);
+  };
+
+  const goToPreviousMonth = () => {
+    setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() - 1, 1));
+  };
+
+  const goToNextMonth = () => {
+    setVisibleMonth((current) => new Date(current.getFullYear(), current.getMonth() + 1, 1));
+  };
+
+  const openDateDropdown = () => {
+    const selectedDate = parseDateValue(form.desired_date);
+
+    if (selectedDate) {
+      setVisibleMonth(new Date(selectedDate.getFullYear(), selectedDate.getMonth(), 1));
+    }
+
+    setDateOpen((prev) => !prev);
+    setGoalOpen(false);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setGoalOpen(false);
+      }
+
+      if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
+        setDateOpen(false);
+      }
+    };
+
+    const handleEscape = (event) => {
+      if (event.key === "Escape") {
+        setGoalOpen(false);
+        setDateOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleEscape);
+    };
+  }, []);
+
+  const submitTrialRequest = async (e) => {
+    e.preventDefault();
+
+    if (!form.desired_date) {
+      toast.error("Vui lòng chọn ngày tập thử");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await api.post("/trial-requests", form);
+      toast.success("Đã gửi yêu cầu tập thử");
+      setForm({
+        name: "",
+        phone: "",
+        goal: goalOptions[0],
+        desired_date: "",
+      });
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Không gửi được yêu cầu");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <section
       ref={contactRef}
@@ -10,7 +185,7 @@ export default function ContactSection({
       className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-10"
     >
       <div
-        className={`relative overflow-hidden rounded-4xl border border-white/10 bg-linear-to-br from-[#4a4545] to-[#2d2a2a] p-8 shadow-2xl transition-all duration-700 sm:p-10 lg:grid lg:grid-cols-2 lg:gap-10 lg:p-14 ${
+        className={`relative overflow-visible rounded-4xl border border-white/10 bg-linear-to-br from-[#4a4545] to-[#2d2a2a] p-8 shadow-2xl transition-all duration-700 sm:p-10 lg:grid lg:grid-cols-2 lg:gap-16 lg:p-14 ${
           contactVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-20 scale-0 opacity-0"
@@ -19,249 +194,297 @@ export default function ContactSection({
         <div className="pointer-events-none absolute -right-24 -top-24 h-96 w-96 rounded-full bg-red-600/15 blur-3xl" />
         <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-black/40 blur-3xl" />
 
-        {/* Left: Contact form */}
-        <div className="relative z-10">
+        <div className="relative z-10 flex flex-col justify-center">
           <div className="inline-flex items-center gap-2.5">
             <span className="relative flex h-2.5 w-2.5">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-red-400 opacity-75" />
               <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-red-500" />
             </span>
             <p className="text-sm font-bold uppercase tracking-[0.24em] text-red-400">
-              Liên hệ với chúng tôi
+              Tập thử tại HN Fitcore
             </p>
           </div>
 
           <h2 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
-            Kết nối với{" "}
+            Đăng ký một buổi tập thử cùng{" "}
             <span className="bg-linear-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
-              HN Fitcore Evolution
+              đội ngũ Fitcore
             </span>
           </h2>
 
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-300 sm:text-lg">
-            Để lại thông tin của bạn, đội ngũ phòng gym sẽ liên hệ tư vấn gói
-            tập, lịch PT và các chương trình ưu đãi phù hợp.
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-300 italic sm:text-lg">
+            Khách vãng lai để lại thông tin, admin hoặc staff sẽ duyệt yêu cầu
+            và liên hệ theo số điện thoại đã đăng ký.
           </p>
 
-          <div className="mt-8 rounded-3xl border border-white/5 bg-black/20 p-6 backdrop-blur-md sm:p-8">
-            <div className="flex flex-col gap-5">
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  type="email"
-                  placeholder="Email của bạn"
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 py-3.5 pl-12 pr-4 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
-                />
-              </div>
-
-              <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-slate-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                </div>
-                <input
-                  type="tel"
-                  placeholder="Số điện thoại"
-                  className="w-full rounded-2xl border border-white/10 bg-white/5 py-3.5 pl-12 pr-4 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
-                />
-              </div>
-
-              <div className="relative">
-                <div className="pointer-events-none absolute left-0 top-4 flex items-center pl-4 text-slate-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M8 10h.01M12 10h.01M16 10h.01M21 12c0 4.418-4.03 8-9 8a9.77 9.77 0 01-4-.8L3 20l1.3-3.9A7.53 7.53 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
-                    />
-                  </svg>
-                </div>
-                <textarea
-                  rows={5}
-                  placeholder="Nội dung liên hệ"
-                  className="w-full resize-none rounded-2xl border border-white/10 bg-white/5 py-3.5 pl-12 pr-4 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
-                />
-              </div>
-
-              <button
-                onClick={() => navigate("/")}
-                className="group mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-red-500 hover:shadow-lg hover:shadow-red-600/30 active:scale-[0.98]"
-              >
-                Gửi thông tin liên hệ
-                <svg
-                  className="h-5 w-5 transition-transform group-hover:translate-x-1"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                  />
-                </svg>
-              </button>
-            </div>
+          <div className="mt-8 flex flex-wrap gap-6 text-sm font-medium text-slate-400">
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-red-500" />
+              Tư vấn mục tiêu
+            </span>
+            <span className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-red-500" />
+              Chọn ngày tập linh hoạt
+            </span>
           </div>
         </div>
 
-        {/* Right: Gym contact + maps */}
-        <div className="relative z-10 mt-12 flex flex-col justify-between lg:mt-0">
-          <div className="rounded-3xl border border-white/5 bg-black/20 p-6 backdrop-blur-md sm:p-8">
-            <p className="text-sm font-bold uppercase tracking-[0.24em] text-red-400">
-              Thông tin phòng gym
-            </p>
+        <div className="relative z-20 mt-12 flex items-center lg:mt-0">
+          <div className="w-full rounded-3xl border border-white/5 bg-black/20 p-6 backdrop-blur-md sm:p-8">
+            <form onSubmit={submitTrialRequest} className="flex flex-col gap-5">
+              <input
+                name="name"
+                type="text"
+                value={form.name}
+                onChange={handleChange}
+                placeholder="Họ và tên"
+                required
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
+              />
 
-            <h3 className="mt-4 text-3xl font-extrabold text-white">
-              HN Fitcore Evolution
-            </h3>
+              <input
+                name="phone"
+                type="tel"
+                value={form.phone}
+                onChange={handleChange}
+                placeholder="Số điện thoại"
+                required
+                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
+              />
 
-            <p className="mt-4 text-base leading-relaxed text-slate-300">
-              Không gian tập luyện hiện đại, đội ngũ PT chuyên nghiệp và lộ
-              trình cá nhân hóa cho từng hội viên.
-            </p>
-
-            <div className="mt-8 flex flex-col gap-5 text-sm font-medium text-slate-300">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-600/15 text-red-400">
+              <div ref={dropdownRef} className="relative">
+                <input type="hidden" name="goal" value={form.goal} readOnly />
+                <button
+                  type="button"
+                  aria-haspopup="listbox"
+                  aria-expanded={goalOpen}
+                  onClick={() => {
+                    setGoalOpen((prev) => !prev);
+                    setDateOpen(false);
+                  }}
+                  className={`group flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-white transition-all ${
+                    goalOpen
+                      ? "border-red-500 bg-[#1f1b1b] ring-1 ring-red-500"
+                      : "border-white/10 bg-white/5 hover:border-red-500/70 hover:bg-white/10"
+                  }`}
+                >
+                  <span>
+                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Mục tiêu
+                    </span>
+                    <span className="mt-0.5 block font-semibold text-white">
+                      {form.goal}
+                    </span>
+                  </span>
                   <svg
-                    className="h-5 w-5"
-                    fill="none"
                     viewBox="0 0 24 24"
+                    className={`h-5 w-5 text-slate-300 transition-transform duration-200 ${
+                      goalOpen ? "rotate-180 text-red-400" : ""
+                    }`}
+                    fill="none"
                     stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                   >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17.657 16.657L13.414 20.9a2 2 0 01-2.828 0l-4.243-4.243a8 8 0 1111.314 0z"
-                    />
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                    />
+                    <path d="m6 9 6 6 6-6" />
                   </svg>
-                </span>
-                <div>
-                  <p className="text-white">Địa chỉ</p>
-                  <p className="mt-1 text-slate-400">
-                    Số 3 đường Cầu Giấy, Hà Nội
-                  </p>
-                </div>
+                </button>
+
+                {goalOpen && (
+                  <div className="absolute left-0 right-0 top-[calc(100%+0.6rem)] z-50 overflow-hidden rounded-2xl border border-white/10 bg-[#1f1b1b]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
+                    <ul role="listbox" className="max-h-72 overflow-auto">
+                      {goalOptions.map((goal) => {
+                        const selected = form.goal === goal;
+
+                        return (
+                          <li key={goal} role="option" aria-selected={selected}>
+                            <button
+                              type="button"
+                              onClick={() => handleGoalSelect(goal)}
+                              className={`flex w-full items-center justify-between rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition-all ${
+                                selected
+                                  ? "bg-red-600 text-white shadow-lg shadow-red-600/20"
+                                  : "text-slate-200 hover:bg-white/10 hover:text-white"
+                              }`}
+                            >
+                              <span>{goal}</span>
+                              {selected && (
+                                <svg
+                                  viewBox="0 0 24 24"
+                                  className="h-[18px] w-[18px]"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  strokeWidth="2"
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                >
+                                  <path d="M20 6 9 17l-5-5" />
+                                </svg>
+                              )}
+                            </button>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                )}
               </div>
 
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-600/15 text-red-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
+              <div ref={datePickerRef} className="relative">
+                <input type="hidden" name="desired_date" value={form.desired_date} readOnly />
+
+                <button
+                  type="button"
+                  aria-haspopup="dialog"
+                  aria-expanded={dateOpen}
+                  onClick={openDateDropdown}
+                  className={`group flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-white transition-all ${
+                    dateOpen
+                      ? "border-red-500 bg-[#1f1b1b] ring-1 ring-red-500"
+                      : "border-white/10 bg-white/5 hover:border-red-500/70 hover:bg-white/10"
+                  } focus:border-red-500 focus:bg-[#1f1b1b] focus:outline-none focus:ring-1 focus:ring-red-500`}
+                >
+                  <span>
+                    <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
+                      Ngày tập thử
+                    </span>
+                    <span
+                      className={`mt-0.5 block font-semibold ${
+                        form.desired_date ? "text-white" : "text-slate-400"
+                      }`}
+                    >
+                      {formatDisplayDate(form.desired_date)}
+                    </span>
+                  </span>
+
+                  <span className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-black/20 text-red-400 transition group-hover:border-red-500/40 group-hover:bg-red-600/10">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="h-5 w-5"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
-                    />
-                  </svg>
-                </span>
-                <div>
-                  <p className="text-white">Hotline</p>
-                  <p className="mt-1 text-slate-400">0356625521</p>
-                </div>
+                    >
+                      <path d="M8 2v4" />
+                      <path d="M16 2v4" />
+                      <rect width="18" height="18" x="3" y="4" rx="2" />
+                      <path d="M3 10h18" />
+                    </svg>
+                  </span>
+                </button>
+
+                {dateOpen && (
+                  <div className="absolute left-0 right-0 top-[calc(100%+0.6rem)] z-50 rounded-2xl border border-white/10 bg-[#1f1b1b]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
+                    <div className="mb-4 flex items-center justify-between">
+                      <button
+                        type="button"
+                        onClick={goToPreviousMonth}
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 transition hover:border-red-500/50 hover:bg-red-600/10 hover:text-white"
+                        aria-label="Tháng trước"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="m15 18-6-6 6-6" />
+                        </svg>
+                      </button>
+
+                      <div className="text-center">
+                        <p className="text-sm font-bold text-white">
+                          {monthNames[visibleMonth.getMonth()]} {visibleMonth.getFullYear()}
+                        </p>
+                        <p className="mt-0.5 text-xs text-slate-400">
+                          Chọn ngày bạn muốn tập thử
+                        </p>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={goToNextMonth}
+                        className="flex h-9 w-9 items-center justify-center rounded-xl border border-white/10 bg-white/5 text-slate-200 transition hover:border-red-500/50 hover:bg-red-600/10 hover:text-white"
+                        aria-label="Tháng sau"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-5 w-5"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <path d="m9 18 6-6-6-6" />
+                        </svg>
+                      </button>
+                    </div>
+
+                    <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      {weekDays.map((day) => (
+                        <span key={day}>{day}</span>
+                      ))}
+                    </div>
+
+                    <div className="mt-2 grid grid-cols-7 gap-1.5">
+                      {calendarDays.map(({ date, value, isCurrentMonth }) => {
+                        const selected = form.desired_date === value;
+                        const today = value === todayValue;
+
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => handleDateSelect(value)}
+                            className={`aspect-square rounded-xl text-sm font-semibold transition-all ${
+                              selected
+                                ? "bg-red-600 text-white shadow-lg shadow-red-600/25"
+                                : isCurrentMonth
+                                  ? "bg-white/5 text-slate-100 hover:bg-red-600/15 hover:text-white"
+                                  : "text-slate-600 hover:bg-white/5 hover:text-slate-400"
+                            } ${today && !selected ? "ring-1 ring-red-500/50" : ""}`}
+                          >
+                            {date.getDate()}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between border-t border-white/10 pt-3">
+                      <button
+                        type="button"
+                        onClick={() => handleDateSelect(todayValue)}
+                        className="rounded-xl px-3 py-2 text-xs font-bold text-red-400 transition hover:bg-red-600/10 hover:text-red-300"
+                      >
+                        Hôm nay
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setDateOpen(false)}
+                        className="rounded-xl px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white"
+                      >
+                        Đóng
+                      </button>
+                    </div>
+                  </div>
+                )}
               </div>
 
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-600/15 text-red-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                    />
-                  </svg>
-                </span>
-                <div>
-                  <p className="text-white">Email</p>
-                  <p className="mt-1 text-slate-400">nambh@hnfitcore.vn</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-red-600/15 text-red-400">
-                  <svg
-                    className="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                </span>
-                <div>
-                  <p className="text-white">Giờ mở cửa</p>
-                  <p className="mt-1 text-slate-400">
-                    05:30 - 22:00, Thứ 2 - Chủ nhật
-                  </p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 overflow-hidden rounded-3xl border border-white/10 bg-black/20 shadow-xl">
-            <iframe
-              title="HN Fitcore Evolution Map"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3724.113115942701!2d105.80084557625523!3d21.028159487797268!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3135ab424a50fff9%3A0xbe3a7f3670c0a45f!2zVHLGsOG7nW5nIMSQ4bqhaSBI4buNYyBHaWFvIFRow7RuZyBW4bqtbiBU4bqjaQ!5e0!3m2!1svi!2s!4v1778059751535!5m2!1svi!2s"
-              className="h-72 w-full border-0"
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
+              <button
+                type="submit"
+                disabled={submitting}
+                className="group mt-2 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-red-500 hover:shadow-lg hover:shadow-red-600/30 active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {submitting ? "Đang gửi..." : "Gửi yêu cầu tập thử"}
+              </button>
+            </form>
           </div>
         </div>
       </div>

@@ -50,7 +50,7 @@ export default function FeedbackAdmin() {
                     feedbacks.map(f => (
                         <div key={f.id} className="card p-5 group">
                             <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-950 border border-zinc-800 flex-shrink-0">
+                                <div className="w-10 h-10 rounded-full overflow-hidden bg-zinc-950 border border-zinc-800 shrink-0">
                                     {f.avatar ? <img src={f.avatar} alt={f.member_name} className="w-full h-full object-cover" /> : 
                                     <div className="w-full h-full flex items-center justify-center text-zinc-700"><User size={18} /></div>}
                                 </div>

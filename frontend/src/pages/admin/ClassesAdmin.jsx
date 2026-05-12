@@ -85,7 +85,7 @@ export default function ClassesAdmin() {
                     classes.map(c => (
                         <div key={c.id} className="card border-zinc-800 p-6 group hover:border-yellow-500/30 transition-all flex flex-col">
                             <div className="flex justify-between items-start mb-4">
-                                <span className="badge badge-yellow uppercase !text-[10px] font-black">{c.class_type}</span>
+                                <span className="badge badge-yellow uppercase text-[10px]! font-black">{c.class_type}</span>
                                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                                     <button onClick={() => openEdit(c)} className="p-1.5 rounded hover:bg-white/5 text-zinc-500 hover:text-white transition-colors">
                                         <Edit2 size={13} />

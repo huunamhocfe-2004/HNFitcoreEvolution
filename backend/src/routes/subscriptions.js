@@ -5,7 +5,10 @@ const { authMiddleware, requireRole } = require('../middleware/auth');
 router.use(authMiddleware);
 
 router.get('/', c.getAll);
+router.get('/pending-pt-count', requireRole('admin', 'staff'), c.getPendingPtCount);
 router.post('/', requireRole('admin', 'staff', 'member'), c.create);
+router.put('/:id/accept-renewal', requireRole('member'), c.acceptRenewal);
+router.delete('/:id/cancel-renewal', requireRole('member'), c.cancelRenewal);
 router.put('/:id/paid', requireRole('admin', 'staff'), c.markPaid);
 router.post('/sync-expired', requireRole('admin'), c.syncExpiredMembers);
 

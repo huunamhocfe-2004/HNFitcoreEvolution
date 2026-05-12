@@ -82,7 +82,7 @@ export default function ProductsAdmin() {
                                 <tr key={p.id}>
                                     <td>
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center flex-shrink-0 bg-zinc-900 border border-zinc-800">
+                                            <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center shrink-0 bg-zinc-900 border border-zinc-800">
                                                 {p.image_url ? (
                                                     <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" onError={(e) => {
                                                         e.target.onerror = null;

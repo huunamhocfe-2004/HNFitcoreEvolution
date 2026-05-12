@@ -16,7 +16,11 @@ api.interceptors.request.use(config => {
 api.interceptors.response.use(
     res => res,
     err => {
-        if (err.response?.status === 401 || err.response?.status === 403) {
+        const status = err.response?.status
+        const message = err.response?.data?.message
+        const isAuthError = status === 401 || message === 'Invalid or expired token'
+
+        if (isAuthError) {
             localStorage.removeItem('fitcore_user')
             localStorage.removeItem('fitcore_token')
             window.location.href = '/login'

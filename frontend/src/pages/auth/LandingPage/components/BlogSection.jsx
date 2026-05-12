@@ -93,7 +93,7 @@ export default function BlogSection({ blogRef, blogVisible, blogs }) {
           onClick={() => setSelectedBlog(null)}
         >
           <div
-            className="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-[32px] border border-white/10 bg-[#f8fafc] text-slate-900 shadow-2xl"
+            className="relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-4xl border border-white/10 bg-[#f8fafc] text-slate-900 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
             <button
