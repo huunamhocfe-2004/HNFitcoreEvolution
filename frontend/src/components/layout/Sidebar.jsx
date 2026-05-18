@@ -20,10 +20,12 @@ import {
   MessageSquare,
   ClipboardCheck,
   Award,
+  ShieldCheck,
   Settings,
   User as UserIcon,
   Save,
   X,
+  Bell,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -49,6 +51,13 @@ const links = [
   { to: "/admin/trainers", icon: Award, label: "Huấn Luyện Viên" },
   { to: "/admin/feedback", icon: MessageSquare, label: "Phản Hồi" },
   { to: "/admin/trial-requests", icon: ClipboardCheck, label: "Yêu cầu tập thử" },
+  { to: "/admin/notifications", icon: Bell, label: "Thông báo" },
+  {
+    to: "/admin/permissions",
+    icon: ShieldCheck,
+    label: "Phân quyền",
+    roles: ["admin"],
+  },
   { to: "/admin/checkin", icon: ScanLine, label: "Check-in" },
 ];
 
@@ -56,6 +65,7 @@ export default function Sidebar() {
   const [hasNewOrders, setHasNewOrders] = useState(false);
   const [pendingTrialCount, setPendingTrialCount] = useState(0);
   const [pendingPtCount, setPendingPtCount] = useState(0);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
 
   const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
@@ -112,23 +122,44 @@ export default function Sidebar() {
     (l) => !l.roles || l.roles.includes(user?.role),
   );
 
+  const handleNavClick = (to) => {
+    if (to === "/admin/orders") {
+      setHasNewOrders(false);
+      api.patch("/orders/mark-seen").catch(() => {});
+    }
+    if (to === "/admin/trial-requests") {
+      setPendingTrialCount(0);
+    }
+    if (to === "/admin/subscriptions") {
+      setPendingPtCount(0);
+    }
+    if (to === "/admin/notifications") {
+      setUnreadNotifications(0);
+      api.patch("/notifications/read-all").catch(() => {});
+    }
+  };
+
   useEffect(() => {
     const refreshIndicators = async () => {
       try {
-        const [orders, trials, ptRequests] = await Promise.allSettled([
+        const [orders, trials, ptRequests, notifications] = await Promise.allSettled([
           api.get("/orders/has-new"),
           api.get("/trial-requests/has-new"),
           api.get("/subscriptions/pending-pt-count"),
+          api.get("/notifications/unread-count"),
         ]);
 
         if (orders.status === "fulfilled") {
           setHasNewOrders(orders.value.data.hasNew);
         }
         if (trials.status === "fulfilled") {
-          setPendingTrialCount(trials.value.data.count || 0);
+          setPendingTrialCount(window.location.pathname.startsWith("/admin/trial-requests") ? 0 : trials.value.data.count || 0);
         }
         if (ptRequests.status === "fulfilled") {
-          setPendingPtCount(ptRequests.value.data.count || 0);
+          setPendingPtCount(window.location.pathname.startsWith("/admin/subscriptions") ? 0 : ptRequests.value.data.count || 0);
+        }
+        if (notifications.status === "fulfilled") {
+          setUnreadNotifications(window.location.pathname.startsWith("/admin/notifications") ? 0 : notifications.value.data.count || 0);
         }
       } catch (err) {
         console.log("Check admin indicators error:", err.response?.data || err.message);
@@ -148,13 +179,19 @@ export default function Sidebar() {
     socket.on("new-order", () => {
       setHasNewOrders(true);
     });
+    socket.on("new-notification", refreshIndicators);
 
     socket.on("new-trial-request", refreshIndicators);
     socket.on("trial-request-updated", refreshIndicators);
     socket.on("new-pt-request", refreshIndicators);
     socket.on("pt-request-updated", refreshIndicators);
 
-    return () => socket.disconnect();
+    const interval = setInterval(refreshIndicators, 30000);
+
+    return () => {
+      clearInterval(interval);
+      socket.disconnect();
+    };
   }, []);
 
   return (
@@ -196,6 +233,7 @@ export default function Sidebar() {
             key={to}
             to={to}
             end={end}
+            onClick={() => handleNavClick(to)}
             className={({ isActive }) =>
               `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 group ${
                 isActive
@@ -220,6 +258,9 @@ export default function Sidebar() {
               {to === "/admin/subscriptions" && pendingPtCount > 0 && (
                 <span className="ml-auto h-2 w-2 bg-red-500 rounded-full"></span>
               )}
+              {to === "/admin/notifications" && unreadNotifications > 0 && (
+                <span className="ml-auto h-2 w-2 bg-red-500 rounded-full"></span>
+              )}
             </div>
           </NavLink>
         ))}
@@ -230,7 +271,7 @@ export default function Sidebar() {
         <div className="rounded-xl bg-zinc-900/50 border border-zinc-800/50 p-4">
           <div className="flex items-center gap-3 mb-4">
             <div
-              className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-black shadow-inner overflow-hidden"
+              className="h-10 w-10 aspect-square shrink-0 rounded-lg flex items-center justify-center font-black text-black shadow-inner overflow-hidden"
               style={{
                 background: "linear-gradient(135deg,#eab308,#ca8a04)",
                 border: "1px solid #eab308",
@@ -240,7 +281,7 @@ export default function Sidebar() {
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-full h-full object-cover"
+                  className="block h-full w-full object-cover object-center"
                   onError={handleAvatarError}
                 />
               ) : (
@@ -297,17 +338,17 @@ export default function Sidebar() {
 
               <form onSubmit={handleUpdate} className="space-y-5">
                 <div className="flex flex-col items-center mb-6">
-                  <div className="w-24 h-24 rounded-3xl bg-zinc-900 border border-zinc-800 overflow-hidden mb-3 flex items-center justify-center font-black text-3xl text-yellow-500">
+                  <div className="h-24 w-24 aspect-square shrink-0 rounded-3xl bg-zinc-900 border border-zinc-800 overflow-hidden mb-3 flex items-center justify-center font-black text-3xl text-yellow-500">
                     {file ? (
                       <img
                         src={URL.createObjectURL(file)}
-                        className="w-full h-full object-cover"
+                        className="block h-full w-full object-cover object-center"
                       />
                     ) : user?.avatar && !imgError ? (
                       <img
                         src={user.avatar}
                         alt={user.name}
-                        className="w-full h-full object-cover"
+                        className="block h-full w-full object-cover object-center"
                         onError={handleAvatarError}
                       />
                     ) : (

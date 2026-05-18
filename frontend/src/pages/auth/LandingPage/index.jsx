@@ -14,8 +14,9 @@ import TrainerModal from "./components/TrainerModal";
 import ContactSection from "./components/ContactSection";
 import Footer from "./components/Footer";
 
-import { words, heroImages, programs, pricing, trainers, blogs } from "./data";
+import { words, heroImages, programs, pricing, blogs } from "./data";
 import { getBMIData } from "./utils";
+import api from "../../../api/axios";
 
 import { X } from "lucide-react";
 
@@ -26,6 +27,7 @@ export default function LandingPage() {
   const [isAnnual, setIsAnnual] = useState(false);
   const [isVideoOpen, setIsVideoOpen] = useState(false);
   const [selectedTrainer, setSelectedTrainer] = useState(null);
+  const [landingTrainers, setLandingTrainers] = useState([]);
   const [typedText, setTypedText] = useState("");
   const [wordIndex, setWordIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -99,6 +101,50 @@ export default function LandingPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const toList = (value) => {
+      if (!value) return [];
+      if (Array.isArray(value)) return value;
+      try {
+        const parsed = JSON.parse(value);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (err) {
+        // Keep fallback below.
+      }
+      return String(value)
+        .split(",")
+        .map((item) => item.trim())
+        .filter(Boolean);
+    };
+
+    api.get("/trainers")
+      .then((res) => {
+        setLandingTrainers(res.data.map((trainer) => {
+          const skills = toList(trainer.skills || trainer.specialization);
+          const certifications = toList(trainer.certifications);
+          const teaching = toList(trainer.teaching || trainer.specialization);
+
+          return {
+            id: trainer.id,
+            name: trainer.name,
+            role: trainer.title || trainer.specialization || "Huấn luyện viên",
+            img: trainer.avatar || "/logo.png",
+            bio: trainer.bio || "Huấn luyện viên của HN Fitcore Evolution.",
+            rate: trainer.hourly_rate ? `${Number(trainer.hourly_rate).toLocaleString("vi-VN")}đ/giờ` : "Liên hệ",
+            status: trainer.employment_status || "HN Fitcore",
+            badge: trainer.badge || "",
+            skills: skills.length ? skills : ["Fitness"],
+            email: trainer.email || "fitcore@example.com",
+            phone: trainer.phone || "Đang cập nhật",
+            address: trainer.work_address || "HN Fitcore Evolution",
+            certifications: certifications.length ? certifications : ["Chứng nhận huấn luyện viên chuyên nghiệp"],
+            teaching: teaching.length ? teaching : ["Huấn luyện cá nhân"],
+          };
+        }));
+      })
+      .catch(() => setLandingTrainers([]));
+  }, []);
+
   const handleCalculateBMI = () => {
     const height = Number(bmiForm.height);
     const weight = Number(bmiForm.weight);
@@ -158,7 +204,7 @@ export default function LandingPage() {
       <TrainersSection
         trainerRef={trainerRef}
         trainerVisible={trainerVisible}
-        trainers={trainers}
+        trainers={landingTrainers}
         setSelectedTrainer={setSelectedTrainer}
       />
 

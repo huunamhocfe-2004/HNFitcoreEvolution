@@ -38,6 +38,8 @@ app.use("/api/dashboard", require("./routes/dashboard"));
 app.use("/api/trainers", require("./routes/trainers"));
 app.use("/api/feedback", require("./routes/feedback"));
 app.use("/api/trial-requests", require("./routes/trialRequests"));
+app.use("/api/permissions", require("./routes/permissions"));
+app.use("/api/notifications", require("./routes/notifications"));
 
 app.get("/api/health", (req, res) =>
   res.json({ status: "ok", timestamp: new Date() }),

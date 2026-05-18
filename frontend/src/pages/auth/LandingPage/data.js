@@ -219,7 +219,7 @@ export const blogs = [
     category: "Người mới",
     date: "07/05/2026",
     readTime: "4 phút đọc",
-    image: "/gym.webp",
+    image: "/gym.jpg",
     summary:
       "Tìm hiểu cách không gian tập luyện, đội ngũ PT và lộ trình cá nhân hóa giúp khách mới bắt đầu an toàn, tự tin và có động lực hơn.",
     content: [

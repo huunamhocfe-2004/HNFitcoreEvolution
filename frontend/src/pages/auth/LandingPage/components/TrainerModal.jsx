@@ -84,7 +84,7 @@ export default function TrainerModal({ selectedTrainer, setSelectedTrainer }) {
                 <span className="h-1 w-5 bg-red-600" /> Bằng cấp chuyên môn
               </h4>
               <div className="space-y-3 pl-1">
-                {selectedTrainer.certifications.map((cert, index) => (
+                {(selectedTrainer.certifications || []).map((cert, index) => (
                   <div
                     key={index}
                     className="flex items-start gap-3 text-sm text-slate-600"
@@ -103,7 +103,7 @@ export default function TrainerModal({ selectedTrainer, setSelectedTrainer }) {
                 <span className="h-1 w-5 bg-red-600" /> Chương trình dạy
               </h4>
               <div className="flex flex-wrap gap-2">
-                {selectedTrainer.teaching.map((program, index) => (
+                {(selectedTrainer.teaching || []).map((program, index) => (
                   <span
                     key={index}
                     className="cursor-default rounded-xl border border-slate-200 bg-slate-100 px-4 py-2 text-xs font-bold text-slate-700 transition-all hover:border-red-300 hover:text-red-600"

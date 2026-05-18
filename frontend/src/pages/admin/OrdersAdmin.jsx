@@ -97,7 +97,7 @@ export default function OrdersAdmin() {
                   onClick={() => setExpanded(expanded === o.id ? null : o.id)}
                 >
                   <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
                     style={{
                       background: "rgba(234,179,8,0.1)",
                       border: "1px solid rgba(234,179,8,0.2)",
@@ -151,11 +151,24 @@ export default function OrdersAdmin() {
                       {o.items?.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between text-sm"
+                          className="flex items-center justify-between gap-3 rounded-lg bg-zinc-950/40 border border-zinc-900 p-2 text-sm"
                         >
-                          <span className="text-gray-300">
-                            {item.product_name}
-                          </span>
+                          <div className="flex items-center gap-3 min-w-0">
+                            <div className="h-12 w-12 aspect-square shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+                              {item.image_url ? (
+                                <img
+                                  src={item.image_url}
+                                  alt={item.product_name}
+                                  className="block h-full w-full object-cover object-center"
+                                />
+                              ) : (
+                                <Package className="h-full w-full p-3 text-zinc-700" />
+                              )}
+                            </div>
+                            <span className="text-gray-300 truncate">
+                              {item.product_name}
+                            </span>
+                          </div>
                           <span className="text-gray-500">
                             x{item.quantity} ×{" "}
                             {Number(item.unit_price).toLocaleString("vi-VN")}₫

@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import api from '../../api/axios'
 import { useAuth } from '../../context/AuthContext'
-import { QRCodeSVG } from 'qrcode.react'
-import { User, Phone, Mail, Calendar, CreditCard, ShieldCheck, AlertCircle, ArrowLeft, Check, Copy, Star, MessageSquare, Send } from 'lucide-react'
+import { QRCodeCanvas } from 'qrcode.react'
+import { User, Phone, Mail, Calendar, CreditCard, ShieldCheck, AlertCircle, ArrowLeft, Check, Copy, Star, MessageSquare, Send, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const BANK_INFO = {
@@ -28,7 +28,9 @@ export default function MemberProfile() {
     const [submitting, setSubmitting] = useState(false)
     const [feedback, setFeedback] = useState({ rating: 5, comment: '' })
     const [sendingFeedback, setSendingFeedback] = useState(false)
+    const [myFeedbacks, setMyFeedbacks] = useState([])
     const [renewalActionLoading, setRenewalActionLoading] = useState(false)
+    const memberQrRef = useRef(null)
 
     const loadProfile = () => {
         if (user?.member_id) {
@@ -43,7 +45,31 @@ export default function MemberProfile() {
     useEffect(() => {
         loadProfile()
         api.get('/packages').then(r => setPackages(r.data))
+        api.get('/feedback/mine').then(r => setMyFeedbacks(r.data)).catch(() => setMyFeedbacks([]))
     }, [user])
+
+    const loadMyFeedbacks = () => {
+        api.get('/feedback/mine').then(r => setMyFeedbacks(r.data)).catch(() => setMyFeedbacks([]))
+    }
+
+    const downloadMemberQr = () => {
+        const qrCanvas = memberQrRef.current
+        if (!qrCanvas) return toast.error('Không tìm thấy mã QR để tải')
+
+        const canvas = document.createElement('canvas')
+        canvas.width = 640
+        canvas.height = 640
+        const ctx = canvas.getContext('2d')
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.imageSmoothingEnabled = false
+        ctx.drawImage(qrCanvas, 40, 40, 560, 560)
+
+        const link = document.createElement('a')
+        link.download = `${profile.qr_code || `FC-${profile.id}`}.png`
+        link.href = canvas.toDataURL('image/png')
+        link.click()
+    }
 
     const submitFeedback = async (e) => {
         e.preventDefault()
@@ -53,6 +79,7 @@ export default function MemberProfile() {
             await api.post('/feedback', feedback)
             toast.success('Cảm ơn bạn đã gửi phản hồi cho Fitcore!')
             setFeedback({ rating: 5, comment: '' })
+            loadMyFeedbacks()
         } catch (err) {
             toast.error('Lỗi khi gửi phản hồi')
         } finally {
@@ -137,11 +164,12 @@ export default function MemberProfile() {
                 {/* Background Decor */}
                 <div className="absolute top-0 right-0 w-64 h-64 bg-red-600/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
-                <div className="card relative bg-[#111] border-[#1f1f1f] p-8 md:p-12 flex flex-col md:flex-row items-center gap-10">
-                    <div className="flex-shrink-0 relative">
+                <div className="card relative bg-[#111] border-border-base p-8 md:p-12 flex flex-col md:flex-row items-center gap-10">
+                    <div className="shrink-0 relative">
                         <div className="absolute inset-0 bg-red-500 blur-2xl opacity-10 group-hover:opacity-20 transition-opacity" />
                         <div className="relative p-5 bg-white rounded-2xl shadow-2xl shadow-black">
-                            <QRCodeSVG
+                            <QRCodeCanvas
+                                ref={memberQrRef}
                                 value={profile.qr_code || `FC-${profile.id}`}
                                 size={160}
                                 level="H"
@@ -151,6 +179,13 @@ export default function MemberProfile() {
                         <div className="mt-4 text-center">
                             <div className="text-[10px] font-bold tracking-widest text-zinc-500 uppercase">THẺ HỘI VIÊN</div>
                             <div className="text-sm font-mono text-zinc-400 font-bold">{profile.qr_code}</div>
+                            <button
+                                type="button"
+                                onClick={downloadMemberQr}
+                                className="mt-3 btn-gold px-4 py-2 text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2"
+                            >
+                                <Download size={14} /> Tải QR
+                            </button>
                         </div>
                     </div>
 
@@ -158,19 +193,19 @@ export default function MemberProfile() {
                         <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
                             {statusBadge(profile.status)}
                             {isGymRenewalProposal && (
-                                <span className="badge badge-yellow uppercase !text-[9px] font-bold animate-pulse">Đề xuất gia hạn</span>
+                                <span className="badge badge-yellow uppercase text-[9px]! font-bold animate-pulse">Đề xuất gia hạn</span>
                             )}
                             {isGymPending && (
-                                <span className="badge badge-yellow uppercase !text-[9px] font-bold animate-pulse">Gói tập chờ duyệt</span>
+                                <span className="badge badge-yellow uppercase text-[9px]! font-bold animate-pulse">Gói tập chờ duyệt</span>
                             )}
                             {isPtPending && (
-                                <span className="badge badge-yellow uppercase !text-[9px] font-bold animate-pulse">Yêu cầu PT chờ duyệt</span>
+                                <span className="badge badge-yellow uppercase text-[9px]! font-bold animate-pulse">Yêu cầu PT chờ duyệt</span>
                             )}
                         </div>
                         <div className="flex flex-col md:flex-row items-center gap-4 mb-2">
                              {profile.avatar && (
-                                <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-red-500 shadow-lg shadow-red-900/20">
-                                    <img src={profile.avatar} className="w-full h-full object-cover" alt={profile.name} />
+                                <div className="h-12 w-12 aspect-square shrink-0 rounded-full overflow-hidden border-2 border-red-500 shadow-lg shadow-red-900/20">
+                                    <img src={profile.avatar} className="block h-full w-full object-cover object-center" alt={profile.name} />
                                 </div>
                              )}
                             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tighter uppercase leading-none italic">
@@ -201,7 +236,7 @@ export default function MemberProfile() {
                 {/* Subscriptions Middle Part */}
                 <div className="md:col-span-2 space-y-6">
                     {/* Gym Card */}
-                    <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-6 lg:p-8 relative overflow-hidden">
+                    <div className="card bg-surface-base border-[#1a1a1a] p-6 lg:p-8 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4">
                             <CreditCard size={48} className="text-white/5 -rotate-12" />
                         </div>
@@ -298,7 +333,7 @@ export default function MemberProfile() {
 
                     {/* PT Card if exists */}
                     {ptSub && (
-                        <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-6 lg:p-8 relative overflow-hidden">
+                        <div className="card bg-surface-base border-[#1a1a1a] p-6 lg:p-8 relative overflow-hidden">
                             <div className="absolute top-0 right-0 p-4">
                                 <User size={48} className="text-yellow-500/5 -rotate-12" />
                             </div>
@@ -334,7 +369,7 @@ export default function MemberProfile() {
                                     )}
                                 </div>
                                 <div className="w-24 h-24 rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800 self-center md:self-start">
-                                    {ptSub.trainer_avatar ? <img src={ptSub.trainer_avatar} className="w-full h-full object-cover" /> : <div className="w-full h-full flex items-center justify-center text-zinc-700"><User size={40} /></div>}
+                                    {ptSub.trainer_avatar ? <img src={ptSub.trainer_avatar} className="block h-full w-full object-cover object-center" /> : <div className="w-full h-full flex items-center justify-center text-zinc-700"><User size={40} /></div>}
                                 </div>
                             </div>
                         </div>
@@ -342,7 +377,7 @@ export default function MemberProfile() {
                 </div>
 
                 {/* Personal Details Side */}
-                <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-6">
+                <div className="card bg-surface-base border-[#1a1a1a] p-6">
                     <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-6 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 rounded-full bg-zinc-700" /> CÁ NHÂN
                     </h3>
@@ -383,7 +418,7 @@ export default function MemberProfile() {
             </div>
 
             {/* Feedback Section */}
-            <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-8 relative overflow-hidden">
+            <div className="card bg-surface-base border-[#1a1a1a] p-8 relative overflow-hidden">
                 <div className="absolute top-0 right-0 p-6 opacity-5 rotate-12">
                     <MessageSquare size={120} />
                 </div>
@@ -418,7 +453,7 @@ export default function MemberProfile() {
                         <textarea
                             value={feedback.comment}
                             onChange={e => setFeedback(p => ({ ...p, comment: e.target.value }))}
-                            className="input-dark w-full min-h-[120px] p-4 text-sm"
+                            className="input-dark w-full min-h-30 p-4 text-sm"
                             placeholder="Hãy để lại ý kiến của bạn để giúp HN Fitcore ngày càng hoàn thiện hơn..."
                         />
                     </div>
@@ -431,10 +466,46 @@ export default function MemberProfile() {
                         {sendingFeedback ? 'ĐANG GỬI...' : <><Send size={16} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" /> GỬI PHẢN HỒI</>}
                     </button>
                 </form>
+
+                {myFeedbacks.length > 0 && (
+                    <div className="relative z-10 mt-8 pt-8 border-t border-zinc-900">
+                        <h4 className="text-xs font-black text-zinc-600 uppercase tracking-widest mb-4">Lịch sử phản hồi</h4>
+                        <div className="space-y-3">
+                            {myFeedbacks.map(item => (
+                                <div key={item.id} className="rounded-xl bg-zinc-950 border border-zinc-900 p-4">
+                                    <div className="flex items-center justify-between gap-3">
+                                        <div className="flex gap-0.5">
+                                            {[...Array(5)].map((_, i) => (
+                                                <Star key={i} size={12} fill={i < item.rating ? "#eab308" : "transparent"}
+                                                    className={i < item.rating ? "text-yellow-500" : "text-zinc-800"} />
+                                            ))}
+                                        </div>
+                                        <span className="text-[10px] text-zinc-600 font-bold">
+                                            {new Date(item.created_at).toLocaleDateString('vi-VN')}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-zinc-400 mt-3">{item.comment}</p>
+                                    {item.admin_reply ? (
+                                        <div className="mt-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20 p-3">
+                                            <div className="text-[10px] font-black text-yellow-500 uppercase tracking-widest mb-1">
+                                                Phản hồi từ Fitcore
+                                            </div>
+                                            <p className="text-sm text-zinc-300 whitespace-pre-wrap">{item.admin_reply}</p>
+                                        </div>
+                                    ) : (
+                                        <div className="mt-3 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+                                            Đang chờ admin / nhân viên phản hồi
+                                        </div>
+                                    )}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* History Table */}
-            <div className="card bg-[#0d0d0d] border-[#1a1a1a] p-0 overflow-hidden">
+            <div className="card bg-surface-base border-[#1a1a1a] p-0 overflow-hidden">
                 <div className="p-8 border-b border-zinc-900">
                     <h3 className="text-sm font-bold text-zinc-500 uppercase tracking-[0.2em] flex items-center gap-3">
                         <CreditCard size={16} className="text-zinc-700" /> LỊCH SỬ ĐĂNG KÝ & THANH TOÁN
@@ -444,10 +515,10 @@ export default function MemberProfile() {
                     <table className="tbl">
                         <thead>
                             <tr className="bg-zinc-950/50">
-                                <th className="!text-[10px] font-black uppercase tracking-widest">Gói tập / Loại</th>
-                                <th className="!text-[10px] font-black uppercase tracking-widest">Chi phí</th>
-                                <th className="!text-[10px] font-black uppercase tracking-widest">Thời hạn</th>
-                                <th className="!text-[10px] font-black uppercase tracking-widest text-center">Trạng thái</th>
+                                <th className="text-[10px]! font-black uppercase tracking-widest">Gói tập / Loại</th>
+                                <th className="text-[10px]! font-black uppercase tracking-widest">Chi phí</th>
+                                <th className="text-[10px]! font-black uppercase tracking-widest">Thời hạn</th>
+                                <th className="text-[10px]! font-black uppercase tracking-widest text-center">Trạng thái</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -489,8 +560,8 @@ export default function MemberProfile() {
             </div>
 
             {purchaseModal && (
-                <div className="modal-overlay z-[100]" onClick={e => e.target === e.currentTarget && setPurchaseModal(false)}>
-                    <div className="modal-box bg-[#0a0a0a] border border-zinc-800 !max-w-[1100px] overflow-hidden p-0" style={{ maxWidth: '1100px' }}>
+                <div className="modal-overlay z-100" onClick={e => e.target === e.currentTarget && setPurchaseModal(false)}>
+                    <div className="modal-box bg-[#0a0a0a] border border-zinc-800 max-w-275! overflow-hidden p-0" style={{ maxWidth: '1100px' }}>
                         {purchaseStep === 0 ? (
                             <div className="p-8">
                                 <div className="mb-8">
@@ -565,7 +636,7 @@ export default function MemberProfile() {
                                     </div>
                                 </div>
 
-                                <div className="w-full md:w-[380px] bg-white p-12 flex flex-col items-center justify-center gap-6">
+                                <div className="w-full md:w-95 bg-white p-12 flex flex-col items-center justify-center gap-6">
                                     <div className="text-[11px] font-black text-black uppercase tracking-[0.2em] opacity-50">Quét mã VietQR</div>
                                     <div className="relative p-4 bg-white border border-zinc-100 rounded-2xl shadow-[0_32px_64px_-16px_rgba(0,0,0,0.1)]">
                                         <img 

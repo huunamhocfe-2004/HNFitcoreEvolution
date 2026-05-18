@@ -54,6 +54,14 @@ export default function TrainersSection({
           }}
           className="relative px-4 py-8 pb-24"
         >
+          {trainers.length === 0 && (
+            <SwiperSlide>
+              <div className="rounded-[10px] bg-white p-10 text-center text-slate-500">
+                Đang cập nhật danh sách huấn luyện viên.
+              </div>
+            </SwiperSlide>
+          )}
+
           {trainers.map((trainer, index) => (
             <SwiperSlide key={index}>
               <div className="group flex flex-col overflow-hidden rounded-[10px] bg-linear-to-b from-gray-100 via-gray-200 to-[#ffffff] shadow-lg transition-all duration-300 hover:scale-98 hover:shadow-2xl hover:shadow-black/50">
@@ -78,7 +86,7 @@ export default function TrainersSection({
                   </div>
 
                   <div className="mt-5 flex flex-wrap justify-center gap-2">
-                    {trainer.skills.map((skill, idx) => (
+                    {(trainer.skills || []).map((skill, idx) => (
                       <span
                         key={idx}
                         className={`rounded-full border px-3 py-1 text-[11px] font-bold ${

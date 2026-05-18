@@ -19,7 +19,7 @@ export default function AboutSection({
           }`}
         >
           <img
-            src="../../../public/gym.webp"
+            src="../../../public/gym.jpg"
             alt="Fitness woman"
             className="h-90 w-full object-cover"
           />

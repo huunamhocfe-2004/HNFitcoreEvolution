@@ -6,8 +6,8 @@ import { Package, Truck, CheckCircle, Clock, ShoppingBag, MapPin, CreditCard } f
 const STATUS_MAP = {
     pending: { label: 'Chờ xử lý', color: 'text-yellow-500', bg: 'bg-yellow-500/10', icon: Clock },
     confirmed: { label: 'Đã xác nhận', color: 'text-blue-500', bg: 'bg-blue-500/10', icon: CheckCircle },
-    shipped: { label: 'Đang giao', color: 'text-zinc-400', bg: 'bg-zinc-800/50', icon: Truck },
-    completed: { label: 'Hoàn tất', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle },
+    processing: { label: 'Đang được giao', color: 'text-zinc-400', bg: 'bg-zinc-800/50', icon: Truck },
+    delivered: { label: 'Hoàn thành', color: 'text-green-500', bg: 'bg-green-500/10', icon: CheckCircle },
     cancelled: { label: 'Đã hủy', color: 'text-red-500', bg: 'bg-red-900/10', icon: Package },
 }
 
@@ -29,7 +29,7 @@ export default function MemberOrders() {
     return (
         <div>
             <div className="mb-6">
-                <h1 className="text-2xl font-bold text-white uppercase tracking-tight">Lịch sử Đơn Hàng</h1>
+                <h1 className="text-2xl font-bold text-white uppercase tracking-tight">Lịch sử đơn hàng</h1>
                 <p className="text-sm text-zinc-500 mt-1">Theo dõi các sản phẩm bạn đã đặt mua</p>
             </div>
 
@@ -38,7 +38,7 @@ export default function MemberOrders() {
                     <ShoppingBag size={48} className="mx-auto text-zinc-700 mb-4" />
                     <h3 className="text-lg font-bold text-white mb-2">Bạn chưa có đơn hàng nào</h3>
                     <p className="text-sm text-zinc-500 mb-6">Hãy ghé thăm cửa hàng để chọn phụ kiện luyện tập!</p>
-                    <button className="btn-gold px-8" onClick={() => window.location.href = '/member/store'}>Đến Cửa Hàng</button>
+                    <button className="btn-gold px-8" onClick={() => window.location.href = '/member/store'}>Đến cửa hàng</button>
                 </div>
             ) : (
                 <div className="space-y-6">
@@ -70,15 +70,15 @@ export default function MemberOrders() {
                                     <div className="space-y-4 mb-6">
                                         {order.items?.map(item => (
                                             <div key={item.id} className="flex items-center gap-4">
-                                                <div className="w-16 h-16 rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
-                                                    {item.image_url ? <img src={item.image_url} className="w-full h-full object-cover" /> : <Package className="w-full h-full p-4 text-zinc-600" />}
+                                                <div className="w-16 h-16 aspect-square rounded-xl bg-zinc-800 border border-zinc-700 overflow-hidden shrink-0">
+                                                    {item.image_url ? <img src={item.image_url} className="block w-full h-full object-cover object-center" alt={item.product_name} /> : <Package className="w-full h-full p-4 text-zinc-600" />}
                                                 </div>
                                                 <div className="flex-1 min-w-0">
                                                     <div className="text-sm font-bold text-white truncate">{item.product_name}</div>
-                                                    <div className="text-xs text-zinc-500 mt-1">Số lượng: {item.quantity} × {Number(item.unit_price).toLocaleString('vi-VN')}₫</div>
+                                                    <div className="text-xs text-zinc-500 mt-1">Số lượng: {item.quantity} x {Number(item.unit_price).toLocaleString('vi-VN')}đ</div>
                                                 </div>
                                                 <div className="text-sm font-bold text-white whitespace-nowrap">
-                                                    {(item.quantity * item.unit_price).toLocaleString('vi-VN')}₫
+                                                    {(item.quantity * item.unit_price).toLocaleString('vi-VN')}đ
                                                 </div>
                                             </div>
                                         ))}
@@ -92,16 +92,16 @@ export default function MemberOrders() {
                                         <div>
                                             <div className="text-[10px] text-zinc-500 mb-2 flex items-center gap-1.5"><CreditCard size={12} /> Phương thức</div>
                                             <div className="text-[11px] text-zinc-300">
-                                                {order.payment_method === 'cash' ? 'Tại quầy' : 
+                                                {order.payment_method === 'cash' ? 'Tại quầy' :
                                                  order.payment_method === 'cod' ? 'Ship COD' : 'Chuyển khoản'}
                                             </div>
                                         </div>
                                         <div className="sm:text-right">
                                             <div className="text-[10px] text-zinc-500 mb-1 leading-none">
-                                                {order.shipping_fee > 0 && <span>Gồm {Number(order.shipping_fee).toLocaleString('vi-VN')}₫ ship · </span>}
+                                                {order.shipping_fee > 0 && <span>Gồm {Number(order.shipping_fee).toLocaleString('vi-VN')}đ ship - </span>}
                                                 Tổng thanh toán
                                             </div>
-                                            <div className="text-xl text-yellow-500">{Number(order.total_amount).toLocaleString('vi-VN')}₫</div>
+                                            <div className="text-xl text-yellow-500">{Number(order.total_amount).toLocaleString('vi-VN')}đ</div>
                                         </div>
                                     </div>
                                 </div>

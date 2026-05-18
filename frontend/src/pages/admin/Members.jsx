@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../api/axios";
+import { useAuth } from "../../context/AuthContext";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import SearchInput from "../../components/layout/searchInput";
-import { Plus, Search, Eye, Edit2, Trash2, QrCode } from "lucide-react";
+import { Plus, Search, Eye, Edit2, Trash2, Download } from "lucide-react";
 
 const statusBadge = (s) =>
   ({
@@ -32,7 +33,18 @@ export default function Members() {
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
   const [file, setFile] = useState(null);
+  const [memberPermissions, setMemberPermissions] = useState({
+    view: true,
+    create: false,
+    edit: false,
+    delete: false,
+    assign: false,
+  });
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const canCreate = Boolean(memberPermissions.create);
+  const canEdit = Boolean(memberPermissions.edit);
+  const canDelete = Boolean(memberPermissions.delete);
 
   const load = () => {
     setLoading(true);
@@ -43,18 +55,33 @@ export default function Members() {
   };
   useEffect(() => {
     load();
-  }, []);
+    api
+      .get("/permissions")
+      .then((r) => {
+        const membersArea = r.data.find((item) => item.id === "members");
+        setMemberPermissions(membersArea?.roles?.[user?.role] || {});
+      })
+      .catch(() => {
+        setMemberPermissions(
+          user?.role === "admin"
+            ? { view: true, create: true, edit: true, delete: true, assign: true }
+            : { view: true, create: false, edit: true, delete: false, assign: true },
+        );
+      });
+  }, [user?.role]);
 
   const handle = (e) =>
     setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
 
   const openAdd = () => {
+    if (!canCreate) return toast.error("Bạn không có quyền thêm hội viên");
     setEditing(null);
     setForm(EMPTY);
     setModal(true);
   };
 
   const openEdit = (m) => {
+    if (!canEdit) return toast.error("Bạn không có quyền sửa hội viên");
     setEditing(m.id);
     setForm({
       name: m.name || "",
@@ -73,6 +100,8 @@ export default function Members() {
 
   const submit = async (e) => {
     e.preventDefault();
+    if (editing && !canEdit) return toast.error("Bạn không có quyền sửa hội viên");
+    if (!editing && !canCreate) return toast.error("Bạn không có quyền thêm hội viên");
     setSaving(true);
     const data = new FormData();
     Object.keys(form).forEach((k) => {
@@ -109,10 +138,24 @@ export default function Members() {
   };
 
   const deleteMember = async (id, name) => {
+    if (!canDelete) return toast.error("Bạn không có quyền xóa hội viên");
     if (!confirm(`Xóa hội viên "${name}"?`)) return;
     await api.delete(`/members/${id}`);
     toast.success("Đã xóa hội viên");
     load();
+  };
+
+  const downloadMemberQr = async (member) => {
+    try {
+      const res = await api.get(`/members/${member.id}/qr`);
+      const link = document.createElement("a");
+      link.href = res.data.qr_image;
+      link.download = `${res.data.qr_code || member.qr_code || `FC-${member.id}`}.png`;
+      link.click();
+      toast.success("Đã tải mã QR check-in");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Không tải được mã QR");
+    }
   };
 
   const filtered = members.filter(
@@ -131,12 +174,14 @@ export default function Members() {
             {members.length} hội viên trong hệ thống
           </p>
         </div>
-        <button
-          onClick={openAdd}
-          className="btn-gold flex items-center gap-2 text-sm"
-        >
-          <Plus size={15} /> Thêm hội viên
-        </button>
+        {canCreate && (
+          <button
+            onClick={openAdd}
+            className="btn-gold flex items-center gap-2 text-sm"
+          >
+            <Plus size={15} /> Thêm hội viên
+          </button>
+        )}
       </div>
 
       {/* Search */}
@@ -176,12 +221,12 @@ export default function Members() {
                     <tr key={m.id}>
                       <td>
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center font-bold text-sm shrink-0 bg-zinc-900 border border-zinc-800">
+                          <div className="h-10 w-10 aspect-square rounded-full overflow-hidden flex items-center justify-center font-bold text-sm shrink-0 bg-zinc-900 border border-zinc-800">
                             {m.avatar ? (
                               <img
                                 src={m.avatar}
                                 alt={m.name}
-                                className="w-full h-full object-cover"
+                                className="block h-full w-full object-cover object-center"
                                 onError={(e) => {
                                   e.target.onerror = null;
                                   e.target.src = "";
@@ -236,7 +281,7 @@ export default function Members() {
                       <td>
                         <div className="flex items-center gap-1">
                           <button
-                            onClick={() => navigate(`/members/${m.id}`)}
+                            onClick={() => navigate(`/admin/members/${m.id}`)}
                             className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
                             title="Xem chi tiết"
                           >
@@ -244,18 +289,28 @@ export default function Members() {
                           </button>
                           <button
                             onClick={() => openEdit(m)}
+                            disabled={!canEdit}
                             className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
                             title="Chỉnh sửa"
                           >
                             <Edit2 size={15} />
                           </button>
                           <button
-                            onClick={() => deleteMember(m.id, m.name)}
-                            className="p-1.5 rounded hover:bg-red-900/20 text-gray-400 hover:text-red-400 transition-colors"
-                            title="Xóa"
+                            onClick={() => downloadMemberQr(m)}
+                            className="p-1.5 rounded hover:bg-yellow-500/10 text-gray-400 hover:text-yellow-500 transition-colors"
+                            title="Tải QR check-in"
                           >
-                            <Trash2 size={15} />
+                            <Download size={15} />
                           </button>
+                          {canDelete && (
+                            <button
+                              onClick={() => deleteMember(m.id, m.name)}
+                              className="p-1.5 rounded hover:bg-red-900/20 text-gray-400 hover:text-red-400 transition-colors"
+                              title="Xóa"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

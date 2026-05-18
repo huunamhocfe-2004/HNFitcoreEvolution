@@ -1,8 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import api from '../../api/axios'
-import { QRCodeSVG } from 'qrcode.react'
-import { ArrowLeft, User, Calendar, Phone, Mail, CreditCard } from 'lucide-react'
+import { QRCodeCanvas } from 'qrcode.react'
+import { ArrowLeft, User, Calendar, Phone, Mail, CreditCard, Download } from 'lucide-react'
 
 const statusBadge = s => ({
     active: <span className="badge badge-green">Đang tập</span>,
@@ -15,6 +15,7 @@ export default function MemberDetail() {
     const navigate = useNavigate()
     const [member, setMember] = useState(null)
     const [tab, setTab] = useState('info')
+    const qrRef = useRef(null)
 
     useEffect(() => {
         api.get(`/members/${id}`).then(r => setMember(r.data))
@@ -23,20 +24,38 @@ export default function MemberDetail() {
     if (!member) return <div className="skeleton h-96 rounded-xl" />
 
     const tabs = ['info', 'subscriptions', 'checkins']
+    const downloadQr = () => {
+        const qrCanvas = qrRef.current
+        if (!qrCanvas) return
+
+        const canvas = document.createElement('canvas')
+        canvas.width = 640
+        canvas.height = 640
+        const ctx = canvas.getContext('2d')
+        ctx.fillStyle = '#ffffff'
+        ctx.fillRect(0, 0, canvas.width, canvas.height)
+        ctx.imageSmoothingEnabled = false
+        ctx.drawImage(qrCanvas, 40, 40, 560, 560)
+
+        const link = document.createElement('a')
+        link.download = `${member.qr_code || `FC-${id}`}.png`
+        link.href = canvas.toDataURL('image/png')
+        link.click()
+    }
     const tabLabels = { info: 'Thông tin', subscriptions: 'Gói tập', checkins: 'Check-in' }
 
     return (
         <div>
-            <button onClick={() => navigate('/members')}
+            <button onClick={() => navigate('/admin/members')}
                 className="flex items-center gap-2 text-sm text-gray-500 hover:text-white mb-4 transition-colors">
                 <ArrowLeft size={15} /> Quay lại danh sách
             </button>
 
             {/* Header card */}
             <div className="card mb-4 flex flex-col md:flex-row items-start md:items-center gap-5">
-                <div className="w-16 h-16 rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black shrink-0 bg-zinc-900 border border-zinc-800">
+                <div className="h-16 w-16 aspect-square rounded-2xl overflow-hidden flex items-center justify-center text-2xl font-black shrink-0 bg-zinc-900 border border-zinc-800">
                     {member.avatar ? (
-                        <img src={member.avatar} alt={member.name} className="w-full h-full object-cover" />
+                        <img src={member.avatar} alt={member.name} className="block h-full w-full object-cover object-center" />
                     ) : (
                         <span className="text-yellow-500">{member.name?.[0]}</span>
                     )}
@@ -52,9 +71,16 @@ export default function MemberDetail() {
                 {/* QR Code */}
                 <div className="flex flex-col items-center gap-2">
                     <div className="p-3 rounded-xl" style={{ background: '#fff' }}>
-                        <QRCodeSVG value={member.qr_code || `FC-${id}`} size={96} />
+                        <QRCodeCanvas ref={qrRef} value={member.qr_code || `FC-${id}`} size={96} />
                     </div>
                     <span className="text-xs text-gray-500 font-mono">{member.qr_code}</span>
+                    <button
+                        type="button"
+                        onClick={downloadQr}
+                        className="btn-gold px-3 py-1.5 text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-1.5"
+                    >
+                        <Download size={12} /> Tải QR
+                    </button>
                 </div>
             </div>
 

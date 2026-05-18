@@ -28,6 +28,8 @@ import TrainersAdmin from './pages/admin/TrainersAdmin'
 import FeedbackAdmin from './pages/admin/FeedbackAdmin'
 import HirePT from './pages/member/HirePT'
 import TrialRequestsAdmin from './pages/admin/TrialRequestsAdmin'
+import PermissionsAdmin from './pages/admin/PermissionsAdmin'
+import Notifications from './pages/Notifications'
 
 // Route guards
 const ProtectedRoute = ({ children, roles }) => {
@@ -73,6 +75,12 @@ const AppRoutes = () => {
                 <Route path="trainers" element={<TrainersAdmin />} />
                 <Route path="feedback" element={<FeedbackAdmin />} />
                 <Route path="trial-requests" element={<TrialRequestsAdmin />} />
+                <Route path="notifications" element={<Notifications />} />
+                <Route path="permissions" element={
+                    <ProtectedRoute roles={['admin']}>
+                        <PermissionsAdmin />
+                    </ProtectedRoute>
+                } />
             </Route>
 
             {/* Member routes */}
@@ -89,6 +97,7 @@ const AppRoutes = () => {
                 <Route path="booking" element={<MemberBooking />} />
                 <Route path="hire-pt" element={<HirePT />} />
                 <Route path="cart" element={<Cart />} />
+                <Route path="notifications" element={<Notifications />} />
             </Route>
 
             <Route path="*" element={<Navigate to="/" replace />} />

@@ -13,10 +13,11 @@ import {
   Save,
   X,
   Camera,
+  Bell,
 } from "lucide-react";
 import api from "../../api/axios";
 import toast from "react-hot-toast";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const links = [
   { to: "/member", icon: User, label: "Hồ Sơ", end: true },
@@ -26,6 +27,7 @@ const links = [
   { to: "/member/member-orders", icon: ClipboardList, label: "Đơn Hàng" },
   { to: "/member/booking", icon: CalendarDays, label: "Đặt Lịch" },
   { to: "/member/hire-pt", icon: User, label: "Thuê PT" },
+  { to: "/member/notifications", icon: Bell, label: "Thông báo" },
 ];
 
 export default function MemberLayout() {
@@ -38,6 +40,26 @@ export default function MemberLayout() {
     phone: user?.phone || "",
   });
   const [file, setFile] = useState(null);
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+
+  useEffect(() => {
+    const refreshUnread = () => {
+      api.get("/notifications/unread-count")
+        .then((res) => setUnreadNotifications(window.location.pathname.startsWith("/member/notifications") ? 0 : res.data.count || 0))
+        .catch(() => setUnreadNotifications(0));
+    };
+
+    refreshUnread();
+    const interval = setInterval(refreshUnread, 30000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleNavClick = (to) => {
+    if (to === "/member/notifications") {
+      setUnreadNotifications(0);
+      api.patch("/notifications/read-all").catch(() => {});
+    }
+  };
 
   const handleLogout = () => {
     logout();
@@ -110,6 +132,7 @@ export default function MemberLayout() {
               key={to}
               to={to}
               end={end}
+              onClick={() => handleNavClick(to)}
               className={({ isActive }) =>
                 `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 group ${
                   isActive
@@ -122,7 +145,12 @@ export default function MemberLayout() {
                 size={18}
                 className="group-hover:scale-110 transition-transform"
               />{" "}
-              {label}
+              <span className="flex flex-1 items-center gap-2">
+                {label}
+                {to === "/member/notifications" && unreadNotifications > 0 && (
+                  <span className="h-2 w-2 rounded-full bg-red-500" />
+                )}
+              </span>
             </NavLink>
           ))}
         </nav>
@@ -131,7 +159,7 @@ export default function MemberLayout() {
           <div className="rounded-xl bg-zinc-900/50 border border-zinc-800/50 p-4">
             <div className="flex items-center gap-3 mb-4">
               <div
-                className="w-10 h-10 rounded-lg flex items-center justify-center font-black text-white shadow-inner overflow-hidden"
+                className="h-10 w-10 aspect-square shrink-0 rounded-lg flex items-center justify-center font-black text-white shadow-inner overflow-hidden"
                 style={{
                   background: "linear-gradient(135deg,#1f1f1f,#0a0a0a)",
                   border: "1px solid #333",
@@ -140,7 +168,7 @@ export default function MemberLayout() {
                 {user?.avatar ? (
                   <img
                     src={user.avatar}
-                    className="w-full h-full object-cover"
+                    className="block h-full w-full object-cover object-center"
                   />
                 ) : (
                   user?.name?.[0]
@@ -184,13 +212,20 @@ export default function MemberLayout() {
             key={to}
             to={to}
             end={end}
+            onClick={() => handleNavClick(to)}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center py-2 text-xs gap-1 transition-colors ${
                 isActive ? "text-yellow-400" : "text-gray-500"
               }`
             }
           >
-            <Icon size={18} /> <span>{label}</span>
+            <Icon size={18} />
+            <span className="relative">
+              {label}
+              {to === "/member/notifications" && unreadNotifications > 0 && (
+                <span className="absolute -right-2 -top-1 h-2 w-2 rounded-full bg-red-500" />
+              )}
+            </span>
           </NavLink>
         ))}
         <button
@@ -243,12 +278,12 @@ export default function MemberLayout() {
                     {file ? (
                       <img
                         src={URL.createObjectURL(file)}
-                        className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                        className="block h-full w-full object-cover object-center transition duration-500 group-hover:scale-110"
                       />
                     ) : user?.avatar ? (
                       <img
                         src={user.avatar}
-                        className="w-full h-full object-cover transition duration-500 group-hover:scale-110"
+                        className="block h-full w-full object-cover object-center transition duration-500 group-hover:scale-110"
                       />
                     ) : (
                       <span className="font-black text-4xl bg-linear-to-br from-red-400 to-red-700 bg-clip-text text-transparent">
