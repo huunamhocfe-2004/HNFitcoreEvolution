@@ -10,14 +10,39 @@ const STATUS_OPTIONS = [
   "delivered",
   "cancelled",
 ];
+
 const statusBadge = (s) =>
   ({
-    pending: <span className="badge badge-yellow">Chờ xử lý</span>,
-    confirmed: <span className="badge badge-blue">Đã xác nhận</span>,
-    processing: <span className="badge badge-gray">Đang giao</span>,
-    delivered: <span className="badge badge-green">Hoàn tất</span>,
-    cancelled: <span className="badge badge-red">Đã hủy</span>,
-  })[s];
+    pending: (
+      <span className="rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-600">
+        Chờ xử lý
+      </span>
+    ),
+    confirmed: (
+      <span className="rounded-full border border-blue-200 bg-blue-50 px-3 py-1 text-xs font-bold text-blue-600">
+        Đã xác nhận
+      </span>
+    ),
+    processing: (
+      <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+        Đang giao
+      </span>
+    ),
+    delivered: (
+      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-600">
+        Hoàn tất
+      </span>
+    ),
+    cancelled: (
+      <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
+        Đã hủy
+      </span>
+    ),
+  })[s] || (
+    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+      {s}
+    </span>
+  );
 
 export default function OrdersAdmin() {
   const [orders, setOrders] = useState([]);
@@ -36,6 +61,7 @@ export default function OrdersAdmin() {
       .then((r) => setOrders(r.data))
       .finally(() => setLoading(false));
   };
+
   useEffect(() => {
     load();
   }, []);
@@ -51,24 +77,28 @@ export default function OrdersAdmin() {
     : orders;
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6 text-slate-900">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-white">Quản lý Đơn Hàng</h1>
-          <p className="text-sm text-gray-500 mt-1">{orders.length} đơn hàng</p>
+          <h1 className="text-2xl font-black text-slate-900">
+            Quản lý Đơn Hàng
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
+            {orders.length} đơn hàng
+          </p>
         </div>
       </div>
 
       {/* Status filter */}
-      <div className="flex gap-2 mb-4 flex-wrap">
+      <div className="flex flex-wrap gap-2">
         {["", ...STATUS_OPTIONS].map((s) => (
           <button
             key={s}
             onClick={() => setStatusFilter(s)}
-            className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${
+            className={`rounded-full border px-4 py-1.5 text-xs font-bold transition-colors ${
               statusFilter === s
-                ? "border-yellow-500 text-yellow-400 bg-yellow-500/10"
-                : "border-gray-700 text-gray-400 hover:border-gray-500"
+                ? "border-red-200 bg-red-50 text-red-600"
+                : "border-slate-200 bg-white text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600"
             }`}
           >
             {s
@@ -84,35 +114,37 @@ export default function OrdersAdmin() {
         ))}
       </div>
 
-      <div className="space-y-2">
+      <div className="space-y-3">
         {loading
           ? [...Array(4)].map((_, i) => (
-              <div key={i} className="skeleton h-16 rounded-xl" />
+              <div
+                key={i}
+                className="h-16 animate-pulse rounded-2xl bg-slate-200"
+              />
             ))
           : filtered.map((o) => (
-              <div key={o.id} className="card">
+              <div
+                key={o.id}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70 transition-all hover:border-red-200 hover:shadow-md"
+              >
                 {/* Order header */}
                 <div
-                  className="flex flex-wrap items-center gap-3 cursor-pointer"
+                  className="flex cursor-pointer flex-wrap items-center gap-3"
                   onClick={() => setExpanded(expanded === o.id ? null : o.id)}
                 >
-                  <div
-                    className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0"
-                    style={{
-                      background: "rgba(234,179,8,0.1)",
-                      border: "1px solid rgba(234,179,8,0.2)",
-                    }}
-                  >
-                    <Package size={16} color="#eab308" />
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-red-200 bg-red-50">
+                    <Package size={16} className="text-red-600" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white text-sm">
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-bold text-slate-900">
                         #{o.id} – {o.member_name}
                       </span>
                       {statusBadge(o.status)}
                     </div>
-                    <div className="text-xs text-gray-500 mt-0.5">
+
+                    <div className="mt-0.5 text-xs text-slate-500">
                       {new Date(o.created_at).toLocaleString("vi-VN")} ·{" "}
                       {o.payment_method === "cash"
                         ? "💵 Tại quầy"
@@ -120,14 +152,17 @@ export default function OrdersAdmin() {
                           ? "🚚 Ship COD"
                           : "🏦 Chuyển khoản"}
                       {o.shipping_fee > 0 &&
-                        ` (+${Number(o.shipping_fee).toLocaleString("vi-VN")}₫ ship)`}
+                        ` (+${Number(o.shipping_fee).toLocaleString(
+                          "vi-VN",
+                        )}₫ ship)`}
                     </div>
                   </div>
+
                   <div className="text-right">
-                    <div className="font-bold text-yellow-400">
+                    <div className="font-black text-red-600">
                       {Number(o.total_amount).toLocaleString("vi-VN")}₫
                     </div>
-                    <div className="text-xs text-gray-500">
+                    <div className="text-xs text-slate-500">
                       {o.items?.length} sản phẩm
                     </div>
                   </div>
@@ -135,26 +170,24 @@ export default function OrdersAdmin() {
 
                 {/* Expanded items */}
                 {expanded === o.id && (
-                  <div
-                    className="mt-3 pt-3"
-                    style={{ borderTop: "1px solid #1f1f1f" }}
-                  >
+                  <div className="mt-4 border-t border-slate-200 pt-4">
                     {o.shipping_address && (
-                      <div className="mb-3 p-3 rounded-lg bg-zinc-950/50 border border-zinc-800 text-xs text-zinc-400">
-                        <div className="font-bold text-zinc-500 uppercase text-[9px] mb-1">
+                      <div className="mb-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs text-slate-600">
+                        <div className="mb-1 text-[9px] font-black uppercase tracking-widest text-slate-400">
                           Địa chỉ giao hàng
                         </div>
                         {o.shipping_address}
                       </div>
                     )}
-                    <div className="space-y-2 mb-3">
+
+                    <div className="mb-3 space-y-2">
                       {o.items?.map((item) => (
                         <div
                           key={item.id}
-                          className="flex items-center justify-between gap-3 rounded-lg bg-zinc-950/40 border border-zinc-900 p-2 text-sm"
+                          className="flex items-center justify-between gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm"
                         >
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="h-12 w-12 aspect-square shrink-0 overflow-hidden rounded-lg border border-zinc-800 bg-zinc-900">
+                          <div className="flex min-w-0 items-center gap-3">
+                            <div className="h-12 w-12 aspect-square shrink-0 overflow-hidden rounded-lg border border-slate-200 bg-white">
                               {item.image_url ? (
                                 <img
                                   src={item.image_url}
@@ -162,27 +195,30 @@ export default function OrdersAdmin() {
                                   className="block h-full w-full object-cover object-center"
                                 />
                               ) : (
-                                <Package className="h-full w-full p-3 text-zinc-700" />
+                                <Package className="h-full w-full p-3 text-slate-400" />
                               )}
                             </div>
-                            <span className="text-gray-300 truncate">
+
+                            <span className="truncate font-semibold text-slate-700">
                               {item.product_name}
                             </span>
                           </div>
-                          <span className="text-gray-500">
+
+                          <span className="shrink-0 text-slate-500">
                             x{item.quantity} ×{" "}
                             {Number(item.unit_price).toLocaleString("vi-VN")}₫
                           </span>
                         </div>
                       ))}
                     </div>
+
                     {/* Status actions */}
-                    <div className="flex gap-2 flex-wrap">
+                    <div className="flex flex-wrap gap-2">
                       {STATUS_OPTIONS.filter((s) => s !== o.status).map((s) => (
                         <button
                           key={s}
                           onClick={() => updateStatus(o.id, s)}
-                          className="btn-ghost py-1 px-3 text-xs"
+                          className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:border-red-200 hover:bg-red-50 hover:text-red-600"
                         >
                           →{" "}
                           {
@@ -201,8 +237,9 @@ export default function OrdersAdmin() {
                 )}
               </div>
             ))}
+
         {!loading && filtered.length === 0 && (
-          <div className="text-center py-16 text-gray-600">
+          <div className="rounded-2xl border border-slate-200 bg-white py-16 text-center text-slate-500 shadow-sm">
             Không có đơn hàng
           </div>
         )}

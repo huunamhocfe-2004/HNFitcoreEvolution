@@ -8,7 +8,7 @@ export default function BlogSection({ blogRef, blogVisible, blogs }) {
     <section
       ref={blogRef}
       id="blog"
-      className="bg-[#2f2b2b] px-6 py-16 text-white lg:px-10"
+      className="bg-slate-50 px-6 py-16 text-slate-900 lg:px-10"
     >
       <div className="mx-auto max-w-7xl">
         <div
@@ -26,7 +26,7 @@ export default function BlogSection({ blogRef, blogVisible, blogs }) {
             Khám phá thêm về <span className="text-red-500">HN Fitcore</span>
           </h2>
 
-          <p className="mt-4 text-base leading-7 text-slate-300">
+          <p className="mt-4 text-base leading-7 text-slate-600">
             Những bài viết ngắn giúp khách vãng lai hiểu rõ hơn về không gian,
             lộ trình tập luyện và cách phòng gym đồng hành cùng hội viên.
           </p>
@@ -36,7 +36,7 @@ export default function BlogSection({ blogRef, blogVisible, blogs }) {
           {blogs.map((blog, index) => (
             <article
               key={blog.title}
-              className={`group flex h-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-white/5 shadow-xl shadow-black/20 backdrop-blur-sm transition-all duration-700 hover:border-red-500/40 hover:bg-white/8 ${
+              className={`group flex h-full flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-xl shadow-slate-200/80 backdrop-blur-sm transition-all duration-700 hover:border-red-500/40 hover:bg-red-50 ${
                 blogVisible
                   ? "translate-y-0 opacity-100"
                   : "translate-y-16 opacity-0"
@@ -66,11 +66,11 @@ export default function BlogSection({ blogRef, blogVisible, blogs }) {
                   </span>
                 </div>
 
-                <h3 className="mt-4 text-2xl font-extrabold leading-snug text-white">
+                <h3 className="mt-4 text-2xl font-extrabold leading-snug text-slate-900">
                   {blog.title}
                 </h3>
 
-                <p className="mt-3 line-clamp-3 text-sm leading-7 text-slate-300">
+                <p className="mt-3 line-clamp-3 text-sm leading-7 text-slate-600">
                   {blog.summary}
                 </p>
 

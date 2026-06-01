@@ -28,6 +28,13 @@
   --clr-muted: #71717a;
 }
 
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
 html,
 body,
 #root {

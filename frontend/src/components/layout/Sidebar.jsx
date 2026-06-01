@@ -15,17 +15,16 @@ import {
   ScanLine,
   LogOut,
   Dumbbell,
-  Ticket,
   School,
   MessageSquare,
   ClipboardCheck,
   Award,
   ShieldCheck,
   Settings,
-  User as UserIcon,
   Save,
   X,
   Bell,
+  Camera,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -50,7 +49,11 @@ const links = [
   { to: "/admin/orders", icon: ClipboardList, label: "Đơn Hàng" },
   { to: "/admin/trainers", icon: Award, label: "Huấn Luyện Viên" },
   { to: "/admin/feedback", icon: MessageSquare, label: "Phản Hồi" },
-  { to: "/admin/trial-requests", icon: ClipboardCheck, label: "Yêu cầu tập thử" },
+  {
+    to: "/admin/trial-requests",
+    icon: ClipboardCheck,
+    label: "Yêu cầu tập thử",
+  },
   { to: "/admin/notifications", icon: Bell, label: "Thông báo" },
   {
     to: "/admin/permissions",
@@ -142,27 +145,43 @@ export default function Sidebar() {
   useEffect(() => {
     const refreshIndicators = async () => {
       try {
-        const [orders, trials, ptRequests, notifications] = await Promise.allSettled([
-          api.get("/orders/has-new"),
-          api.get("/trial-requests/has-new"),
-          api.get("/subscriptions/pending-pt-count"),
-          api.get("/notifications/unread-count"),
-        ]);
+        const [orders, trials, ptRequests, notifications] =
+          await Promise.allSettled([
+            api.get("/orders/has-new"),
+            api.get("/trial-requests/has-new"),
+            api.get("/subscriptions/pending-pt-count"),
+            api.get("/notifications/unread-count"),
+          ]);
 
         if (orders.status === "fulfilled") {
           setHasNewOrders(orders.value.data.hasNew);
         }
         if (trials.status === "fulfilled") {
-          setPendingTrialCount(window.location.pathname.startsWith("/admin/trial-requests") ? 0 : trials.value.data.count || 0);
+          setPendingTrialCount(
+            window.location.pathname.startsWith("/admin/trial-requests")
+              ? 0
+              : trials.value.data.count || 0,
+          );
         }
         if (ptRequests.status === "fulfilled") {
-          setPendingPtCount(window.location.pathname.startsWith("/admin/subscriptions") ? 0 : ptRequests.value.data.count || 0);
+          setPendingPtCount(
+            window.location.pathname.startsWith("/admin/subscriptions")
+              ? 0
+              : ptRequests.value.data.count || 0,
+          );
         }
         if (notifications.status === "fulfilled") {
-          setUnreadNotifications(window.location.pathname.startsWith("/admin/notifications") ? 0 : notifications.value.data.count || 0);
+          setUnreadNotifications(
+            window.location.pathname.startsWith("/admin/notifications")
+              ? 0
+              : notifications.value.data.count || 0,
+          );
         }
       } catch (err) {
-        console.log("Check admin indicators error:", err.response?.data || err.message);
+        console.log(
+          "Check admin indicators error:",
+          err.response?.data || err.message,
+        );
       }
     };
 
@@ -196,38 +215,38 @@ export default function Sidebar() {
 
   return (
     <aside
-      className="w-64 shrink-0 flex flex-col"
+      className="w-64 shrink-0 flex flex-col bg-white text-slate-900 shadow-xl shadow-slate-200/60"
       style={{
-        background: "#080808",
-        borderRight: "1px solid #111",
+        borderRight: "1px solid #e5e7eb",
         height: "100vh",
         position: "sticky",
         top: 0,
       }}
     >
       {/* Logo */}
-      <div className="flex items-center gap-3 px-6 py-8 border-b border-amber-100">
+      <div className="flex items-center gap-3 px-6 py-8 border-b border-slate-200 bg-white">
         <div
-          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-yellow-900/20"
-          style={{ background: "linear-gradient(135deg,#ca8a04,#eab308)" }}
+          className="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-red-200"
+          style={{ background: "linear-gradient(135deg,#dc2626,#ef4444)" }}
         >
-          <Dumbbell size={20} color="#000" />
+          <Dumbbell size={20} color="#fff" />
         </div>
         <div>
-          <div className="font-black text-sm text-white tracking-tighter">
+          <div className="font-black text-sm text-slate-900 tracking-tighter">
             FITCORE
           </div>
-          <div className="text-[10px] font-black text-yellow-500 tracking-[0.2em] -mt-1 uppercase">
+          <div className="text-[10px] font-black text-red-600 tracking-[0.2em] -mt-1 uppercase">
             Evolution
           </div>
         </div>
       </div>
 
       {/* Nav */}
-      <nav className="flex-1 overflow-y-auto py-2 px-3 space-y-1">
-        <div className="px-3 mb-2 text-[10px] font-bold text-white uppercase tracking-widest">
+      <nav className="flex-1 overflow-y-auto py-2 px-3 space-y-1 bg-white">
+        <div className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
           Quản Trị Hệ Thống
         </div>
+
         {visibleLinks.map(({ to, icon: Icon, label, end }) => (
           <NavLink
             key={to}
@@ -235,10 +254,10 @@ export default function Sidebar() {
             end={end}
             onClick={() => handleNavClick(to)}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 group ${
+              `flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-semibold transition-all border duration-200 group ${
                 isActive
-                  ? "bg-yellow-500/10 text-yellow-500 border border-yellow-500/20 shadow-[0_0_15px_rgba(234,179,8,0.1)]"
-                  : "text-zinc-500 hover:text-white hover:bg-zinc-900"
+                  ? "bg-red-50 text-red-600 border-red-200 shadow-sm"
+                  : "border-transparent text-slate-600 hover:text-red-600 hover:bg-red-50"
               }`
             }
           >
@@ -246,6 +265,7 @@ export default function Sidebar() {
               size={17}
               className="group-hover:scale-110 transition-transform"
             />
+
             <div className="flex items-center w-full">
               <span>{label}</span>
 
@@ -267,14 +287,14 @@ export default function Sidebar() {
       </nav>
 
       {/* User info */}
-      <div className="p-4 mt-auto">
-        <div className="rounded-xl bg-zinc-900/50 border border-zinc-800/50 p-4">
+      <div className="p-4 mt-auto bg-white">
+        <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 shadow-sm">
           <div className="flex items-center gap-3 mb-4">
             <div
-              className="h-10 w-10 aspect-square shrink-0 rounded-lg flex items-center justify-center font-black text-black shadow-inner overflow-hidden"
+              className="h-10 w-10 aspect-square shrink-0 rounded-lg flex items-center justify-center font-black text-white shadow-inner overflow-hidden"
               style={{
-                background: "linear-gradient(135deg,#eab308,#ca8a04)",
-                border: "1px solid #eab308",
+                background: "linear-gradient(135deg,#ef4444,#dc2626)",
+                border: "1px solid #ef4444",
               }}
             >
               {user?.avatar && !imgError ? (
@@ -288,27 +308,30 @@ export default function Sidebar() {
                 user?.name?.[0]
               )}
             </div>
+
             <div className="min-w-0">
-              <div className="text-sm font-bold text-white truncate">
+              <div className="text-sm font-bold text-slate-900 truncate">
                 {user?.name}
               </div>
-              <div className="text-[10px] font-bold text-yellow-500/80 uppercase tracking-widest">
+              <div className="text-[10px] font-bold text-red-500 uppercase tracking-widest">
                 {user?.role}
               </div>
             </div>
+
             <button
               onClick={() => {
                 setEditForm({ name: user.name, phone: user.phone });
                 setProfileModal(true);
               }}
-              className="ml-auto p-1.5 rounded-lg text-zinc-600 hover:text-yellow-500 transition-colors"
+              className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
             >
               <Settings size={14} />
             </button>
           </div>
+
           <button
             onClick={handleLogout}
-            className="w-full flex items-center gap-2 justify-center text-xs font-bold py-2.5 rounded-lg bg-zinc-950 text-zinc-500 hover:text-yellow-500 hover:bg-yellow-500/5 border border-zinc-800 transition-all"
+            className="w-full flex items-center gap-2 justify-center text-xs font-bold py-2.5 rounded-lg bg-white text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-all"
           >
             <LogOut size={14} /> Đăng xuất
           </button>
@@ -318,58 +341,73 @@ export default function Sidebar() {
       {profileModal &&
         createPortal(
           <div
-            className="modal-overlay z-1000"
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
             onClick={(e) =>
               e.target === e.currentTarget && setProfileModal(false)
             }
           >
-            <div className="modal-box p-6 max-w-md bg-[#0a0a0a] border border-zinc-800">
-              <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-black text-white uppercase italic tracking-tight">
+            <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-2xl">
+              <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
+                <h2 className="text-lg font-black uppercase italic tracking-tight text-slate-900">
                   Cập nhật hồ sơ
                 </h2>
+
                 <button
                   onClick={() => setProfileModal(false)}
-                  className="text-zinc-500 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
                 >
                   <X size={20} />
                 </button>
               </div>
 
               <form onSubmit={handleUpdate} className="space-y-5">
-                <div className="flex flex-col items-center mb-6">
-                  <div className="h-24 w-24 aspect-square shrink-0 rounded-3xl bg-zinc-900 border border-zinc-800 overflow-hidden mb-3 flex items-center justify-center font-black text-3xl text-yellow-500">
-                    {file ? (
-                      <img
-                        src={URL.createObjectURL(file)}
-                        className="block h-full w-full object-cover object-center"
+                <div className="mb-6 flex flex-col items-center">
+                  <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                    <div className="mx-auto mb-4 flex h-24 w-24 aspect-square shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-white text-3xl font-black text-red-600 shadow-inner">
+                      {file ? (
+                        <img
+                          src={URL.createObjectURL(file)}
+                          className="block h-full w-full object-cover object-center"
+                        />
+                      ) : user?.avatar && !imgError ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="block h-full w-full object-cover object-center"
+                          onError={handleAvatarError}
+                        />
+                      ) : (
+                        user?.name?.[0]
+                      )}
+                    </div>
+
+                    <label className="flex justify-center items-center cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-3 text-center transition hover:border-red-300 hover:bg-red-50">
+                      {/* <span className="block text-[10px] font-black uppercase tracking-widest text-red-600">
+                        Thay đổi ảnh đại diện
+                      </span>
+
+                      <span className="mt-1 block text-[11px] font-medium text-slate-500">
+                        Chọn ảnh mới từ máy của bạn
+                      </span> */}
+                      <Camera />
+                      {file && (
+                        <span className="mt-2 block max-w-[220px] truncate text-[10px] font-bold text-slate-600">
+                          Đã chọn: {file.name}
+                        </span>
+                      )}
+
+                      <input
+                        type="file"
+                        hidden
+                        accept="image/*"
+                        onChange={(e) => setFile(e.target.files[0])}
                       />
-                    ) : user?.avatar && !imgError ? (
-                      <img
-                        src={user.avatar}
-                        alt={user.name}
-                        className="block h-full w-full object-cover object-center"
-                        onError={handleAvatarError}
-                      />
-                    ) : (
-                      user?.name?.[0]
-                    )}
+                    </label>
                   </div>
-                  <label className="cursor-pointer">
-                    <span className="text-[10px] font-black uppercase text-yellow-500 hover:text-yellow-400 tracking-widest">
-                      Thay đổi ảnh đại diện
-                    </span>
-                    <input
-                      type="file"
-                      hidden
-                      accept="image/*"
-                      onChange={(e) => setFile(e.target.files[0])}
-                    />
-                  </label>
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-zinc-600 uppercase mb-1.5">
+                  <label className="mb-1.5 block text-[10px] font-black uppercase text-slate-500">
                     Họ và tên
                   </label>
                   <input
@@ -378,14 +416,14 @@ export default function Sidebar() {
                     onChange={(e) =>
                       setEditForm((p) => ({ ...p, name: e.target.value }))
                     }
-                    className="input-dark text-sm w-full"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500"
                     placeholder="Nguyễn Văn A"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-black text-zinc-600 uppercase mb-1.5">
+                  <label className="mb-1.5 block text-[10px] font-black uppercase text-slate-500">
                     Số điện thoại
                   </label>
                   <input
@@ -394,7 +432,7 @@ export default function Sidebar() {
                     onChange={(e) =>
                       setEditForm((p) => ({ ...p, phone: e.target.value }))
                     }
-                    className="input-dark text-sm w-full"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500"
                     placeholder="0901xxxxxx"
                   />
                 </div>
@@ -402,7 +440,7 @@ export default function Sidebar() {
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full btn-gold py-3 flex items-center justify-center gap-2 text-xs font-black uppercase tracking-widest"
+                  className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {saving ? (
                     "ĐANG LƯU..."

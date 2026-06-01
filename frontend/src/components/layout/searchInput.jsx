@@ -35,8 +35,8 @@ const SearchInput = ({ onSearch }) => {
         placeholder="Tìm theo tên, SĐT, email..."
         className="
           w-full rounded-xl
-          bg-black text-white
-          placeholder:text-gray-200
+          bg-white text-black
+          placeholder:text-gray-900
           pl-10 pr-10 py-2.5 text-sm
           border border-gray-700
           outline-none

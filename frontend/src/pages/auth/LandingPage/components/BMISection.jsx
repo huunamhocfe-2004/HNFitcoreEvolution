@@ -32,7 +32,7 @@ export default function BMISection({
         }`}
       >
         {!bmiResult ? (
-          <div className="group relative overflow-hidden rounded-4xl border border-white/10 bg-white/5 p-3 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-sm">
+          <div className="group relative overflow-hidden rounded-4xl border border-slate-200 bg-white p-3 shadow-[0_20px_60px_rgba(0,0,0,0.35)] backdrop-blur-sm">
             {/* Glow nền */}
             <div className="absolute -left-16 top-10 h-44 w-44 rounded-full bg-red-600/20 blur-3xl" />
             <div className="absolute -right-10 bottom-0 h-56 w-56 rounded-full bg-orange-500/10 blur-3xl" />
@@ -59,12 +59,12 @@ export default function BMISection({
 
               {/* Nội dung chính */}
               <div className="absolute bottom-6 left-6 right-6">
-                <div className="max-w-md rounded-[28px] border border-white/10 bg-black/35 p-6 shadow-xl backdrop-blur-xl">
-                  <h3 className="text-3xl font-extrabold leading-tight text-white">
+                <div className="max-w-md rounded-[28px] border border-white/20 bg-white/85 p-6 shadow-xl backdrop-blur-xl">
+                  <h3 className="text-3xl font-extrabold leading-tight text-slate-900">
                     Kiểm tra nhanh thể trạng cơ bản của bạn
                   </h3>
 
-                  <p className="mt-3 text-sm leading-7 text-slate-200">
+                  <p className="mt-3 text-sm leading-7 text-slate-600">
                     Nhập chiều cao và cân nặng để xem vùng BMI hiện tại cùng gợi
                     ý tập luyện phù hợp với mục tiêu của bạn.
                   </p>
@@ -94,10 +94,10 @@ export default function BMISection({
           Tính nhanh <span className="text-red-500">chỉ số BMI</span> của bạn
         </h2>
 
-        <div className="mt-8 rounded-[28px] border border-white/10 bg-white/5 p-6 backdrop-blur-md">
+        <div className="mt-8 rounded-[28px] border border-slate-200 bg-white p-6 backdrop-blur-md">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-600">
                 <Ruler className="h-4 w-4 text-red-400" /> Chiều cao (cm)
               </span>
               <input
@@ -105,13 +105,13 @@ export default function BMISection({
                 onChange={(e) =>
                   setBmiForm((prev) => ({ ...prev, height: e.target.value }))
                 }
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none transition focus:border-red-500"
+                className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm px-4 py-3 text-slate-900 outline-none transition focus:border-red-500"
                 placeholder="Ví dụ: 170"
               />
             </label>
 
             <label className="block">
-              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-600">
                 <Scale className="h-4 w-4 text-red-400" /> Cân nặng (kg)
               </span>
               <input
@@ -119,13 +119,13 @@ export default function BMISection({
                 onChange={(e) =>
                   setBmiForm((prev) => ({ ...prev, weight: e.target.value }))
                 }
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none transition focus:border-red-500"
+                className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm px-4 py-3 text-slate-900 outline-none transition focus:border-red-500"
                 placeholder="Ví dụ: 65"
               />
             </label>
 
             <label className="block">
-              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-600">
                 <Activity className="h-4 w-4 text-red-400" /> Tuổi
               </span>
               <input
@@ -133,13 +133,13 @@ export default function BMISection({
                 onChange={(e) =>
                   setBmiForm((prev) => ({ ...prev, age: e.target.value }))
                 }
-                className="w-full rounded-2xl border border-white/10 bg-black/20 px-4 py-3 text-white outline-none transition focus:border-red-500"
+                className="w-full rounded-2xl border border-slate-200 bg-white shadow-sm px-4 py-3 text-slate-900 outline-none transition focus:border-red-500"
                 placeholder="Ví dụ: 25"
               />
             </label>
 
             <label className="block">
-              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-200">
+              <span className="mb-2 flex items-center gap-2 text-sm font-semibold text-slate-600 ">
                 <TrendingUp className="h-4 w-4 text-red-400" /> Giới tính
               </span>
               <GenderDropdown
@@ -153,15 +153,15 @@ export default function BMISection({
 
           <button
             onClick={handleCalculateBMI}
-            className="group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 py-4 text-base font-semibold text-white transition-all duration-200 hover:bg-red-500 hover:shadow-lg hover:shadow-red-600/30 active:scale-[0.98]"
+            className="text-white group mt-6 flex w-full items-center justify-center gap-2 rounded-2xl bg-red-600 px-5 py-4 text-base font-semibold transition-all duration-200 hover:bg-red-500 hover:shadow-lg hover:shadow-red-600/30 active:scale-[0.98]"
           >
-            <Calculator className="h-5 w-5 transition-transform group-hover:rotate-6" />
+            <Calculator className="h-5 w-5 transition-transform group-hover:rotate-6 text-white" />
             Tính chỉ số ngay
           </button>
 
           <div className="mt-5 grid gap-4 sm:grid-cols-3">
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-900">
                 Vùng tốt
               </p>
               <p className="mt-2 text-lg font-bold text-emerald-400">
@@ -169,8 +169,8 @@ export default function BMISection({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-900">
                 Cảnh báo
               </p>
               <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-amber-400">
@@ -178,8 +178,8 @@ export default function BMISection({
               </p>
             </div>
 
-            <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-              <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-2xl border border-slate-200 bg-white shadow-sm p-4">
+              <p className="text-xs uppercase tracking-[0.2em] text-slate-900">
                 Mục tiêu
               </p>
               <p className="mt-2 flex items-center gap-2 text-sm font-semibold text-cyan-300">

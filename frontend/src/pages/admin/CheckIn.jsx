@@ -341,30 +341,35 @@ export default function CheckIn() {
     }
 
     return (
-        <div>
-            <div className="mb-6">
-                <h1 className="text-2xl font-black text-white">Check-in Hội Viên</h1>
-                <p className="text-sm text-gray-500 mt-1">Quét QR bằng camera hoặc nhập mã thủ công</p>
+        <div className="space-y-6 text-slate-900">
+            <div>
+                <h1 className="text-2xl font-black text-slate-900">
+                    Check-in Hội Viên
+                </h1>
+                <p className="mt-1 text-sm text-slate-500">
+                    Quét QR bằng camera hoặc nhập mã thủ công
+                </p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-                <div className="card">
-                    <div className="flex items-center justify-between gap-3 mb-4">
+            <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                    <div className="mb-4 flex items-center justify-between gap-3">
                         <div className="flex items-center gap-3">
-                            <div
-                                className="w-12 h-12 rounded-xl flex items-center justify-center"
-                                style={{ background: 'rgba(234,179,8,0.1)', border: '1px solid rgba(234,179,8,0.2)' }}
-                            >
-                                <ScanLine size={22} color="#eab308" />
+                            <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-red-200 bg-red-50">
+                                <ScanLine size={22} className="text-red-600" />
                             </div>
                             <div>
-                                <h3 className="font-bold text-white">Quét QR Code</h3>
-                                <p className="text-xs text-gray-500">Camera sẽ tự check-in khi đọc được mã</p>
+                                <h3 className="font-bold text-slate-900">
+                                    Quét QR Code
+                                </h3>
+                                <p className="text-xs text-slate-500">
+                                    Camera sẽ tự check-in khi đọc được mã
+                                </p>
                             </div>
                         </div>
                     </div>
 
-                    <div className="relative aspect-video overflow-hidden rounded-xl bg-black mb-3" style={{ border: '1px solid #27272a' }}>
+                    <div className="relative mb-3 aspect-video overflow-hidden rounded-xl border border-slate-200 bg-slate-950">
                         <video
                             ref={videoRef}
                             className={`h-full w-full object-cover ${scannerActive ? 'block' : 'hidden'}`}
@@ -374,26 +379,28 @@ export default function CheckIn() {
                         <canvas ref={canvasRef} className="hidden" aria-hidden="true" />
 
                         {!scannerActive && (
-                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 text-center px-4">
-                                <Camera size={36} className="text-gray-600" />
-                                <div className="text-sm font-semibold text-gray-300">Camera chưa bật</div>
-                                <div className="text-xs text-gray-600 max-w-xs">{scannerMessage}</div>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 px-4 text-center">
+                                <Camera size={36} className="text-slate-500" />
+                                <div className="text-sm font-semibold text-slate-200">
+                                    Camera chưa bật
+                                </div>
+                                <div className="max-w-xs text-xs text-slate-400">
+                                    {scannerMessage}
+                                </div>
                             </div>
                         )}
 
                         {scannerActive && (
-                            <div className="absolute inset-0 pointer-events-none">
-                                <div className="absolute inset-6 rounded-xl" style={{ border: '2px solid rgba(234,179,8,0.8)' }} />
+                            <div className="pointer-events-none absolute inset-0">
+                                <div className="absolute inset-6 rounded-xl border-2 border-red-500" />
                                 <div
-                                    className="absolute left-8 right-8 h-0.5"
+                                    className="absolute left-8 right-8 h-0.5 bg-red-500 shadow-[0_0_18px_rgba(239,68,68,0.8)]"
                                     style={{
                                         top: cameraReady ? '50%' : '45%',
-                                        background: '#eab308',
-                                        boxShadow: '0 0 18px rgba(234,179,8,0.8)',
                                     }}
                                 />
                                 {!cameraReady && (
-                                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 text-xs font-semibold text-yellow-500">
+                                    <div className="absolute inset-0 flex items-center justify-center bg-slate-950/60 text-xs font-semibold text-red-400">
                                         Đang khởi động camera...
                                     </div>
                                 )}
@@ -401,33 +408,41 @@ export default function CheckIn() {
                         )}
                     </div>
 
-                    <div className="text-xs text-gray-500 min-h-4 mb-3">{scannerMessage}</div>
+                    <div className="mb-3 min-h-4 text-xs text-slate-500">
+                        {scannerMessage}
+                    </div>
+
                     {uploadedQrName && (
-                        <div className="text-[11px] text-gray-600 mb-3 truncate">
-                            Ảnh QR vừa chọn: <span className="font-mono text-gray-400">{uploadedQrName}</span>
+                        <div className="mb-3 truncate text-[11px] text-slate-500">
+                            Ảnh QR vừa chọn:{' '}
+                            <span className="font-mono text-slate-700">
+                                {uploadedQrName}
+                            </span>
                         </div>
                     )}
 
-                    <div className="grid grid-cols-2 gap-2 mb-3">
+                    <div className="mb-3 grid grid-cols-2 gap-2">
                         <button
                             type="button"
                             onClick={startScanner}
                             disabled={loading || scannerActive}
-                            className="btn-gold text-sm flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                            className="flex items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                         >
                             <Camera size={16} />
                             Bật camera
                         </button>
+
                         <button
                             type="button"
                             onClick={stopScanner}
                             disabled={!scannerActive}
-                            className="btn-ghost text-sm flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                            className="flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40"
                         >
                             <CameraOff size={16} />
                             Tắt
                         </button>
                     </div>
+
                     <input
                         ref={uploadInputRef}
                         type="file"
@@ -435,82 +450,97 @@ export default function CheckIn() {
                         className="hidden"
                         onChange={handleQrUpload}
                     />
+
                     <button
                         type="button"
                         onClick={() => uploadInputRef.current?.click()}
                         disabled={loading}
-                        className="btn-ghost w-full text-sm flex items-center justify-center gap-2 mb-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="mb-3 flex w-full items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         <Upload size={16} />
                         Upload ảnh QR
                     </button>
 
                     <input
-                        className="input-dark text-sm text-center mb-3"
-                        placeholder="Mã QR sau khi quét hoặc nhập nhanh..."
+                        className="mb-3 w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-center text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                        placeholder="Mã QR sau khi quét"
                         value={qrInput}
                         onChange={e => setQrInput(e.target.value)}
                         onKeyDown={e => e.key === 'Enter' && doCheckin(qrInput, 'qr')}
                     />
+
                     <button
                         type="button"
                         onClick={() => doCheckin(qrInput, 'qr')}
                         disabled={loading || !qrInput}
-                        className="btn-gold w-full text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {loading ? 'Đang xử lý...' : 'Check-in lại mã QR'}
                     </button>
                 </div>
 
-                <div className="card">
-                    <h3 className="font-bold text-white mb-3">Check-in Thủ Công</h3>
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                    <h3 className="mb-3 font-bold text-slate-900">
+                        Check-in Thủ Công
+                    </h3>
+
                     <div className="relative mb-3">
-                        <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
                         <input
-                            className="input-dark text-sm pl-9"
+                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 pl-9 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                             placeholder="Nhập mã QR hội viên... (vd: FC-000001)"
                             value={manualInput}
                             onChange={e => setManualInput(e.target.value)}
                             onKeyDown={e => e.key === 'Enter' && doCheckin(manualInput, 'manual')}
                         />
+                        <Search
+                            size={15}
+                            className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                        />
                     </div>
+
                     <button
                         type="button"
                         onClick={() => doCheckin(manualInput, 'manual')}
                         disabled={loading || !manualInput}
-                        className="btn-gold w-full text-sm disabled:opacity-60 disabled:cursor-not-allowed"
+                        className="w-full rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                     >
                         {loading ? 'Đang xử lý...' : 'Check-in thủ công'}
                     </button>
 
                     {blockedCheckin && (
-                        <div className="mt-4 p-4 rounded-xl" style={{ background: 'rgba(220,38,38,0.08)', border: '1px solid rgba(220,38,38,0.35)' }}>
+                        <div className="mt-4 rounded-xl border border-red-200 bg-red-50 p-4">
                             <div className="flex items-start gap-3">
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0" style={{ background: 'rgba(220,38,38,0.15)' }}>
-                                    <AlertTriangle size={20} className="text-red-500" />
+                                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-red-100">
+                                    <AlertTriangle size={20} className="text-red-600" />
                                 </div>
+
                                 <div className="min-w-0 flex-1">
-                                    <div className="text-[10px] font-black uppercase tracking-widest text-red-400 mb-1">
+                                    <div className="mb-1 text-[10px] font-black uppercase tracking-widest text-red-600">
                                         Check-in bị hủy
                                     </div>
-                                    <div className="font-bold text-white truncate">
+                                    <div className="truncate font-bold text-slate-900">
                                         {blockedCheckin.member?.name || 'Hội viên'}
                                     </div>
-                                    <div className="text-xs text-gray-500 font-mono">
+                                    <div className="font-mono text-xs text-slate-500">
                                         {blockedCheckin.member?.qr_code || blockedCheckin.qr_code}
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="mt-3 text-sm text-red-200">{blockedCheckin.message}</div>
+                            <div className="mt-3 text-sm text-red-700">
+                                {blockedCheckin.message}
+                            </div>
+
                             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                                 <div>
-                                    <div className="text-gray-600">Gói gần nhất</div>
-                                    <div className="text-gray-300">{blockedCheckin.member?.current_package || '-'}</div>
+                                    <div className="text-slate-500">Gói gần nhất</div>
+                                    <div className="font-semibold text-slate-700">
+                                        {blockedCheckin.member?.current_package || '-'}
+                                    </div>
                                 </div>
                                 <div>
-                                    <div className="text-gray-600">Hết hạn</div>
-                                    <div className="text-gray-300">
+                                    <div className="text-slate-500">Hết hạn</div>
+                                    <div className="font-semibold text-slate-700">
                                         {blockedCheckin.member?.package_expires
                                             ? new Date(blockedCheckin.member.package_expires).toLocaleDateString('vi-VN')
                                             : '-'}
@@ -519,7 +549,7 @@ export default function CheckIn() {
                             </div>
 
                             {blockedCheckin.renewalRequested ? (
-                                <div className="mt-3 text-xs text-yellow-500">
+                                <div className="mt-3 text-xs font-semibold text-orange-600">
                                     Đã gửi đề xuất gia hạn cho hội viên, chờ hội viên phản hồi.
                                 </div>
                             ) : (
@@ -527,7 +557,7 @@ export default function CheckIn() {
                                     type="button"
                                     onClick={requestRenewal}
                                     disabled={renewing || !blockedCheckin.member?.latest_package_id}
-                                    className="btn-gold w-full text-sm mt-3 flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                                    className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                                 >
                                     <RefreshCw size={16} />
                                     {renewing ? 'Đang gửi...' : 'Gửi đề xuất gia hạn'}
@@ -537,130 +567,180 @@ export default function CheckIn() {
                     )}
 
                     {lastCheckin && (
-                        <div className="mt-4 p-4 rounded-xl" style={{ background: 'rgba(234,179,8,0.08)', border: '1px solid rgba(234,179,8,0.25)' }}>
-                            <div className="text-[10px] font-black uppercase tracking-widest text-yellow-500 mb-2">Vừa check-in</div>
+                        <div className="mt-4 rounded-xl border border-emerald-200 bg-emerald-50 p-4">
+                            <div className="mb-2 text-[10px] font-black uppercase tracking-widest text-emerald-600">
+                                Vừa check-in
+                            </div>
+
                             <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-lg flex items-center justify-center text-sm font-black text-black"
-                                    style={{ background: 'linear-gradient(135deg,#eab308,#ca8a04)' }}>
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-emerald-600 text-sm font-black text-white">
                                     {lastCheckin.name?.[0] || '?'}
                                 </div>
+
                                 <div className="min-w-0">
-                                    <div className="font-bold text-white truncate">{lastCheckin.name || 'Hội viên'}</div>
-                                    <div className="text-xs text-gray-500 font-mono">{lastCheckin.qr_code}</div>
+                                    <div className="truncate font-bold text-slate-900">
+                                        {lastCheckin.name || 'Hội viên'}
+                                    </div>
+                                    <div className="font-mono text-xs text-slate-500">
+                                        {lastCheckin.qr_code}
+                                    </div>
                                 </div>
                             </div>
+
                             <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
                                 <div>
-                                    <div className="text-gray-600">Thời gian</div>
-                                    <div className="text-gray-300">{formatDateTime(lastCheckin.checked_in_at)}</div>
+                                    <div className="text-slate-500">Thời gian</div>
+                                    <div className="font-semibold text-slate-700">
+                                        {formatDateTime(lastCheckin.checked_in_at)}
+                                    </div>
                                 </div>
                                 <div>
-                                    <div className="text-gray-600">Phương thức</div>
-                                    <div className="text-gray-300 uppercase">{lastCheckin.method}</div>
+                                    <div className="text-slate-500">Phương thức</div>
+                                    <div className="font-semibold uppercase text-slate-700">
+                                        {lastCheckin.method}
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     )}
-
-                    <div className="mt-4 p-3 rounded-lg text-center" style={{ background: '#0f0f0f', border: '1px solid #1a1a1a' }}>
-                        <div className="text-xs text-gray-600 mb-2">Ví dụ QR hội viên:</div>
-                        <div className="inline-block p-2 rounded-lg bg-white">
-                            <QRCodeSVG value="FC-000001" size={80} />
-                        </div>
-                        <div className="text-xs text-gray-500 mt-2 font-mono">FC-000001</div>
-                        <button
-                            type="button"
-                            onClick={() => doCheckin('FC-000001', 'manual')}
-                            className="btn-ghost text-xs mt-2 py-1 px-3"
-                        >
-                            Dùng mã demo này
-                        </button>
-                    </div>
                 </div>
             </div>
 
-            <div className="card mb-6">
-                <div className="flex items-center justify-between gap-3 mb-4">
-                    <h3 className="font-bold text-white">Lịch sử check-in</h3>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                <div className="mb-4 flex items-center justify-between gap-3">
+                    <h3 className="font-bold text-slate-900">
+                        Lịch sử check-in
+                    </h3>
+
                     <button
                         type="button"
                         onClick={loadCheckinHistory}
-                        className="btn-ghost text-xs py-1.5 px-3"
+                        className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-bold text-slate-600 transition hover:bg-red-50 hover:text-red-600"
                     >
                         Làm mới
                     </button>
                 </div>
+
                 <div className="space-y-2">
                     {checkinHistory.length === 0 ? (
-                        <div className="text-sm text-gray-500 py-6 text-center rounded-lg" style={{ background: '#0f0f0f', border: '1px solid #1a1a1a' }}>
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 py-6 text-center text-sm text-slate-500">
                             Chưa có lịch sử check-in
                         </div>
                     ) : checkinHistory.map(item => (
                         <div
                             key={item.id}
-                            className="flex items-center gap-3 p-3 rounded-lg"
-                            style={{ background: '#0f0f0f', border: '1px solid #1a1a1a' }}
+                            className="flex items-center gap-3 rounded-xl border border-slate-200 bg-slate-50 p-3"
                         >
-                            <div
-                                className="w-9 h-9 rounded-lg flex items-center justify-center text-xs font-black shrink-0"
-                                style={{ background: '#1f1f1f', color: '#eab308' }}
-                            >
+                            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-red-50 text-xs font-black text-red-600">
                                 {item.name?.[0] || '?'}
                             </div>
+
                             <div className="min-w-0 flex-1">
-                                <div className="text-sm font-semibold text-white truncate">{item.name || 'Hội viên'}</div>
-                                <div className="text-xs text-gray-500">
+                                <div className="truncate text-sm font-semibold text-slate-900">
+                                    {item.name || 'Hội viên'}
+                                </div>
+                                <div className="text-xs text-slate-500">
                                     <span className="font-mono">{item.qr_code}</span>
                                     {item.phone ? <span> · {item.phone}</span> : null}
                                 </div>
                             </div>
-                            <div className="text-right shrink-0">
-                                <div className="text-xs text-gray-300">{formatDateTime(item.checked_in_at)}</div>
-                                <div className="text-[10px] text-gray-600 uppercase">{item.method}</div>
+
+                            <div className="shrink-0 text-right">
+                                <div className="text-xs text-slate-700">
+                                    {formatDateTime(item.checked_in_at)}
+                                </div>
+                                <div className="text-[10px] uppercase text-slate-400">
+                                    {item.method}
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            <div className="card">
-                <h3 className="font-bold text-white mb-4">Hội viên đang hoạt động</h3>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                <h3 className="mb-4 font-bold text-slate-900">
+                    Hội viên đang hoạt động
+                </h3>
+
                 <div className="overflow-x-auto">
-                    <table className="tbl">
-                        <thead><tr><th>Hội viên</th><th>QR Code</th><th>Gói tập</th><th>Hết hạn</th><th></th></tr></thead>
-                        <tbody>
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-slate-200 bg-slate-50">
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Hội viên
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    QR Code
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Gói tập
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Hết hạn
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500"></th>
+                            </tr>
+                        </thead>
+
+                        <tbody className="divide-y divide-slate-100">
                             {activeMembers.map(m => (
-                                <tr key={m.id}>
-                                    <td>
+                                <tr
+                                    key={m.id}
+                                    className="transition-colors hover:bg-red-50/40"
+                                >
+                                    <td className="px-6 py-4">
                                         <div className="flex items-center gap-2">
-                                            <div
-                                                className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                                                style={{ background: '#1f1f1f', color: '#eab308' }}
-                                            >
+                                            <div className="flex h-7 w-7 items-center justify-center rounded-full bg-red-50 text-xs font-bold text-red-600">
                                                 {m.name?.[0]}
                                             </div>
                                             <div>
-                                                <div className="text-sm font-medium text-white">{m.name}</div>
-                                                <div className="text-xs text-gray-500">{m.phone}</div>
+                                                <div className="text-sm font-semibold text-slate-900">
+                                                    {m.name}
+                                                </div>
+                                                <div className="text-xs text-slate-500">
+                                                    {m.phone}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span className="font-mono text-xs text-gray-400">{m.qr_code}</span></td>
-                                    <td className="text-xs text-gray-400">{m.current_package || '-'}</td>
-                                    <td className="text-xs text-gray-400">
+
+                                    <td className="px-6 py-4">
+                                        <span className="font-mono text-xs text-slate-500">
+                                            {m.qr_code}
+                                        </span>
+                                    </td>
+
+                                    <td className="px-6 py-4 text-xs text-slate-600">
+                                        {m.current_package || '-'}
+                                    </td>
+
+                                    <td className="px-6 py-4 text-xs text-slate-600">
                                         {m.package_expires ? new Date(m.package_expires).toLocaleDateString('vi-VN') : '-'}
                                     </td>
-                                    <td>
+
+                                    <td className="px-6 py-4">
                                         <button
                                             type="button"
                                             onClick={() => doCheckin(m.qr_code, 'manual')}
-                                            className="btn-gold py-1 px-3 text-xs"
+                                            className="rounded-xl bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-md shadow-red-200 transition hover:bg-red-500"
                                         >
                                             Check-in
                                         </button>
                                     </td>
                                 </tr>
                             ))}
+
+                            {activeMembers.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={5}
+                                        className="px-6 py-12 text-center text-slate-500"
+                                    >
+                                        Chưa có hội viên đang hoạt động
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

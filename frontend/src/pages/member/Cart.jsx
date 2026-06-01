@@ -21,7 +21,7 @@ export default function Cart() {
   const { cart, removeFromCart, updateQuantity, clearCart, totalAmount } =
     useCart();
   const [submitting, setSubmitting] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("cash"); // 'cash' or 'cod'
+  const [paymentMethod, setPaymentMethod] = useState("cash");
   const [shippingAddress, setShippingAddress] = useState("");
 
   const checkout = async () => {
@@ -36,7 +36,6 @@ export default function Cart() {
       const fee = paymentMethod === "cod" ? 30000 : 0;
 
       await api.post("/orders", {
-        // ❌ bỏ member_id
         items: cart.map((item) => ({
           product_id: item.id,
           quantity: item.quantity,
@@ -58,19 +57,22 @@ export default function Cart() {
 
   if (cart.length === 0) {
     return (
-      <div className="h-[70vh] flex flex-col items-center justify-center text-zinc-600">
-        <div className="w-20 h-20 rounded-3xl bg-zinc-900 flex items-center justify-center mb-6 border border-zinc-800">
-          <ShoppingCart size={40} className="text-zinc-700" />
+      <div className="flex h-[70vh] flex-col items-center justify-center text-center text-slate-500">
+        <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-3xl border border-slate-200 bg-slate-50 shadow-sm">
+          <ShoppingCart size={40} className="text-slate-300" />
         </div>
-        <h2 className="text-xl font-bold text-white mb-2">
+
+        <h2 className="mb-2 text-xl font-black text-slate-900">
           Giỏ hàng đang trống
         </h2>
-        <p className="text-sm mb-8 text-zinc-500">
+
+        <p className="mb-8 text-sm text-slate-500">
           Hãy dạo quanh cửa hàng và chọn những món đồ bạn cần.
         </p>
+
         <button
           onClick={() => navigate("/member/store")}
-          className="btn-gold px-8 py-3 flex items-center gap-2"
+          className="flex items-center gap-2 rounded-xl bg-red-600 px-8 py-3 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
         >
           <ArrowLeft size={18} /> QUAY LẠI CỬA HÀNG
         </button>
@@ -79,76 +81,82 @@ export default function Cart() {
   }
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="flex items-center gap-4 mb-8">
+    <div className="mx-auto max-w-6xl text-slate-900">
+      <div className="mb-8 flex items-center gap-4">
         <button
           onClick={() => navigate("/member/store")}
-          className="p-2 rounded-xl bg-zinc-900 border border-zinc-800 text-zinc-400 hover:text-white transition-colors"
+          className="rounded-xl border border-slate-200 bg-white p-2 text-slate-500 shadow-sm transition-colors hover:bg-red-50 hover:text-red-600"
         >
           <ArrowLeft size={20} />
         </button>
+
         <div>
-          <h1 className="text-2xl font-bold text-white uppercase tracking-tight">
+          <h1 className="text-2xl font-black uppercase tracking-tight text-slate-900">
             Giỏ Hàng Của Bạn
           </h1>
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-slate-500">
             {cart.length} mặt hàng đã chọn
           </p>
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-4">
+      <div className="grid gap-8 lg:grid-cols-3">
+        <div className="space-y-4 lg:col-span-2">
           {cart.map((item) => (
             <div
               key={item.id}
-              className="card p-4 flex flex-col sm:flex-row items-center gap-6 bg-zinc-900/40 border-zinc-800 hover:border-zinc-700 transition-colors"
+              className="flex flex-col items-center gap-6 rounded-3xl border border-slate-200 bg-white p-4 shadow-sm shadow-slate-200/70 transition-colors hover:border-red-200 hover:shadow-lg sm:flex-row"
             >
-              <div className="w-24 h-24 rounded-2xl bg-zinc-950 flex items-center justify-center border border-zinc-800 overflow-hidden shrink-0">
+              <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
                 {item.image_url ? (
                   <img
                     src={item.image_url}
                     alt={item.name}
-                    className="w-full h-full object-cover"
+                    className="h-full w-full object-cover"
                   />
                 ) : (
-                  <Package size={32} className="text-zinc-800" />
+                  <Package size={32} className="text-slate-300" />
                 )}
               </div>
 
-              <div className="flex-1 min-w-0 text-center sm:text-left">
-                <h3 className="text-lg font-bold text-white mb-1">
+              <div className="min-w-0 flex-1 text-center sm:text-left">
+                <h3 className="mb-1 text-lg font-black text-slate-900">
                   {item.name}
                 </h3>
-                <div className="flex items-center justify-center sm:justify-start gap-2 text-zinc-500 text-sm mb-2">
+
+                <div className="mb-2 flex items-center justify-center gap-2 text-sm text-slate-500 sm:justify-start">
                   <Tag size={14} /> {item.category}
                 </div>
-                <div className="text-yellow-500 font-bold text-lg">
+
+                <div className="text-lg font-black text-red-600">
                   {Number(item.price).toLocaleString("vi-VN")}₫
                 </div>
               </div>
 
-              <div className="flex flex-col items-center sm:items-end gap-3 shrink-0">
-                <div className="flex items-center p-1 rounded-xl bg-zinc-950 border border-zinc-800">
+              <div className="flex shrink-0 flex-col items-center gap-3 sm:items-end">
+                <div className="flex items-center rounded-xl border border-slate-200 bg-slate-50 p-1">
                   <button
                     onClick={() => updateQuantity(item.id, -1)}
-                    className="w-10 h-10 rounded-lg text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors flex items-center justify-center"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-white hover:text-red-600"
                   >
                     <Minus size={16} />
                   </button>
-                  <span className="w-10 text-center text-sm font-bold text-white">
+
+                  <span className="w-10 text-center text-sm font-black text-slate-900">
                     {item.quantity}
                   </span>
+
                   <button
                     onClick={() => updateQuantity(item.id, 1)}
-                    className="w-10 h-10 rounded-lg text-zinc-400 hover:bg-zinc-900 hover:text-white transition-colors flex items-center justify-center"
+                    className="flex h-10 w-10 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-white hover:text-red-600"
                   >
                     <Plus size={16} />
                   </button>
                 </div>
+
                 <button
                   onClick={() => removeFromCart(item.id)}
-                  className="text-[10px] font-black uppercase tracking-widest text-zinc-600 hover:text-red-500 transition-colors flex items-center gap-1.5"
+                  className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 transition-colors hover:text-red-600"
                 >
                   <Trash2 size={13} /> Xóa khỏi giỏ
                 </button>
@@ -158,23 +166,29 @@ export default function Cart() {
         </div>
 
         <div className="lg:col-span-1">
-          <div className="card bg-zinc-900 border-zinc-800 p-6 sticky top-6">
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest mb-6 border-b border-zinc-800 pb-4">
+          <div className="sticky top-6 rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+            <h2 className="mb-6 border-b border-slate-200 pb-4 text-sm font-black uppercase tracking-widest text-slate-900">
               Tóm tắt đơn hàng
             </h2>
 
-            <div className="space-y-4 mb-6">
-              <div className="flex justify-between text-sm text-zinc-400 font-medium">
+            <div className="mb-6 space-y-4">
+              <div className="flex justify-between text-sm font-medium text-slate-500">
                 <span>Tạm tính</span>
                 <span>{totalAmount.toLocaleString("vi-VN")}₫</span>
               </div>
-              <div className="flex justify-between text-sm text-zinc-400 font-medium">
+
+              <div className="flex justify-between text-sm font-medium text-slate-500">
                 <span>Phí giao hàng</span>
                 <span>{paymentMethod === "cod" ? "30.000₫" : "Miễn phí"}</span>
               </div>
-              <div className="h-px bg-zinc-800 my-2" />
-              <div className="flex justify-between items-end">
-                <span className="text-3xl font-bold text-yellow-500">
+
+              <div className="my-2 h-px bg-slate-200" />
+
+              <div>
+                <div className="mb-1 text-[10px] font-black uppercase tracking-widest text-slate-400">
+                  Tổng thanh toán
+                </div>
+                <span className="text-3xl font-black text-red-600">
                   {(
                     totalAmount + (paymentMethod === "cod" ? 30000 : 0)
                   ).toLocaleString("vi-VN")}
@@ -183,46 +197,66 @@ export default function Cart() {
               </div>
             </div>
 
-            <div className="space-y-3 mb-6">
-              <h3 className="text-[10px] font-black text-zinc-500 uppercase tracking-widest px-1">
+            <div className="mb-6 space-y-3">
+              <h3 className="px-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
                 Phương thức thanh toán
               </h3>
+
               <div className="grid grid-cols-1 gap-2">
                 <button
                   onClick={() => setPaymentMethod("cash")}
-                  className={`p-3 rounded-xl border text-left transition-all ${paymentMethod === "cash" ? "bg-yellow-500/10 border-yellow-500/50" : "bg-zinc-950/50 border-zinc-800 hover:border-zinc-700"}`}
+                  className={`rounded-xl border p-3 text-left transition-all ${
+                    paymentMethod === "cash"
+                      ? "border-red-200 bg-red-50"
+                      : "border-slate-200 bg-slate-50 hover:border-red-200 hover:bg-red-50/60"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`p-1.5 rounded-lg ${paymentMethod === "cash" ? "bg-yellow-500 text-black" : "bg-zinc-800 text-zinc-500"}`}
+                      className={`rounded-lg p-1.5 ${
+                        paymentMethod === "cash"
+                          ? "bg-red-600 text-white"
+                          : "bg-white text-slate-500"
+                      }`}
                     >
                       <CreditCard size={14} />
                     </div>
+
                     <div>
-                      <div className="text-xs font-bold text-white">
+                      <div className="text-xs font-black text-slate-900">
                         Tại quầy
                       </div>
-                      <div className="text-[9px] text-zinc-500">
+                      <div className="text-[9px] text-slate-500">
                         Miễn phí ship
                       </div>
                     </div>
                   </div>
                 </button>
+
                 <button
                   onClick={() => setPaymentMethod("cod")}
-                  className={`p-3 rounded-xl border text-left transition-all ${paymentMethod === "cod" ? "bg-yellow-500/10 border-yellow-500/50" : "bg-zinc-950/50 border-zinc-800 hover:border-zinc-700"}`}
+                  className={`rounded-xl border p-3 text-left transition-all ${
+                    paymentMethod === "cod"
+                      ? "border-red-200 bg-red-50"
+                      : "border-slate-200 bg-slate-50 hover:border-red-200 hover:bg-red-50/60"
+                  }`}
                 >
                   <div className="flex items-center gap-3">
                     <div
-                      className={`p-1.5 rounded-lg ${paymentMethod === "cod" ? "bg-yellow-500 text-black" : "bg-zinc-800 text-zinc-500"}`}
+                      className={`rounded-lg p-1.5 ${
+                        paymentMethod === "cod"
+                          ? "bg-red-600 text-white"
+                          : "bg-white text-slate-500"
+                      }`}
                     >
                       <Package size={14} />
                     </div>
+
                     <div>
-                      <div className="text-xs font-bold text-white">
+                      <div className="text-xs font-black text-slate-900">
                         Ship COD
                       </div>
-                      <div className="text-[9px] text-zinc-500">
+                      <div className="text-[9px] text-slate-500">
                         +30.000₫ phí ship
                       </div>
                     </div>
@@ -233,14 +267,15 @@ export default function Cart() {
 
             {paymentMethod === "cod" && (
               <div className="mb-6 animate-in fade-in slide-in-from-top-2 duration-300">
-                <label className="block text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-2 px-1">
+                <label className="mb-2 block px-1 text-[10px] font-black uppercase tracking-widest text-slate-500">
                   Địa chỉ giao hàng
                 </label>
+
                 <textarea
                   value={shippingAddress}
                   onChange={(e) => setShippingAddress(e.target.value)}
                   placeholder="Nhập địa chỉ nhận hàng..."
-                  className="input-dark text-xs min-h-20 resize-none"
+                  className="min-h-20 w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-xs text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                 />
               </div>
             )}
@@ -248,7 +283,7 @@ export default function Cart() {
             <button
               onClick={checkout}
               disabled={submitting}
-              className="btn-gold w-full py-4 text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-yellow-500/10"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 py-4 text-sm font-black uppercase tracking-widest text-white shadow-xl shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {submitting ? (
                 "ĐANG XỬ LÝ..."
@@ -262,7 +297,7 @@ export default function Cart() {
             <div className="mt-4 text-center">
               <button
                 onClick={clearCart}
-                className="text-[10px] font-black text-zinc-600 hover:text-zinc-400 uppercase tracking-widest"
+                className="text-[10px] font-black uppercase tracking-widest text-slate-400 transition-colors hover:text-red-600"
               >
                 Làm trống giỏ hàng
               </button>

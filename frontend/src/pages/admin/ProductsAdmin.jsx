@@ -1,12 +1,27 @@
 import { useEffect, useState } from 'react'
 import api from '../../api/axios'
+import { createPortal } from 'react-dom'
 import toast from 'react-hot-toast'
-import {createPortal} from 'react-dom'
 import { Plus, Edit2, Trash2, Tag } from 'lucide-react'
 
-const EMPTY = { name: '', description: '', category: 'supplement', price: '', stock_qty: '', image_url: '' }
+const EMPTY = {
+    name: '',
+    description: '',
+    category: 'supplement',
+    price: '',
+    stock_qty: '',
+    image_url: ''
+}
+
 const CATS = ['supplement', 'equipment', 'accessory', 'apparel', 'other']
-const CAT_LABELS = { supplement: 'Thực phẩm', equipment: 'Dụng cụ', accessory: 'Phụ kiện', apparel: 'Trang phục', other: 'Khác' }
+
+const CAT_LABELS = {
+    supplement: 'Thực phẩm',
+    equipment: 'Dụng cụ',
+    accessory: 'Phụ kiện',
+    apparel: 'Trang phục',
+    other: 'Khác'
+}
 
 export default function ProductsAdmin() {
     const [products, setProducts] = useState([])
@@ -19,29 +34,50 @@ export default function ProductsAdmin() {
     const load = () => {
         api.get(`/products${cat ? `?category=${cat}` : ''}`).then(r => setProducts(r.data))
     }
-    useEffect(() => { load() }, [cat])
+
+    useEffect(() => {
+        load()
+    }, [cat])
 
     const handle = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
-    const openEdit = p => { setEditing(p.id); setForm({ ...p }); setModal(true) }
-    const openAdd = () => { setEditing(null); setForm(EMPTY); setModal(true) }
+
+    const openEdit = p => {
+        setEditing(p.id)
+        setForm({ ...p })
+        setModal(true)
+    }
+
+    const openAdd = () => {
+        setEditing(null)
+        setForm(EMPTY)
+        setModal(true)
+    }
 
     const submit = async e => {
         e.preventDefault()
         const data = new FormData()
+
         Object.keys(form).forEach(k => {
             if (form[k] !== null && form[k] !== undefined) data.append(k, form[k])
         })
+
         if (file) data.append('image', file)
 
         try {
             if (editing) {
-                await api.put(`/products/${editing}`, data, { headers: { 'Content-Type': 'multipart/form-data' } })
+                await api.put(`/products/${editing}`, data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                })
                 toast.success('Đã cập nhật sản phẩm')
             } else {
-                await api.post('/products', data, { headers: { 'Content-Type': 'multipart/form-data' } })
+                await api.post('/products', data, {
+                    headers: { 'Content-Type': 'multipart/form-data' }
+                })
                 toast.success('Đã thêm sản phẩm')
             }
-            setModal(false); setFile(null); load()
+            setModal(false)
+            setFile(null)
+            load()
         } catch (err) {
             toast.error(err.response?.data?.message || 'Có lỗi xảy ra')
         }
@@ -49,125 +85,341 @@ export default function ProductsAdmin() {
 
     const del = async id => {
         if (!confirm('Ẩn sản phẩm này?')) return
-        await api.delete(`/products/${id}`); toast.success('Đã ẩn'); load()
+        await api.delete(`/products/${id}`)
+        toast.success('Đã ẩn')
+        load()
+    }
+
+    const categoryBadge = category => {
+        const styles = {
+            supplement: 'border border-emerald-200 bg-emerald-50 text-emerald-600',
+            equipment: 'border border-blue-200 bg-blue-50 text-blue-600',
+            accessory: 'border border-orange-200 bg-orange-50 text-orange-600',
+            apparel: 'border border-purple-200 bg-purple-50 text-purple-600',
+            other: 'border border-slate-200 bg-slate-50 text-slate-600',
+        }
+
+        return styles[category] || styles.other
     }
 
     return (
-        <div>
-            <div className="flex items-center justify-between mb-6">
+        <div className="space-y-6 text-slate-900">
+            <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-white">Quản lý Sản Phẩm</h1>
-                    <p className="text-sm text-gray-500 mt-1">{products.length} sản phẩm</p>
+                    <h1 className="text-2xl font-black text-slate-900">
+                        Quản lý Sản Phẩm
+                    </h1>
+                    <p className="mt-1 text-sm text-slate-500">
+                        {products.length} sản phẩm
+                    </p>
                 </div>
-                <button onClick={openAdd} className="btn-gold flex items-center gap-2 text-sm"><Plus size={15} /> Thêm sản phẩm</button>
+
+                <button
+                    onClick={openAdd}
+                    className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
+                >
+                    <Plus size={15} /> Thêm sản phẩm
+                </button>
             </div>
 
             {/* Category filter */}
-            <div className="flex gap-2 mb-4 flex-wrap">
+            <div className="flex flex-wrap gap-2">
                 {['', ...CATS].map(c => (
-                    <button key={c} onClick={() => setCat(c)}
-                        className={`px-3 py-1 rounded-full text-xs font-medium border transition-colors ${cat === c ? 'border-yellow-500 text-yellow-400 bg-yellow-500/10' : 'border-gray-700 text-gray-400 hover:border-gray-500'
-                            }`}>
+                    <button
+                        key={c}
+                        onClick={() => setCat(c)}
+                        className={`rounded-full border px-4 py-1.5 text-xs font-bold transition-colors ${
+                            cat === c
+                                ? 'border-red-200 bg-red-50 text-red-600'
+                                : 'border-slate-200 bg-white text-slate-500 hover:border-red-200 hover:bg-red-50 hover:text-red-600'
+                        }`}
+                    >
                         {c ? CAT_LABELS[c] : 'Tất cả'}
                     </button>
                 ))}
             </div>
 
-            <div className="card w-full p-0 overflow-hidden">
+            <div className="w-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70">
                 <div className="max-h-[70vh] overflow-x-auto">
-                    <table className="tbl w-full">
-                        <thead><tr><th>Sản phẩm</th><th>Danh mục</th><th>Giá</th><th>Tồn kho</th><th>Thao tác</th></tr></thead>
-                        <tbody>
+                    <table className="w-full text-left">
+                        <thead>
+                            <tr className="border-b border-slate-200 bg-slate-50">
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Sản phẩm
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Danh mục
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Giá
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Tồn kho
+                                </th>
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Thao tác
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody className="divide-y divide-slate-100">
                             {products.map(p => (
-                                <tr key={p.id}>
-                                    <td>
+                                <tr
+                                    key={p.id}
+                                    className="transition-colors hover:bg-red-50/40"
+                                >
+                                    <td className="px-6 py-4">
                                         <div className="flex items-center gap-3">
-                                            <div className="w-12 h-12 rounded-xl overflow-hidden flex items-center justify-center shrink-0 bg-zinc-900 border border-zinc-800">
+                                            <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-50">
                                                 {p.image_url ? (
-                                                    <img src={p.image_url} alt={p.name} className="w-full h-full object-cover" onError={(e) => {
-                                                        e.target.onerror = null;
-                                                        e.target.style.display = 'none';
-                                                    }} />
+                                                    <img
+                                                        src={p.image_url}
+                                                        alt={p.name}
+                                                        className="h-full w-full object-cover"
+                                                        onError={(e) => {
+                                                            e.target.onerror = null
+                                                            e.target.style.display = 'none'
+                                                        }}
+                                                    />
                                                 ) : (
-                                                    <Tag size={18} color="#eab308" />
+                                                    <Tag size={18} className="text-red-600" />
                                                 )}
                                             </div>
+
                                             <div>
-                                                <div className="font-medium text-white text-sm">{p.name}</div>
-                                                <div className="text-xs text-gray-600 line-clamp-1">{p.description}</div>
+                                                <div className="text-sm font-bold text-slate-900">
+                                                    {p.name}
+                                                </div>
+                                                <div className="line-clamp-1 text-xs text-slate-500">
+                                                    {p.description}
+                                                </div>
                                             </div>
                                         </div>
                                     </td>
-                                    <td><span className="badge badge-blue text-xs">{CAT_LABELS[p.category]}</span></td>
-                                    <td className="text-yellow-400 font-semibold">{Number(p.price).toLocaleString('vi-VN')}₫</td>
-                                    <td>
-                                        <span className={`font-medium ${p.stock_qty < 5 ? 'text-red-400' : 'text-green-400'}`}>
+
+                                    <td className="px-6 py-4">
+                                        <span
+                                            className={`rounded-full px-3 py-1 text-xs font-bold ${categoryBadge(
+                                                p.category,
+                                            )}`}
+                                        >
+                                            {CAT_LABELS[p.category]}
+                                        </span>
+                                    </td>
+
+                                    <td className="px-6 py-4 font-bold text-red-600">
+                                        {Number(p.price).toLocaleString('vi-VN')}₫
+                                    </td>
+
+                                    <td className="px-6 py-4">
+                                        <span
+                                            className={`font-bold ${
+                                                p.stock_qty < 5
+                                                    ? 'text-red-600'
+                                                    : 'text-emerald-600'
+                                            }`}
+                                        >
                                             {p.stock_qty} cái
                                         </span>
                                     </td>
-                                    <td>
+
+                                    <td className="px-6 py-4">
                                         <div className="flex gap-1">
-                                            <button onClick={() => openEdit(p)} className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white"><Edit2 size={14} /></button>
-                                            <button onClick={() => del(p.id)} className="p-1.5 rounded hover:bg-red-900/20 text-gray-400 hover:text-red-400"><Trash2 size={14} /></button>
+                                            <button
+                                                onClick={() => openEdit(p)}
+                                                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                                                title="Sửa sản phẩm"
+                                            >
+                                                <Edit2 size={14} />
+                                            </button>
+
+                                            <button
+                                                onClick={() => del(p.id)}
+                                                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
+                                                title="Ẩn sản phẩm"
+                                            >
+                                                <Trash2 size={14} />
+                                            </button>
                                         </div>
                                     </td>
                                 </tr>
                             ))}
+
+                            {products.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={5}
+                                        className="px-6 py-12 text-center text-slate-500"
+                                    >
+                                        Chưa có sản phẩm
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {modal && createPortal(
-                <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
-                    <div className="modal-box p-6">
-                        <h2 className="text-lg font-bold text-white mb-4">{editing ? 'Cập nhật sản phẩm' : 'Thêm sản phẩm mới'}</h2>
-                        <form onSubmit={submit} className="space-y-3">
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">Tên sản phẩm *</label>
-                                <input name="name" required className="input-dark text-sm" value={form.name} onChange={handle} />
+            {modal &&
+                createPortal(
+                    <div
+                        className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+                        onClick={e =>
+                            e.target === e.currentTarget && setModal(false)
+                        }
+                    >
+                        <div className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-2xl">
+                            <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
+                                <div>
+                                    <h2 className="text-xl font-black uppercase tracking-tight text-slate-900">
+                                        {editing
+                                            ? 'Cập nhật sản phẩm'
+                                            : 'Thêm sản phẩm mới'}
+                                    </h2>
+                                    <p className="mt-1 text-sm text-slate-500">
+                                        {editing
+                                            ? 'Chỉnh sửa thông tin sản phẩm trong cửa hàng'
+                                            : 'Nhập thông tin để tạo sản phẩm mới'}
+                                    </p>
+                                </div>
+
+                                <button
+                                    type="button"
+                                    onClick={() => setModal(false)}
+                                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
+                                >
+                                    ×
+                                </button>
                             </div>
-                            <div>
-                                <label className="block text-xs text-gray-500 mb-1">Mô tả</label>
-                                <textarea name="description" className="input-dark text-sm" rows={2} value={form.description} onChange={handle} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
+
+                            <form onSubmit={submit} className="space-y-4">
                                 <div>
-                                    <label className="block text-xs text-gray-500 mb-1">Danh mục</label>
-                                    <select name="category" className="input-dark text-sm" value={form.category} onChange={handle}>
-                                        {CATS.map(c => <option key={c} value={c}>{CAT_LABELS[c]}</option>)}
-                                    </select>
+                                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                        Tên sản phẩm *
+                                    </label>
+                                    <input
+                                        name="name"
+                                        required
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                        placeholder="Nhập tên sản phẩm"
+                                        value={form.name}
+                                        onChange={handle}
+                                    />
                                 </div>
+
                                 <div>
-                                    <label className="block text-xs text-gray-500 mb-1">Giá (₫) *</label>
-                                    <input name="price" type="number" required min={0} className="input-dark text-sm" value={form.price} onChange={handle} />
+                                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                        Mô tả
+                                    </label>
+                                    <textarea
+                                        name="description"
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                        rows={3}
+                                        placeholder="Nhập mô tả sản phẩm"
+                                        value={form.description}
+                                        onChange={handle}
+                                    />
                                 </div>
-                                <div>
-                                    <label className="block text-xs text-gray-500 mb-1">Tồn kho</label>
-                                    <input name="stock_qty" type="number" min={0} className="input-dark text-sm" value={form.stock_qty} onChange={handle} />
-                                </div>
-                                <div>
-                                    <label className="block text-xs text-zinc-500 mb-1">Ảnh sản phẩm</label>
-                                    <div className="flex flex-col gap-2">
-                                        <input type="file" accept="image/*" className="text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
-                                            onChange={e => setFile(e.target.files[0])}
+
+                                <div className="grid grid-cols-2 gap-3">
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                            Danh mục
+                                        </label>
+                                        <select
+                                            name="category"
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                            value={form.category}
+                                            onChange={handle}
+                                        >
+                                            {CATS.map(c => (
+                                                <option key={c} value={c}>
+                                                    {CAT_LABELS[c]}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                            Giá ₫ *
+                                        </label>
+                                        <input
+                                            name="price"
+                                            type="number"
+                                            required
+                                            min={0}
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                            placeholder="0"
+                                            value={form.price}
+                                            onChange={handle}
                                         />
-                                        {form.image_url && !file && (
-                                            <div className="text-[10px] text-zinc-500 truncate">Hiện tại: {form.image_url}</div>
-                                        )}
-                                        {file && <div className="text-[10px] text-yellow-500 font-bold">Sẽ thay thế bằng: {file.name}</div>}
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                            Tồn kho
+                                        </label>
+                                        <input
+                                            name="stock_qty"
+                                            type="number"
+                                            min={0}
+                                            className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                            placeholder="0"
+                                            value={form.stock_qty}
+                                            onChange={handle}
+                                        />
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
+                                            Ảnh sản phẩm
+                                        </label>
+
+                                        <div className="flex flex-col gap-2 rounded-xl border border-dashed border-slate-300 bg-slate-50 p-3">
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                className="cursor-pointer text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-red-50 file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-red-600 hover:file:bg-red-100"
+                                                onChange={e => setFile(e.target.files[0])}
+                                            />
+
+                                            {form.image_url && !file && (
+                                                <div className="truncate text-[10px] text-slate-500">
+                                                    Hiện tại: {form.image_url}
+                                                </div>
+                                            )}
+
+                                            {file && (
+                                                <div className="text-[10px] font-bold text-red-600">
+                                                    Sẽ thay thế bằng: {file.name}
+                                                </div>
+                                            )}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div className="flex gap-3 justify-end pt-2">
-                                <button type="button" onClick={() => setModal(false)} className="btn-ghost text-sm">Hủy</button>
-                                <button type="submit" className="btn-gold text-sm">{editing ? 'Lưu thay đổi' : 'Thêm sản phẩm'}</button>
-                            </div>
-                        </form>
-                    </div>
-                </div>,
-                document.body
-            )}
+
+                                <div className="flex justify-end gap-3 border-t border-slate-200 pt-5">
+                                    <button
+                                        type="button"
+                                        onClick={() => setModal(false)}
+                                        className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                                    >
+                                        Hủy
+                                    </button>
+
+                                    <button
+                                        type="submit"
+                                        className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
+                                    >
+                                        {editing ? 'Lưu thay đổi' : 'Thêm sản phẩm'}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>,
+                    document.body
+                )}
         </div>
     )
 }

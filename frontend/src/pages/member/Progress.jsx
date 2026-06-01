@@ -59,144 +59,305 @@ export default function Progress() {
             {
                 label: 'Cân nặng (kg)',
                 data: metrics.map(m => m.weight),
-                borderColor: '#eab308',
-                backgroundColor: 'rgba(234,179,8,0.1)',
+                borderColor: '#dc2626',
+                backgroundColor: 'rgba(220,38,38,0.08)',
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: '#eab308',
+                pointBackgroundColor: '#dc2626',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
             },
             {
                 label: 'BMI',
                 data: metrics.map(m => m.bmi),
-                borderColor: '#dc2626',
-                backgroundColor: 'rgba(220,38,38,0.05)',
+                borderColor: '#2563eb',
+                backgroundColor: 'rgba(37,99,235,0.06)',
                 fill: true,
                 tension: 0.4,
-                pointBackgroundColor: '#dc2626',
+                pointBackgroundColor: '#2563eb',
+                pointBorderColor: '#ffffff',
+                pointBorderWidth: 2,
             }
         ]
     }
 
     const chartOptions = {
         responsive: true,
+        maintainAspectRatio: false,
         plugins: {
-            legend: { position: 'bottom', labels: { color: '#888', font: { size: 11 } } },
-            tooltip: { mode: 'index', intersect: false },
+            legend: {
+                position: 'bottom',
+                labels: {
+                    color: '#475569',
+                    font: { size: 11, weight: 'bold' },
+                    usePointStyle: true,
+                    padding: 20,
+                }
+            },
+            tooltip: {
+                mode: 'index',
+                intersect: false,
+                backgroundColor: '#ffffff',
+                titleColor: '#0f172a',
+                bodyColor: '#334155',
+                borderColor: '#e5e7eb',
+                borderWidth: 1,
+            },
         },
         scales: {
-            x: { grid: { color: '#1f1f1f' }, ticks: { color: '#666', font: { size: 10 } } },
-            y: { grid: { color: '#1f1f1f' }, ticks: { color: '#666', font: { size: 10 } } },
+            x: {
+                grid: { color: '#e5e7eb' },
+                ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } }
+            },
+            y: {
+                grid: { color: '#e5e7eb' },
+                ticks: { color: '#64748b', font: { size: 10, weight: 'bold' } }
+            },
         }
     }
 
-    if (loading) return <div className="skeleton h-96 rounded-2xl" />
+    if (loading) {
+        return (
+            <div className="h-96 animate-pulse rounded-2xl bg-slate-200" />
+        )
+    }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 text-slate-900">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-bold text-white">Theo Dõi Tiến Độ</h1>
-                    <p className="text-sm text-gray-500 mt-1">Sự thay đổi cơ thể qua thời gian</p>
+                    <h1 className="text-2xl font-black text-slate-900">
+                        Theo Dõi Tiến Độ
+                    </h1>
+                    <p className="mt-1 text-sm text-slate-500">
+                        Sự thay đổi cơ thể qua thời gian
+                    </p>
                 </div>
-                <button onClick={() => setModal(true)} className="btn-gold flex items-center gap-2 text-sm">
+
+                <button
+                    onClick={() => setModal(true)}
+                    className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
+                >
                     <Plus size={16} /> Cập nhật chỉ số
                 </button>
             </div>
 
             {/* Chart Section */}
-            <div className="card bg-zinc-900/50 border-zinc-800 p-6">
-                <div className="flex items-center gap-2 mb-6">
-                    <Activity size={18} className="text-yellow-500" />
-                    <h3 className="font-bold text-white text-sm uppercase tracking-wider">Biểu đồ biến thiên</h3>
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                <div className="mb-6 flex items-center gap-2">
+                    <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-200 bg-red-50">
+                        <Activity size={18} className="text-red-600" />
+                    </div>
+                    <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
+                        Biểu đồ biến thiên
+                    </h3>
                 </div>
+
                 {metrics.length > 0 ? (
-                    <div className="h-64 sm:h-80 w-full">
+                    <div className="h-64 w-full sm:h-80">
                         <Line data={chartData} options={chartOptions} />
                     </div>
                 ) : (
-                    <div className="py-20 text-center text-zinc-500 border border-dashed border-zinc-800 rounded-xl">
+                    <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 py-20 text-center text-slate-500">
                         Chưa có dữ liệu biểu đồ. Hãy cập nhật chỉ số đầu tiên của bạn!
                     </div>
                 )}
             </div>
 
-            <div className="grid md:grid-cols-2 gap-6">
+            <div className="grid gap-6 md:grid-cols-2">
                 {/* Latest Metrics */}
-                <div className="card bg-zinc-900/50 border-zinc-800 p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                        <Scale size={18} className="text-yellow-500" />
-                        <h3 className="font-bold text-white text-sm uppercase tracking-wider">Chỉ số mới nhất</h3>
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                    <div className="mb-4 flex items-center gap-2">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-red-200 bg-red-50">
+                            <Scale size={18} className="text-red-600" />
+                        </div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
+                            Chỉ số mới nhất
+                        </h3>
                     </div>
+
                     {metrics.length > 0 ? (
                         <div className="grid grid-cols-2 gap-4">
                             {[
-                                { label: 'Cân nặng', value: metrics[metrics.length - 1].weight + ' kg', color: 'text-yellow-500' },
-                                { label: 'BMI', value: metrics[metrics.length - 1].bmi, color: 'text-red-500' },
-                                { label: '% Mỡ', value: (metrics[metrics.length - 1].body_fat || '—') + ' %', color: 'text-zinc-300' },
-                                { label: '% Cơ', value: (metrics[metrics.length - 1].muscle_mass || '—') + ' %', color: 'text-zinc-300' },
+                                {
+                                    label: 'Cân nặng',
+                                    value: metrics[metrics.length - 1].weight + ' kg',
+                                    color: 'text-red-600',
+                                },
+                                {
+                                    label: 'BMI',
+                                    value: metrics[metrics.length - 1].bmi,
+                                    color: 'text-blue-600',
+                                },
+                                {
+                                    label: '% Mỡ',
+                                    value: (metrics[metrics.length - 1].body_fat || '—') + ' %',
+                                    color: 'text-slate-900',
+                                },
+                                {
+                                    label: '% Cơ',
+                                    value: (metrics[metrics.length - 1].muscle_mass || '—') + ' %',
+                                    color: 'text-slate-900',
+                                },
                             ].map(item => (
-                                <div key={item.label} className="p-4 rounded-xl bg-zinc-950/50 border border-zinc-800">
-                                    <div className="text-[10px] text-zinc-500 uppercase font-bold mb-1">{item.label}</div>
-                                    <div className={`text-xl font-bold ${item.color}`}>{item.value}</div>
+                                <div
+                                    key={item.label}
+                                    className="rounded-xl border border-slate-200 bg-slate-50 p-4"
+                                >
+                                    <div className="mb-1 text-[10px] font-bold uppercase text-slate-500">
+                                        {item.label}
+                                    </div>
+                                    <div className={`text-xl font-black ${item.color}`}>
+                                        {item.value}
+                                    </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-zinc-500 text-sm py-8 text-center">Chưa có chỉ số cơ thể.</div>
+                        <div className="py-8 text-center text-sm text-slate-500">
+                            Chưa có chỉ số cơ thể.
+                        </div>
                     )}
                 </div>
 
                 {/* Workout/Update History */}
-                <div className="card bg-zinc-900/50 border-zinc-800 p-6">
-                    <div className="flex items-center gap-2 mb-4">
-                        <History size={18} className="text-zinc-500" />
-                        <h3 className="font-bold text-white text-sm uppercase tracking-wider">Lịch sử cập nhật</h3>
+                <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-200/70">
+                    <div className="mb-4 flex items-center gap-2">
+                        <div className="flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50">
+                            <History size={18} className="text-slate-500" />
+                        </div>
+                        <h3 className="text-sm font-black uppercase tracking-wider text-slate-900">
+                            Lịch sử cập nhật
+                        </h3>
                     </div>
-                    <div className="space-y-3 max-h-60 overflow-y-auto pr-2 custom-scrollbar">
+
+                    <div className="max-h-60 space-y-3 overflow-y-auto pr-2">
                         {metrics.slice().reverse().map((m, i) => (
-                            <div key={i} className="flex items-center justify-between p-3 rounded-lg bg-zinc-950/30 border border-zinc-800/50">
+                            <div
+                                key={i}
+                                className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-3"
+                            >
                                 <div>
-                                    <div className="text-xs text-zinc-500 font-medium">
+                                    <div className="text-xs font-medium text-slate-500">
                                         {new Date(m.recorded_at).toLocaleDateString('vi-VN')}
                                     </div>
-                                    <div className="text-sm font-bold text-zinc-300">
+                                    <div className="text-sm font-bold text-slate-900">
                                         {m.weight} kg · BMI {m.bmi}
                                     </div>
                                 </div>
-                                {m.body_fat && <div className="text-xs text-zinc-600">Fat: {m.body_fat}%</div>}
+
+                                {m.body_fat && (
+                                    <div className="text-xs font-semibold text-slate-500">
+                                        Fat: {m.body_fat}%
+                                    </div>
+                                )}
                             </div>
                         ))}
-                        {metrics.length === 0 && <div className="text-zinc-500 text-sm py-4">Chưa có lịch sử.</div>}
+
+                        {metrics.length === 0 && (
+                            <div className="py-4 text-sm text-slate-500">
+                                Chưa có lịch sử.
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
 
             {modal && createPortal(
-                <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setModal(false)}>
-                    <div className="modal-box max-w-sm p-6">
-                        <h2 className="text-lg font-bold text-white mb-4">Cập Nhật Chỉ Số Cơ Thể</h2>
+                <div
+                    className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+                    onClick={e => e.target === e.currentTarget && setModal(false)}
+                >
+                    <div className="w-full max-w-sm rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-2xl">
+                        <div className="mb-6 border-b border-slate-200 pb-4">
+                            <h2 className="text-lg font-black uppercase tracking-tight text-slate-900">
+                                Cập Nhật Chỉ Số Cơ Thể
+                            </h2>
+                            <p className="mt-1 text-sm text-slate-500">
+                                Nhập chỉ số mới để theo dõi tiến độ luyện tập
+                            </p>
+                        </div>
+
                         <form onSubmit={submit} className="space-y-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1.5">Cân nặng (kg) *</label>
-                                    <input name="weight" type="number" step="0.1" required className="input-dark text-sm" placeholder="70.5" value={form.weight} onChange={handle} />
+                                    <label className="mb-1.5 block text-[10px] font-black uppercase text-slate-500">
+                                        Cân nặng kg *
+                                    </label>
+                                    <input
+                                        name="weight"
+                                        type="number"
+                                        step="0.1"
+                                        required
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                        placeholder="70.5"
+                                        value={form.weight}
+                                        onChange={handle}
+                                    />
                                 </div>
+
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1.5">Chiều cao (cm) *</label>
-                                    <input name="height" type="number" step="0.1" required className="input-dark text-sm" placeholder="175" value={form.height} onChange={handle} />
+                                    <label className="mb-1.5 block text-[10px] font-black uppercase text-slate-500">
+                                        Chiều cao cm *
+                                    </label>
+                                    <input
+                                        name="height"
+                                        type="number"
+                                        step="0.1"
+                                        required
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                        placeholder="175"
+                                        value={form.height}
+                                        onChange={handle}
+                                    />
                                 </div>
+
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1.5">% Mỡ cơ thể</label>
-                                    <input name="body_fat" type="number" step="0.1" className="input-dark text-sm" placeholder="15" value={form.body_fat} onChange={handle} />
+                                    <label className="mb-1.5 block text-[10px] font-black uppercase text-slate-500">
+                                        % Mỡ cơ thể
+                                    </label>
+                                    <input
+                                        name="body_fat"
+                                        type="number"
+                                        step="0.1"
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                        placeholder="15"
+                                        value={form.body_fat}
+                                        onChange={handle}
+                                    />
                                 </div>
+
                                 <div>
-                                    <label className="block text-[10px] font-bold text-zinc-500 uppercase mb-1.5">% Khối lượng cơ</label>
-                                    <input name="muscle_mass" type="number" step="0.1" className="input-dark text-sm" placeholder="45" value={form.muscle_mass} onChange={handle} />
+                                    <label className="mb-1.5 block text-[10px] font-black uppercase text-slate-500">
+                                        % Khối lượng cơ
+                                    </label>
+                                    <input
+                                        name="muscle_mass"
+                                        type="number"
+                                        step="0.1"
+                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                                        placeholder="45"
+                                        value={form.muscle_mass}
+                                        onChange={handle}
+                                    />
                                 </div>
                             </div>
-                            <div className="flex gap-3 pt-2">
-                                <button type="button" onClick={() => setModal(false)} className="btn-ghost flex-1 text-sm py-2">Hủy</button>
-                                <button type="submit" className="btn-gold flex-1 text-sm py-2">Lưu chỉ số</button>
+
+                            <div className="flex gap-3 border-t border-slate-200 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => setModal(false)}
+                                    className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
+                                >
+                                    Hủy
+                                </button>
+
+                                <button
+                                    type="submit"
+                                    className="flex-1 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
+                                >
+                                    Lưu chỉ số
+                                </button>
                             </div>
                         </form>
                     </div>

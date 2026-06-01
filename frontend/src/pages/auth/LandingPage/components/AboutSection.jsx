@@ -8,7 +8,7 @@ export default function AboutSection({
     <section
       ref={getReadyRef}
       id="about"
-      className="w-full bg-[#4a4545] py-16"
+      className="w-full bg-white py-16"
     >
       <div className="mx-auto grid max-w-7xl items-center gap-10 px-6 lg:grid-cols-[420px_1fr] lg:px-10">
         <div
@@ -35,7 +35,7 @@ export default function AboutSection({
             <span className="text-red-500">thể chất</span> của bạn!
           </h2>
 
-          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-200">
+          <p className="mt-5 max-w-2xl text-base leading-7 text-slate-600">
             Tối ưu vận hành phòng gym với dashboard quản lý tập trung. Theo dõi
             hội viên, check-in, lớp học, doanh thu và hiệu suất huấn luyện viên
             trên một giao diện duy nhất.
@@ -43,7 +43,7 @@ export default function AboutSection({
 
           <button
             onClick={() => navigate("/login")}
-            className={`mt-8 cursor-pointer rounded-xl bg-red-600 px-8 py-3 font-semibold transition-all duration-700 ease-out delay-800 hover:bg-red-500 ${
+            className={`mt-8 cursor-pointer text-white rounded-xl bg-red-600 px-8 py-3 font-semibold transition-all duration-700 ease-out delay-800 hover:bg-red-500 ${
               getReadyVisible
                 ? "translate-y-0 opacity-100"
                 : "translate-y-30 opacity-0"

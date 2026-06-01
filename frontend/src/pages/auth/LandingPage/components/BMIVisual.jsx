@@ -30,7 +30,7 @@ export default function BMIVisual({ result, bmiResultRef, bmiResultVisible }) {
     <div className="animate-[fadeIn_0.7s_ease-out] space-y-5">
       <div
         ref={bmiResultRef}
-        className={`rounded-[26px] border border-white/10 bg-white/5 p-5 backdrop-blur-md transition-all duration-700 ${bmiResultVisible ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"}`}
+        className={`rounded-[26px] border border-slate-200 bg-white shadow-sm p-5 backdrop-blur-md transition-all duration-700 ${bmiResultVisible ? "translate-y-0 opacity-100" : "-translate-y-10 opacity-0"}`}
       >
         <div className="flex items-center justify-between gap-4">
           <div>
@@ -61,8 +61,8 @@ export default function BMIVisual({ result, bmiResultRef, bmiResultVisible }) {
           </div>
         </div>
 
-        <p className="mt-4 text-sm leading-7 text-slate-300">{result.detail}</p>
-        <p className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-slate-200">
+        <p className="mt-4 text-sm leading-7 text-slate-600">{result.detail}</p>
+        <p className="mt-3 rounded-2xl border border-white/10 bg-black/20 p-4 text-sm text-slate-700">
           {result.advice}
         </p>
       </div>
@@ -102,7 +102,7 @@ export default function BMIVisual({ result, bmiResultRef, bmiResultVisible }) {
           className={`transition-all duration-700 ${bmiResultVisible ? "translate-x-0 opacity-100" : "translate-x-10 opacity-0"}`}
         >
           <div className="rounded-[26px] border border-white/10 bg-white/5 p-4 backdrop-blur-md">
-            <p className="mb-3 text-sm font-bold text-white">
+            <p className="mb-3 text-sm font-bold text-slate-900">
               Thang phân loại BMI
             </p>
             <div className="h-56 min-h-56 w-full">
@@ -118,7 +118,7 @@ export default function BMIVisual({ result, bmiResultRef, bmiResultVisible }) {
                     <YAxis
                       dataKey="name"
                       type="category"
-                      stroke="#cbd5e1"
+                      stroke="#000"
                       width={78}
                     />
                     <Tooltip />
@@ -142,20 +142,20 @@ export default function BMIVisual({ result, bmiResultRef, bmiResultVisible }) {
       <div
         className={`grid gap-4 sm:grid-cols-2 transition-all duration-700 ${bmiResultVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"}`}
       >
-        <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+        <div className="rounded-2xl border border-white/10 bg-black/10 not-last:p-4">
+          <p className="text-xs uppercase tracking-[0.2em] text-black font-bold">
             Cân nặng lý tưởng
           </p>
-          <p className="mt-2 text-lg font-bold text-white">
+          <p className="mt-2 text-lg text-black">
             {result.healthyMin.toFixed(1)}kg - {result.healthyMax.toFixed(1)}kg
           </p>
         </div>
 
         <div className="rounded-2xl border border-white/10 bg-black/20 p-4">
-          <p className="text-xs uppercase tracking-[0.2em] text-slate-400">
+          <p className="text-xs uppercase tracking-[0.2em] text-black font-bold">
             Gợi ý
           </p>
-          <p className="mt-2 text-sm leading-6 text-slate-200">
+          <p className="mt-2 text-sm leading-6 text-black">
             Tập 3-5 buổi/tuần, kết hợp dinh dưỡng phù hợp với mục tiêu tăng cơ
             hoặc giảm mỡ.
           </p>

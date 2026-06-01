@@ -5,7 +5,13 @@ import { useCart } from '../../context/CartContext'
 import toast from 'react-hot-toast'
 import { ShoppingCart, Package } from 'lucide-react'
 
-const CAT_LABELS = { supplement: 'Thực phẩm', equipment: 'Dụng cụ', accessory: 'Phụ kiện', apparel: 'Trang phục', other: 'Khác' }
+const CAT_LABELS = {
+    supplement: 'Thực phẩm',
+    equipment: 'Dụng cụ',
+    accessory: 'Phụ kiện',
+    apparel: 'Trang phục',
+    other: 'Khác'
+}
 
 export default function Store() {
     const navigate = useNavigate()
@@ -14,57 +20,88 @@ export default function Store() {
     const [loading, setLoading] = useState(true)
 
     useEffect(() => {
-        api.get('/products').then(r => setProducts(r.data)).finally(() => setLoading(false))
+        api.get('/products')
+            .then(r => setProducts(r.data))
+            .finally(() => setLoading(false))
     }, [])
 
-    if (loading) return <div className="skeleton h-96 rounded-2xl" />
+    if (loading) {
+        return (
+            <div className="h-96 animate-pulse rounded-2xl bg-slate-200" />
+        )
+    }
 
     return (
-        <div className="relative">
-            <div className="flex items-center justify-between mb-8">
+        <div className="relative text-slate-900">
+            <div className="mb-8 flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-white">Cửa Hàng HN Fitcore</h1>
-                    <p className="text-sm text-gray-500 mt-1">Sản phẩm bổ sung & Phụ kiện chính hãng</p>
+                    <h1 className="text-2xl font-black text-slate-900">
+                        Cửa Hàng HN Fitcore
+                    </h1>
+                    <p className="mt-1 text-sm text-slate-500">
+                        Sản phẩm bổ sung & Phụ kiện chính hãng
+                    </p>
                 </div>
+
                 <button
                     onClick={() => navigate('/member/cart')}
-                    className="relative p-3 rounded-xl bg-zinc-900 border border-zinc-800 text-yellow-500 hover:bg-zinc-800 transition-colors"
+                    className="relative rounded-xl border border-slate-200 bg-white p-3 text-red-600 shadow-sm shadow-slate-200/70 transition-colors hover:bg-red-50 hover:text-red-500"
                 >
                     <ShoppingCart size={24} />
+
                     {totalCount > 0 && (
-                        <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full">
+                        <span className="absolute -right-1 -top-1 flex h-5 w-5 items-center justify-center rounded-full bg-red-600 text-[10px] font-bold text-white">
                             {totalCount}
                         </span>
                     )}
                 </button>
             </div>
 
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 {products.map(p => (
-                    <div key={p.id} className="card bg-zinc-900/50 border-zinc-800 p-0 overflow-hidden flex flex-col group hover:border-yellow-500/30 transition-all">
-                        <div className="aspect-square bg-zinc-950 flex items-center justify-center overflow-hidden relative">
+                    <div
+                        key={p.id}
+                        className="group flex flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70 transition-all duration-300 hover:-translate-y-1 hover:border-red-200 hover:shadow-lg"
+                    >
+                        <div className="relative flex aspect-square items-center justify-center overflow-hidden bg-slate-50">
                             {p.image_url ? (
-                                <img src={p.image_url} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <img
+                                    src={p.image_url}
+                                    alt={p.name}
+                                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                                />
                             ) : (
-                                <Package size={48} className="text-zinc-800" />
+                                <Package size={48} className="text-slate-300" />
                             )}
-                            <div className="absolute top-3 left-3 bg-zinc-900/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-zinc-400 border border-zinc-800">
+
+                            <div className="absolute left-3 top-3 rounded-full border border-slate-200 bg-white/90 px-3 py-1 text-[10px] font-bold text-slate-600 shadow-sm backdrop-blur-md">
                                 {CAT_LABELS[p.category]}
                             </div>
                         </div>
 
-                        <div className="p-5 flex-1 flex flex-col">
-                            <h3 className="font-bold text-white text-lg mb-1 leading-tight">{p.name}</h3>
-                            <p className="text-xs text-zinc-500 line-clamp-2 mb-4">{p.description}</p>
+                        <div className="flex flex-1 flex-col p-5">
+                            <h3 className="mb-1 text-lg font-black leading-tight text-slate-900">
+                                {p.name}
+                            </h3>
+
+                            <p className="mb-4 line-clamp-2 text-xs text-slate-500">
+                                {p.description}
+                            </p>
 
                             <div className="mt-auto flex items-end justify-between">
                                 <div>
-                                    <div className="text-xs text-zinc-600 font-bold uppercase tracking-tight">Giá bán</div>
-                                    <div className="text-xl font-bold text-yellow-500">{Number(p.price).toLocaleString('vi-VN')}₫</div>
+                                    <div className="text-xs font-bold uppercase tracking-tight text-slate-400">
+                                        Giá bán
+                                    </div>
+                                    <div className="text-xl font-black text-red-600">
+                                        {Number(p.price).toLocaleString('vi-VN')}₫
+                                    </div>
                                 </div>
+
                                 <button
                                     onClick={() => addToCart(p)}
-                                    className="btn-gold !p-2 rounded-lg"
+                                    className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-600 text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
+                                    title="Thêm vào giỏ hàng"
                                 >
                                     <ShoppingCart size={20} />
                                 </button>
@@ -72,8 +109,16 @@ export default function Store() {
                         </div>
                     </div>
                 ))}
-            </div>
 
+                {products.length === 0 && (
+                    <div className="col-span-full rounded-3xl border border-dashed border-slate-300 bg-white p-12 text-center shadow-sm shadow-slate-200/70">
+                        <Package size={44} className="mx-auto mb-4 text-slate-300" />
+                        <p className="text-sm text-slate-500">
+                            Chưa có sản phẩm nào trong cửa hàng.
+                        </p>
+                    </div>
+                )}
+            </div>
         </div>
     )
 }

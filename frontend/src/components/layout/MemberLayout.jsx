@@ -44,8 +44,15 @@ export default function MemberLayout() {
 
   useEffect(() => {
     const refreshUnread = () => {
-      api.get("/notifications/unread-count")
-        .then((res) => setUnreadNotifications(window.location.pathname.startsWith("/member/notifications") ? 0 : res.data.count || 0))
+      api
+        .get("/notifications/unread-count")
+        .then((res) =>
+          setUnreadNotifications(
+            window.location.pathname.startsWith("/member/notifications")
+              ? 0
+              : res.data.count || 0,
+          ),
+        )
         .catch(() => setUnreadNotifications(0));
     };
 
@@ -93,40 +100,40 @@ export default function MemberLayout() {
   };
 
   return (
-    <div className="flex min-h-screen" style={{ background: "#0a0a0a" }}>
+    <div className="flex min-h-screen bg-slate-50 text-slate-900">
       {/* Mobile top nav / Desktop sidebar */}
       {/* Desktop sidebar */}
       <aside
-        className="hidden md:flex w-64 flex-col shrink-0"
+        className="hidden md:flex w-64 flex-col shrink-0 bg-white shadow-xl shadow-slate-200/60"
         style={{
-          background: "#080808",
-          borderRight: "1px solid #111",
+          borderRight: "1px solid #e5e7eb",
           height: "100vh",
           position: "sticky",
           top: 0,
         }}
       >
-        <div className="flex items-center gap-3 px-6 py-8">
+        <div className="flex items-center gap-3 px-6 py-8 border-b border-slate-200 bg-white">
           <div
-            className="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-red-900/20"
-            style={{ background: "linear-gradient(135deg,#b91c1c,#ef4444)" }}
+            className="w-10 h-10 rounded-lg flex items-center justify-center shadow-lg shadow-red-200"
+            style={{ background: "linear-gradient(135deg,#dc2626,#ef4444)" }}
           >
             <Dumbbell size={20} color="#fff" />
           </div>
           <div>
-            <div className="font-black text-sm text-white tracking-tighter">
+            <div className="font-black text-sm text-slate-900 tracking-tighter">
               FITCORE
             </div>
-            <div className="text-[10px] font-black text-red-500 tracking-[0.2em] -mt-1">
+            <div className="text-[10px] font-black text-red-600 tracking-[0.2em] -mt-1">
               EVOLUTION
             </div>
           </div>
         </div>
 
-        <nav className="flex-1 py-4 px-3 space-y-1">
-          <div className="px-3 mb-2 text-[10px] font-bold text-zinc-600 uppercase tracking-widest">
+        <nav className="flex-1 py-4 px-3 space-y-1 bg-white">
+          <div className="px-3 mb-2 text-[10px] font-bold text-slate-500 uppercase tracking-widest">
             Menu Chính
           </div>
+
           {links.map(({ to, icon: Icon, label, end }) => (
             <NavLink
               key={to}
@@ -134,10 +141,10 @@ export default function MemberLayout() {
               end={end}
               onClick={() => handleNavClick(to)}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all duration-200 group ${
+                `flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-semibold transition-all border duration-200 group ${
                   isActive
-                    ? "bg-red-500/10 text-red-500 border border-red-500/20 shadow-[0_0_15px_rgba(239,68,68,0.1)]"
-                    : "text-zinc-500 hover:text-white hover:bg-zinc-900"
+                    ? "bg-red-50 text-red-600 border-red-200 shadow-sm"
+                    : "border-transparent text-slate-600 hover:text-red-600 hover:bg-red-50"
                 }`
               }
             >
@@ -155,14 +162,14 @@ export default function MemberLayout() {
           ))}
         </nav>
 
-        <div className="p-4 mt-auto">
-          <div className="rounded-xl bg-zinc-900/50 border border-zinc-800/50 p-4">
+        <div className="p-4 mt-auto bg-white">
+          <div className="rounded-xl bg-slate-50 border border-slate-200 p-4 shadow-sm">
             <div className="flex items-center gap-3 mb-4">
               <div
                 className="h-10 w-10 aspect-square shrink-0 rounded-lg flex items-center justify-center font-black text-white shadow-inner overflow-hidden"
                 style={{
-                  background: "linear-gradient(135deg,#1f1f1f,#0a0a0a)",
-                  border: "1px solid #333",
+                  background: "linear-gradient(135deg,#ef4444,#dc2626)",
+                  border: "1px solid #ef4444",
                 }}
               >
                 {user?.avatar ? (
@@ -174,27 +181,30 @@ export default function MemberLayout() {
                   user?.name?.[0]
                 )}
               </div>
+
               <div className="min-w-0">
-                <div className="text-sm font-bold text-white truncate">
+                <div className="text-sm font-bold text-slate-900 truncate">
                   {user?.name}
                 </div>
-                <div className="text-[10px] font-bold text-red-500/80 uppercase">
+                <div className="text-[10px] font-bold text-red-500 uppercase">
                   Hội viên Pro
                 </div>
               </div>
+
               <button
                 onClick={() => {
                   setEditForm({ name: user.name, phone: user.phone });
                   setProfileModal(true);
                 }}
-                className="ml-auto p-1.5 rounded-lg text-zinc-600 hover:text-red-500 transition-colors"
+                className="ml-auto p-1.5 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors"
               >
                 <Settings size={14} />
               </button>
             </div>
+
             <button
               onClick={handleLogout}
-              className="w-full flex items-center gap-2 justify-center text-xs font-bold py-2.5 rounded-lg bg-zinc-950 text-zinc-500 hover:text-red-500 hover:bg-red-500/5 border border-zinc-800 transition-all"
+              className="w-full flex items-center gap-2 justify-center text-xs font-bold py-2.5 rounded-lg bg-white text-slate-600 hover:text-red-600 hover:bg-red-50 border border-slate-200 transition-all"
             >
               <LogOut size={14} /> Đăng xuất
             </button>
@@ -204,8 +214,8 @@ export default function MemberLayout() {
 
       {/* Mobile bottom nav */}
       <div
-        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex"
-        style={{ background: "#111", borderTop: "1px solid #1f1f1f" }}
+        className="md:hidden fixed bottom-0 left-0 right-0 z-50 flex bg-white shadow-[0_-8px_30px_rgba(15,23,42,0.08)]"
+        style={{ borderTop: "1px solid #e5e7eb" }}
       >
         {links.map(({ to, icon: Icon, label, end }) => (
           <NavLink
@@ -215,7 +225,7 @@ export default function MemberLayout() {
             onClick={() => handleNavClick(to)}
             className={({ isActive }) =>
               `flex-1 flex flex-col items-center py-2 text-xs gap-1 transition-colors ${
-                isActive ? "text-yellow-400" : "text-gray-500"
+                isActive ? "text-red-600" : "text-slate-500 hover:text-red-600"
               }`
             }
           >
@@ -228,15 +238,16 @@ export default function MemberLayout() {
             </span>
           </NavLink>
         ))}
+
         <button
           onClick={handleLogout}
-          className="flex-1 flex flex-col items-center py-2 text-xs gap-1 text-gray-500"
+          className="flex-1 flex flex-col items-center py-2 text-xs gap-1 text-slate-500 hover:text-red-600 transition-colors"
         >
           <LogOut size={18} /> <span>Thoát</span>
         </button>
       </div>
 
-      <main className="flex-1 overflow-y-auto pb-20 md:pb-0">
+      <main className="flex-1 overflow-y-auto bg-slate-50 pb-20 md:pb-0">
         <div className="p-4 md:p-6 fade-in">
           <Outlet />
         </div>
@@ -244,83 +255,69 @@ export default function MemberLayout() {
 
       {profileModal && (
         <div
-          className="modal-overlay z-1000"
+          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
           onClick={(e) =>
             e.target === e.currentTarget && setProfileModal(false)
           }
         >
-          <div className="modal-box p-6 max-w-md bg-[#0a0a0a] border border-zinc-800">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-lg font-black text-white uppercase italic tracking-tight">
+          <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-2xl">
+            <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
+              <h2 className="text-lg font-black uppercase italic tracking-tight text-slate-900">
                 Cập nhật hồ sơ
               </h2>
+
               <button
                 onClick={() => setProfileModal(false)}
-                className="text-zinc-500 hover:text-white"
+                className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <form
-              onSubmit={handleUpdate}
-              className="max-w-md mx-auto space-y-8 p-1"
-            >
+            <form onSubmit={handleUpdate} className="space-y-5">
               {/* Avatar Section */}
               <div className="flex flex-col items-center">
-                {/* Chỉ kích hoạt hover trong phạm vi box ảnh */}
-                <div className="relative group w-28 h-28">
-                  {/* Glow Effect phía sau - Tone Đỏ */}
-                  <div className="absolute -inset-1 bg-linear-to-tr from-red-600 to-red-400 rounded-[2.2rem] blur opacity-0 group-hover:opacity-40 transition duration-500"></div>
-
-                  {/* Image Container - Hình Squircle */}
-                  <div className="relative w-full h-full rounded-4xl bg-zinc-900 border border-zinc-800/50 overflow-hidden flex items-center justify-center shadow-2xl cursor-pointer">
+                <div className="rounded-3xl border border-slate-200 bg-slate-50 p-4 shadow-sm">
+                  <div className="mx-auto mb-4 flex h-28 w-28 items-center justify-center overflow-hidden rounded-3xl border border-slate-200 bg-white text-4xl font-black text-red-600 shadow-inner">
                     {file ? (
                       <img
                         src={URL.createObjectURL(file)}
-                        className="block h-full w-full object-cover object-center transition duration-500 group-hover:scale-110"
+                        className="block h-full w-full object-cover object-center"
                       />
                     ) : user?.avatar ? (
                       <img
                         src={user.avatar}
-                        className="block h-full w-full object-cover object-center transition duration-500 group-hover:scale-110"
+                        className="block h-full w-full object-cover object-center"
                       />
                     ) : (
-                      <span className="font-black text-4xl bg-linear-to-br from-red-400 to-red-700 bg-clip-text text-transparent">
-                        {user?.name?.[0] || "?"}
-                      </span>
+                      user?.name?.[0] || "?"
                     )}
-
-                    {/* Overlay xuất hiện khi di chuột vào ảnh */}
-                    <label className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 cursor-pointer">
-                      <Camera
-                        size={20}
-                        className="text-red-500 mb-1 translate-y-2 group-hover:translate-y-0 transition-transform"
-                      />
-                      <span className="text-[8px] font-black text-red-500 uppercase tracking-tighter">
-                        Thay đổi ảnh
-                      </span>
-                      <input
-                        type="file"
-                        hidden
-                        accept="image/*"
-                        onChange={(e) => setFile(e.target.files[0])}
-                      />
-                    </label>
                   </div>
-                </div>
 
-                <div className="mt-4 text-center pointer-events-none">
-                  <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-zinc-600">
-                    Ảnh hồ sơ
-                  </p>
+                  <label className="flex justify-center items-center cursor-pointer rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-3 text-center transition hover:border-red-300 hover:bg-red-50">
+                    {/* <span className="block text-[10px] font-black uppercase tracking-widest text-red-600">
+                      Thay đổi ảnh đại diện
+                    </span>
+
+                    <span className="mt-1 block text-[11px] font-medium text-slate-500">
+                      Chọn ảnh mới từ máy của bạn
+                    </span> */}
+                    <Camera />
+
+                    <input
+                      type="file"
+                      hidden
+                      accept="image/*"
+                      onChange={(e) => setFile(e.target.files[0])}
+                    />
+                  </label>
                 </div>
               </div>
 
               {/* Form Fields */}
-              <div className="space-y-6">
-                <div className="group">
-                  <label className="block text-[11px] font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider group-focus-within:text-red-500 transition-colors">
+              <div className="space-y-4">
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-black uppercase tracking-wider text-slate-500">
                     Họ và tên
                   </label>
                   <input
@@ -329,14 +326,14 @@ export default function MemberLayout() {
                     onChange={(e) =>
                       setEditForm((p) => ({ ...p, name: e.target.value }))
                     }
-                    className="w-full bg-zinc-900/50 border border-zinc-800 text-zinc-200 text-sm rounded-2xl px-4 py-3.5 outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all placeholder:text-zinc-700"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                     placeholder="Nguyễn Văn A"
                     required
                   />
                 </div>
 
-                <div className="group">
-                  <label className="block text-[11px] font-bold text-zinc-500 uppercase mb-2 ml-1 tracking-wider group-focus-within:text-red-500 transition-colors">
+                <div>
+                  <label className="mb-1.5 block text-[10px] font-black uppercase tracking-wider text-slate-500">
                     Số điện thoại
                   </label>
                   <input
@@ -345,41 +342,24 @@ export default function MemberLayout() {
                     onChange={(e) =>
                       setEditForm((p) => ({ ...p, phone: e.target.value }))
                     }
-                    className="w-full bg-zinc-900/50 border border-zinc-800 text-zinc-200 text-sm rounded-2xl px-4 py-3.5 outline-none focus:border-red-500/50 focus:ring-1 focus:ring-red-500/20 transition-all placeholder:text-zinc-700"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                     placeholder="0901xxxxxx"
                   />
                 </div>
               </div>
 
-              {/* Submit Button - Tone Red Premium */}
               <button
                 type="submit"
                 disabled={saving}
-                className="relative w-full group overflow-hidden rounded-2xl p-px focus:outline-none disabled:opacity-70 disabled:cursor-wait"
+                className="flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {/* Viền Gradient Đỏ */}
-                <div className="absolute inset-0 bg-linear-to-r from-red-700 via-red-500 to-red-700"></div>
-
-                <div className="cursor-pointer relative bg-zinc-950 group-hover:bg-transparent transition-colors duration-300 rounded-[15px] py-4 flex items-center justify-center gap-3">
-                  {saving ? (
-                    <div className="flex items-center gap-2">
-                      <div className="w-4 h-4 border-2 border-red-500/30 border-t-red-500 rounded-full animate-spin"></div>
-                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-red-500">
-                        Đang xử lý...
-                      </span>
-                    </div>
-                  ) : (
-                    <>
-                      <Save
-                        size={18}
-                        className="text-red-500 group-hover:text-white transition-colors"
-                      />
-                      <span className="text-[11px] font-black uppercase tracking-[0.2em] text-red-500 group-hover:text-white transition-colors">
-                        Lưu
-                      </span>
-                    </>
-                  )}
-                </div>
+                {saving ? (
+                  "ĐANG LƯU..."
+                ) : (
+                  <>
+                    <Save size={16} /> LƯU THAY ĐỔI
+                  </>
+                )}
               </button>
             </form>
           </div>

@@ -5,14 +5,30 @@ import { useAuth } from "../../context/AuthContext";
 import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import SearchInput from "../../components/layout/searchInput";
-import { Plus, Search, Eye, Edit2, Trash2, Download } from "lucide-react";
+import { Plus, Eye, Edit2, Trash2, Download } from "lucide-react";
 
 const statusBadge = (s) =>
   ({
-    active: <span className="badge badge-green">Hoạt động</span>,
-    expired: <span className="badge badge-red">Hết hạn</span>,
-    paused: <span className="badge badge-yellow">Tạm dừng</span>,
-  })[s] || <span className="badge badge-gray">{s}</span>;
+    active: (
+      <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-bold text-emerald-600">
+        Hoạt động
+      </span>
+    ),
+    expired: (
+      <span className="rounded-full border border-red-200 bg-red-50 px-3 py-1 text-xs font-bold text-red-600">
+        Hết hạn
+      </span>
+    ),
+    paused: (
+      <span className="rounded-full border border-orange-200 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-600">
+        Tạm dừng
+      </span>
+    ),
+  })[s] || (
+    <span className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-bold text-slate-600">
+      {s}
+    </span>
+  );
 
 const EMPTY = {
   name: "",
@@ -40,8 +56,10 @@ export default function Members() {
     delete: false,
     assign: false,
   });
+
   const navigate = useNavigate();
   const { user } = useAuth();
+
   const canCreate = Boolean(memberPermissions.create);
   const canEdit = Boolean(memberPermissions.edit);
   const canDelete = Boolean(memberPermissions.delete);
@@ -53,6 +71,7 @@ export default function Members() {
       .then((r) => setMembers(r.data))
       .finally(() => setLoading(false));
   };
+
   useEffect(() => {
     load();
     api
@@ -64,8 +83,20 @@ export default function Members() {
       .catch(() => {
         setMemberPermissions(
           user?.role === "admin"
-            ? { view: true, create: true, edit: true, delete: true, assign: true }
-            : { view: true, create: false, edit: true, delete: false, assign: true },
+            ? {
+                view: true,
+                create: true,
+                edit: true,
+                delete: true,
+                assign: true,
+              }
+            : {
+                view: true,
+                create: false,
+                edit: true,
+                delete: false,
+                assign: true,
+              },
         );
       });
   }, [user?.role]);
@@ -87,7 +118,7 @@ export default function Members() {
       name: m.name || "",
       email: m.email || "",
       phone: m.phone || "",
-      password: "", // Don't show password
+      password: "",
       birth_date: m.birth_date
         ? new Date(m.birth_date).toISOString().split("T")[0]
         : "",
@@ -100,17 +131,25 @@ export default function Members() {
 
   const submit = async (e) => {
     e.preventDefault();
-    if (editing && !canEdit) return toast.error("Bạn không có quyền sửa hội viên");
-    if (!editing && !canCreate) return toast.error("Bạn không có quyền thêm hội viên");
+
+    if (editing && !canEdit) {
+      return toast.error("Bạn không có quyền sửa hội viên");
+    }
+
+    if (!editing && !canCreate) {
+      return toast.error("Bạn không có quyền thêm hội viên");
+    }
+
     setSaving(true);
     const data = new FormData();
+
     Object.keys(form).forEach((k) => {
       if (form[k] !== undefined && form[k] !== null) {
-        // Skip password if empty on edit
         if (k === "password" && editing && !form[k]) return;
         data.append(k, form[k]);
       }
     });
+
     if (file) data.append("avatar", file);
 
     try {
@@ -125,6 +164,7 @@ export default function Members() {
         });
         toast.success("Thêm hội viên thành công!");
       }
+
       setModal(false);
       setForm(EMPTY);
       setFile(null);
@@ -140,6 +180,7 @@ export default function Members() {
   const deleteMember = async (id, name) => {
     if (!canDelete) return toast.error("Bạn không có quyền xóa hội viên");
     if (!confirm(`Xóa hội viên "${name}"?`)) return;
+
     await api.delete(`/members/${id}`);
     toast.success("Đã xóa hội viên");
     load();
@@ -150,7 +191,9 @@ export default function Members() {
       const res = await api.get(`/members/${member.id}/qr`);
       const link = document.createElement("a");
       link.href = res.data.qr_image;
-      link.download = `${res.data.qr_code || member.qr_code || `FC-${member.id}`}.png`;
+      link.download = `${
+        res.data.qr_code || member.qr_code || `FC-${member.id}`
+      }.png`;
       link.click();
       toast.success("Đã tải mã QR check-in");
     } catch (err) {
@@ -166,18 +209,21 @@ export default function Members() {
   );
 
   return (
-    <div>
-      <div className="flex items-center justify-between mb-6">
+    <div className="space-y-6 text-slate-900">
+      <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-black text-white">Quản lý Hội viên</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl font-black text-slate-900">
+            Quản lý Hội viên
+          </h1>
+          <p className="mt-1 text-sm text-slate-500">
             {members.length} hội viên trong hệ thống
           </p>
         </div>
+
         {canCreate && (
           <button
             onClick={openAdd}
-            className="btn-gold flex items-center gap-2 text-sm"
+            className="flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500"
           >
             <Plus size={15} /> Thêm hội viên
           </button>
@@ -185,43 +231,57 @@ export default function Members() {
       </div>
 
       {/* Search */}
-      <div className="relative mb-4 max-w-sm">
-                {/* <Search size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500" />
-                <input className="input-dark pl-9 text-sm" placeholder="Tìm theo tên, SĐT, email..."
-                    value={search} onChange={e => setSearch(e.target.value)} /> */}
-                    <SearchInput onSearch={setSearch} />
-            </div>
-
+      <div className="relative max-w-sm">
+        <SearchInput onSearch={setSearch} />
+      </div>
 
       {/* Table */}
-      <div className="card p-0 overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70">
         <div className="overflow-x-auto">
-          <table className="tbl">
+          <table className="w-full text-left">
             <thead>
-              <tr>
-                <th>Hội viên</th>
-                <th>Liên hệ</th>
-                <th>Ngày tham gia</th>
-                <th>Gói hiện tại</th>
-                <th>Hết hạn</th>
-                <th>Trạng thái</th>
-                <th>Thao tác</th>
+              <tr className="border-b border-slate-200 bg-slate-50">
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Hội viên
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Liên hệ
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Ngày tham gia
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Gói hiện tại
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Hết hạn
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Trạng thái
+                </th>
+                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                  Thao tác
+                </th>
               </tr>
             </thead>
-            <tbody>
+
+            <tbody className="divide-y divide-slate-100">
               {loading
                 ? [...Array(5)].map((_, i) => (
                     <tr key={i}>
-                      <td colSpan={7}>
-                        <div className="skeleton h-4 w-full" />
+                      <td colSpan={7} className="px-6 py-4">
+                        <div className="h-4 w-full animate-pulse rounded bg-slate-200" />
                       </td>
                     </tr>
                   ))
                 : filtered.map((m) => (
-                    <tr key={m.id}>
-                      <td>
+                    <tr
+                      key={m.id}
+                      className="transition-colors hover:bg-red-50/40"
+                    >
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 aspect-square rounded-full overflow-hidden flex items-center justify-center font-bold text-sm shrink-0 bg-zinc-900 border border-zinc-800">
+                          <div className="flex h-10 w-10 aspect-square shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-slate-50 text-sm font-bold">
                             {m.avatar ? (
                               <img
                                 src={m.avatar}
@@ -233,33 +293,40 @@ export default function Members() {
                                 }}
                               />
                             ) : (
-                              <span className="text-yellow-500">
+                              <span className="text-red-600">
                                 {m.name?.[0]}
                               </span>
                             )}
                           </div>
+
                           <div>
-                            <div className="font-semibold text-white text-sm">
+                            <div className="text-sm font-semibold text-slate-900">
                               {m.name}
                             </div>
-                            <div className="text-xs text-gray-500">
+                            <div className="text-xs text-slate-500">
                               {m.email}
                             </div>
                           </div>
                         </div>
                       </td>
-                      <td className="text-gray-400 text-sm">{m.phone}</td>
-                      <td className="text-gray-400 text-sm">
+
+                      <td className="px-6 py-4 text-sm text-slate-600">
+                        {m.phone}
+                      </td>
+
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {m.joined_date
                           ? new Date(m.joined_date).toLocaleDateString("vi-VN")
                           : "—"}
                       </td>
-                      <td className="text-sm text-gray-300">
+
+                      <td className="px-6 py-4 text-sm text-slate-700">
                         {m.current_package || (
-                          <span className="text-gray-600">—</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
-                      <td className="text-sm text-gray-400">
+
+                      <td className="px-6 py-4 text-sm text-slate-600">
                         {m.package_expires ? (
                           <>
                             {new Date(m.package_expires).toLocaleDateString(
@@ -267,45 +334,54 @@ export default function Members() {
                             )}
                             {m.days_remaining != null && (
                               <span
-                                className={`ml-1 text-xs ${m.days_remaining < 7 ? "text-red-400" : "text-gray-600"}`}
+                                className={`ml-1 text-xs ${
+                                  m.days_remaining < 7
+                                    ? "text-red-500"
+                                    : "text-slate-400"
+                                }`}
                               >
                                 ({m.days_remaining}d)
                               </span>
                             )}
                           </>
                         ) : (
-                          <span className="text-gray-600">—</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
-                      <td>{statusBadge(m.status)}</td>
-                      <td>
+
+                      <td className="px-6 py-4">{statusBadge(m.status)}</td>
+
+                      <td className="px-6 py-4">
                         <div className="flex items-center gap-1">
                           <button
                             onClick={() => navigate(`/admin/members/${m.id}`)}
-                            className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
                             title="Xem chi tiết"
                           >
                             <Eye size={15} />
                           </button>
+
                           <button
                             onClick={() => openEdit(m)}
                             disabled={!canEdit}
-                            className="p-1.5 rounded hover:bg-white/5 text-gray-400 hover:text-white transition-colors"
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
                             title="Chỉnh sửa"
                           >
                             <Edit2 size={15} />
                           </button>
+
                           <button
                             onClick={() => downloadMemberQr(m)}
-                            className="p-1.5 rounded hover:bg-yellow-500/10 text-gray-400 hover:text-yellow-500 transition-colors"
+                            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-orange-50 hover:text-orange-500"
                             title="Tải QR check-in"
                           >
                             <Download size={15} />
                           </button>
+
                           {canDelete && (
                             <button
                               onClick={() => deleteMember(m.id, m.name)}
-                              className="p-1.5 rounded hover:bg-red-900/20 text-gray-400 hover:text-red-400 transition-colors"
+                              className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-red-50 hover:text-red-600"
                               title="Xóa"
                             >
                               <Trash2 size={15} />
@@ -315,9 +391,13 @@ export default function Members() {
                       </td>
                     </tr>
                   ))}
+
               {!loading && filtered.length === 0 && (
                 <tr>
-                  <td colSpan={7} className="text-center py-12 text-gray-600">
+                  <td
+                    colSpan={7}
+                    className="px-6 py-12 text-center text-slate-500"
+                  >
                     Không tìm thấy hội viên
                   </td>
                 </tr>
@@ -328,101 +408,128 @@ export default function Members() {
       </div>
 
       {/* Add Modal */}
+            {/* Add Modal */}
       {modal &&
         createPortal(
           <div
-            className="modal-overlay"
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
             onClick={(e) => e.target === e.currentTarget && setModal(false)}
           >
-            <div className="modal-box p-6">
-              <h2 className="text-lg font-bold text-white mb-5">
-                {editing ? "Cập Nhật Hội Viên" : "Thêm Hội Viên Mới"}
-              </h2>
-              <form onSubmit={submit} className="space-y-3">
-                <div className="grid grid-cols-2 gap-3">
+            <div className="w-full max-w-3xl rounded-3xl border border-slate-200 bg-white p-6 text-slate-900 shadow-2xl">
+              <div className="mb-6 flex items-center justify-between border-b border-slate-200 pb-4">
+                <div>
+                  <h2 className="text-xl font-black uppercase tracking-tight text-slate-900">
+                    {editing ? "Cập Nhật Hội Viên" : "Thêm Hội Viên Mới"}
+                  </h2>
+                  <p className="mt-1 text-sm text-slate-500">
+                    {editing
+                      ? "Chỉnh sửa thông tin hội viên trong hệ thống"
+                      : "Nhập thông tin để tạo hội viên mới"}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setModal(false)}
+                  className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-50 text-slate-500 transition hover:bg-red-50 hover:text-red-600"
+                >
+                  ×
+                </button>
+              </div>
+
+              <form onSubmit={submit} className="space-y-4">
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Họ tên *
                     </label>
                     <input
                       name="name"
                       required
-                      className="input-dark text-sm"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                       placeholder="Nguyễn Văn A"
                       value={form.name}
                       onChange={handle}
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Số điện thoại
                     </label>
                     <input
                       name="phone"
-                      className="input-dark text-sm"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                       placeholder="0901..."
                       value={form.phone}
                       onChange={handle}
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Email *
                     </label>
                     <input
                       name="email"
                       type="email"
                       required
-                      className="input-dark text-sm"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                      placeholder="email@example.com"
                       value={form.email}
                       onChange={handle}
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Mật khẩu {editing ? "(để trống nếu không đổi)" : "*"}
                     </label>
                     <input
                       name="password"
                       type="password"
                       required={!editing}
-                      className="input-dark text-sm"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                       placeholder="••••••••"
                       value={form.password}
                       onChange={handle}
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Ngày sinh
                     </label>
                     <input
                       name="birth_date"
                       type="date"
-                      className="input-dark text-sm"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                       value={form.birth_date}
                       onChange={handle}
                     />
                   </div>
+
                   <div>
-                    <label className="block text-xs text-gray-500 mb-1">
+                    <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Số CCCD
                     </label>
                     <input
                       name="id_card"
-                      className="input-dark text-sm"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                      placeholder="Nhập số CCCD"
                       value={form.id_card}
                       onChange={handle}
                     />
                   </div>
+
                   {editing && (
-                    <div className="col-span-2">
-                      <label className="block text-xs text-gray-500 mb-1">
+                    <div className="md:col-span-2">
+                      <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                         Trạng thái
                       </label>
                       <select
                         name="status"
-                        className="input-dark text-sm"
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
                         value={form.status}
                         onChange={handle}
                       >
@@ -433,41 +540,48 @@ export default function Members() {
                     </div>
                   )}
                 </div>
+
                 <div>
-                  <label className="block text-xs text-zinc-500 mb-1">
+                  <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                     Ảnh đại diện
                   </label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="text-xs text-zinc-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-zinc-800 file:text-zinc-200 hover:file:bg-zinc-700 cursor-pointer"
-                    onChange={(e) => setFile(e.target.files[0])}
-                  />
+                  <div className="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      className="cursor-pointer text-xs text-slate-500 file:mr-3 file:rounded-lg file:border-0 file:bg-red-50 file:px-3 file:py-2 file:text-xs file:font-bold file:text-red-600 hover:file:bg-red-100"
+                      onChange={(e) => setFile(e.target.files[0])}
+                    />
+                  </div>
                 </div>
+
                 <div>
-                  <label className="block text-xs text-gray-500 mb-1">
+                  <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                     Ghi chú
                   </label>
                   <textarea
                     name="notes"
-                    className="input-dark text-sm"
-                    rows={2}
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
+                    rows={3}
+                    placeholder="Nhập ghi chú nếu có..."
                     value={form.notes}
                     onChange={handle}
                   />
                 </div>
-                <div className="flex gap-3 justify-end pt-2">
+
+                <div className="flex justify-end gap-3 border-t border-slate-200 pt-5">
                   <button
                     type="button"
                     onClick={() => setModal(false)}
-                    className="btn-ghost text-sm"
+                    className="rounded-xl border border-slate-200 bg-white px-5 py-2.5 text-sm font-bold text-slate-600 transition hover:bg-slate-50 hover:text-slate-900"
                   >
                     Hủy
                   </button>
+
                   <button
                     type="submit"
                     disabled={saving}
-                    className="btn-gold text-sm"
+                    className="rounded-xl bg-red-600 px-5 py-2.5 text-sm font-bold text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                   >
                     {saving
                       ? "Đang lưu..."

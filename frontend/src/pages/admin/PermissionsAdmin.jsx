@@ -12,14 +12,14 @@ const actions = [
 ]
 
 const ToggleCell = ({ enabled, onClick }) => (
-    <td className="text-center">
+    <td className="px-4 py-4 text-center">
         <button
             type="button"
             onClick={onClick}
             className={`inline-flex h-8 w-8 items-center justify-center rounded-lg border transition-colors ${
                 enabled
-                    ? 'bg-green-500/10 text-green-500 border-green-500/20 hover:bg-green-500/20'
-                    : 'bg-zinc-900 text-zinc-700 border-zinc-800 hover:text-zinc-300 hover:border-zinc-700'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-600 hover:bg-emerald-100'
+                    : 'border-slate-200 bg-slate-50 text-slate-400 hover:border-slate-300 hover:bg-slate-100 hover:text-slate-600'
             }`}
             title={enabled ? 'Bấm để bỏ tích' : 'Bấm để tích'}
         >
@@ -67,57 +67,102 @@ export default function PermissionsAdmin() {
     }
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 text-slate-900">
             <div className="flex items-center justify-between">
                 <div>
-                    <h1 className="text-2xl font-black text-white">Phân quyền</h1>
-                    <p className="text-sm text-zinc-500 mt-1">Tích hoặc bỏ tích quyền thao tác theo từng vai trò</p>
+                    <h1 className="text-2xl font-black text-slate-900">
+                        Phân quyền
+                    </h1>
+                    <p className="mt-1 text-sm text-slate-500">
+                        Quản lý quyền truy cập của Admin và Staff theo từng nghiệp vụ
+                    </p>
                 </div>
+
                 <button
                     type="button"
                     onClick={savePermissions}
                     disabled={saving || loading}
-                    className="btn-gold px-5 py-3 text-xs font-black uppercase tracking-widest inline-flex items-center gap-2"
+                    className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-5 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     <Save size={16} /> {saving ? 'Đang lưu...' : 'Lưu phân quyền'}
                 </button>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-4">
-                <div className="card p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <UserCog size={18} className="text-yellow-500" />
-                        <h2 className="font-black text-white uppercase text-sm tracking-widest">Admin</h2>
+            <div className="grid gap-4 md:grid-cols-2">
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
+                    <div className="mb-3 flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-200 bg-red-50">
+                            <UserCog size={18} className="text-red-600" />
+                        </div>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-slate-900">
+                            Admin
+                        </h2>
                     </div>
-                    <p className="text-sm text-zinc-400">Mặc định được xem, thêm, sửa, xóa và phân công nhân viên trên các nghiệp vụ quản trị.</p>
+                    <p className="text-sm leading-6 text-slate-600">
+                        Mặc định được xem, thêm, sửa, xóa và phân công nhân viên trên các nghiệp vụ quản trị.
+                    </p>
                 </div>
-                <div className="card p-5">
-                    <div className="flex items-center gap-3 mb-3">
-                        <ShieldCheck size={18} className="text-yellow-500" />
-                        <h2 className="font-black text-white uppercase text-sm tracking-widest">Staff</h2>
+
+                <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm shadow-slate-200/70">
+                    <div className="mb-3 flex items-center gap-3">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-red-200 bg-red-50">
+                            <ShieldCheck size={18} className="text-red-600" />
+                        </div>
+                        <h2 className="text-sm font-black uppercase tracking-widest text-slate-900">
+                            Staff
+                        </h2>
                     </div>
-                    <p className="text-sm text-zinc-400">Mặc định được xem, sửa và phân công. Có thể điều chỉnh trực tiếp bằng các ô tích bên dưới.</p>
+                    <p className="text-sm leading-6 text-slate-600">
+                        Mặc định được xem, sửa và phân công theo phạm vi được cấp quyền.
+                    </p>
                 </div>
             </div>
 
-            <div className="card p-0 overflow-hidden">
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70">
                 <div className="overflow-x-auto">
-                    <table className="tbl">
+                    <table className="w-full text-left">
                         <thead>
-                            <tr>
-                                <th>Phạm vi</th>
-                                {actions.map(action => <th key={`admin-${action.key}`} className="text-center">Admin: {action.label}</th>)}
-                                {actions.map(action => <th key={`staff-${action.key}`} className="text-center">Staff: {action.label}</th>)}
+                            <tr className="border-b border-slate-200 bg-slate-50">
+                                <th className="px-6 py-4 text-[10px] font-black uppercase tracking-widest text-slate-500">
+                                    Phạm vi
+                                </th>
+
+                                {actions.map(action => (
+                                    <th
+                                        key={`admin-${action.key}`}
+                                        className="px-4 py-4 text-center text-[10px] font-black uppercase tracking-widest text-slate-500"
+                                    >
+                                        Admin: {action.label}
+                                    </th>
+                                ))}
+
+                                {actions.map(action => (
+                                    <th
+                                        key={`staff-${action.key}`}
+                                        className="px-4 py-4 text-center text-[10px] font-black uppercase tracking-widest text-slate-500"
+                                    >
+                                        Staff: {action.label}
+                                    </th>
+                                ))}
                             </tr>
                         </thead>
-                        <tbody>
+
+                        <tbody className="divide-y divide-slate-100">
                             {loading ? [...Array(4)].map((_, i) => (
                                 <tr key={i}>
-                                    <td colSpan={11}><div className="skeleton h-5 w-full" /></td>
+                                    <td colSpan={11} className="px-6 py-4">
+                                        <div className="h-5 w-full animate-pulse rounded bg-slate-200" />
+                                    </td>
                                 </tr>
                             )) : permissions.map(row => (
-                                <tr key={row.id}>
-                                    <td className="font-bold text-white">{row.label}</td>
+                                <tr
+                                    key={row.id}
+                                    className="transition-colors hover:bg-red-50/40"
+                                >
+                                    <td className="px-6 py-4 text-sm font-bold text-slate-900">
+                                        {row.label}
+                                    </td>
+
                                     {actions.map(action => (
                                         <ToggleCell
                                             key={`a-${row.id}-${action.key}`}
@@ -125,6 +170,7 @@ export default function PermissionsAdmin() {
                                             onClick={() => togglePermission(row.id, 'admin', action.key)}
                                         />
                                     ))}
+
                                     {actions.map(action => (
                                         <ToggleCell
                                             key={`s-${row.id}-${action.key}`}
@@ -134,6 +180,17 @@ export default function PermissionsAdmin() {
                                     ))}
                                 </tr>
                             ))}
+
+                            {!loading && permissions.length === 0 && (
+                                <tr>
+                                    <td
+                                        colSpan={11}
+                                        className="px-6 py-12 text-center text-slate-500"
+                                    >
+                                        Chưa có dữ liệu phân quyền
+                                    </td>
+                                </tr>
+                            )}
                         </tbody>
                     </table>
                 </div>

@@ -154,7 +154,7 @@ export default function LandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#2b2626] text-white">
+    <div className="min-h-screen bg-slate-50 text-slate-900">
       <Header navigate={navigate} />
 
       <HeroSection
@@ -229,12 +229,12 @@ export default function LandingPage() {
           >
             <button
               onClick={() => setIsVideoOpen(false)}
-              className="absolute -right-4 -top-12 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white/10 text-slate-300 transition-all hover:scale-110 hover:bg-red-600 hover:text-white"
+              className="absolute -right-4 -top-12 flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-white text-slate-700 shadow-lg transition-all hover:scale-110 hover:bg-red-600 hover:text-white"
             >
               <X className="h-6 w-6" />
             </button>
 
-            <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl shadow-black/80">
+            <div className="relative aspect-video w-full overflow-hidden rounded-3xl border border-slate-200 bg-black shadow-2xl shadow-black/40">
               <video
                 className="h-full w-full object-cover"
                 src="/vidAd.mp4"

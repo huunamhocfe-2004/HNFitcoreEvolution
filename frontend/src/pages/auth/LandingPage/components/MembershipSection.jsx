@@ -10,26 +10,28 @@ export default function MembershipSection({
     <section
       ref={memberRef}
       id="membership"
-      className="bg-[#3f3a3a] px-6 py-16 text-white lg:px-10"
+      className="bg-slate-50 px-6 py-16 text-slate-900 lg:px-10"
     >
       <div className="mx-auto max-w-7xl">
         <div
           className={`text-center transition-all duration-700 ${
-            memberVisible ? "translate-y-0 opacity-100" : "translate-y-10 opacity-0"
+            memberVisible
+              ? "translate-y-0 opacity-100"
+              : "translate-y-10 opacity-0"
           }`}
         >
           <h2 className="text-4xl font-extrabold">Chọn Gói Hội Viên</h2>
-          <p className="mt-3 text-slate-300">
+          <p className="mt-3 text-slate-600">
             Chọn gói phù hợp cho mô hình phòng gym của bạn.
           </p>
 
-          <div className="mx-auto mt-6 inline-flex rounded-full bg-[#5a5555] p-1">
+          <div className="mx-auto mt-6 inline-flex rounded-full border border-slate-200 bg-white shadow-sm p-1">
             <button
               onClick={() => setIsAnnual(false)}
               className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300 ${
                 !isAnnual
                   ? "bg-red-600 text-white"
-                  : "text-slate-300 hover:text-white"
+                  : "text-slate-600 hover:bg-red-50 hover:text-red-600"
               }`}
             >
               Tháng
@@ -39,7 +41,7 @@ export default function MembershipSection({
               className={`cursor-pointer rounded-full px-5 py-2 text-sm font-semibold transition-all duration-300 ${
                 isAnnual
                   ? "bg-red-600 text-white"
-                  : "text-slate-300 hover:text-white"
+                  : "text-slate-600 hover:bg-red-50 hover:text-red-600"
               }`}
             >
               Năm
@@ -53,10 +55,12 @@ export default function MembershipSection({
               key={plan.name}
               className={`rounded-3xl p-8 transition-all duration-700 ${
                 plan.highlight
-                  ? "bg-red-600 shadow-2xl shadow-red-950/30"
-                  : "bg-[#5a5555]"
+                  ? "bg-red-600 text-white shadow-2xl shadow-red-200/80"
+                  : "border border-slate-200 bg-white text-slate-900 shadow-lg shadow-slate-200/70"
               } ${
-                memberVisible ? "translate-y-0 opacity-100" : "translate-y-20 opacity-0"
+                memberVisible
+                  ? "translate-y-0 opacity-100"
+                  : "translate-y-20 opacity-0"
               }`}
               style={{ transitionDelay: `${index * 350}ms` }}
             >
@@ -65,7 +69,7 @@ export default function MembershipSection({
                 <div className="mt-4 flex items-baseline justify-center gap-1">
                   <span className="text-4xl font-extrabold">
                     {Number(
-                      isAnnual ? plan.annualPrice : plan.monthlyPrice
+                      isAnnual ? plan.annualPrice : plan.monthlyPrice,
                     ).toLocaleString("vi-VN")}
                   </span>
                   <span className="text-xl font-bold">đ</span>
@@ -87,7 +91,7 @@ export default function MembershipSection({
                 className={`mt-8 w-full cursor-pointer rounded-full px-5 py-3 font-semibold transition ${
                   plan.highlight
                     ? "bg-white text-red-600 hover:bg-slate-100"
-                    : "border border-white/40 hover:bg-white/10"
+                    : "border border-red-200 text-red-600 hover:bg-red-50"
                 }`}
               >
                 Đăng ký ngay

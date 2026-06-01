@@ -32,7 +32,7 @@ export default function HeroSection({
           </span>
         </h1>
 
-        <p className="mt-5 max-w-lg text-sm leading-7 text-slate-300 md:text-base">
+        <p className="mt-5 max-w-lg text-sm leading-7 text-slate-600 md:text-base">
           Giải pháp quản lý phòng gym hiện đại giúp bạn kiểm soát hội viên, gói
           tập, huấn luyện viên, lịch lớp và doanh thu trong cùng một hệ thống
           trực quan.
@@ -41,16 +41,16 @@ export default function HeroSection({
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <button
             onClick={() => navigate("/login")}
-            className="cursor-pointer rounded-xl bg-red-600 px-6 py-3 font-semibold transition hover:scale-105 hover:bg-red-500"
+            className="text-white cursor-pointer rounded-xl bg-red-600 px-6 py-3 font-semibold transition hover:scale-105 hover:bg-red-500"
           >
             Get Started
           </button>
 
           <button
             onClick={() => setIsVideoOpen(true)}
-            className="flex items-center gap-3 text-slate-300 transition hover:text-white"
+            className="flex items-center gap-3 text-slate-700 transition hover:text-red-600"
           >
-            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-lg transition hover:bg-white/20">
+            <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-md text-lg transition hover:bg-white/20">
               ▶
             </span>
             Watch Videos
@@ -58,17 +58,17 @@ export default function HeroSection({
         </div>
 
         <div className="mt-10 grid max-w-md grid-cols-3 gap-6">
-          <div className="rounded-2xl bg-white/5 p-4 backdrop-blur-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm backdrop-blur-sm">
             <div className="text-3xl font-extrabold">65+</div>
-            <div className="mt-1 text-sm text-slate-300">HLV chuyên nghiệp</div>
+            <div className="mt-1 text-sm text-slate-600">HLV chuyên nghiệp</div>
           </div>
-          <div className="rounded-2xl bg-white/5 p-4 backdrop-blur-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm backdrop-blur-sm">
             <div className="text-3xl font-extrabold">978+</div>
-            <div className="mt-1 text-sm text-slate-300">Hội viên</div>
+            <div className="mt-1 text-sm text-slate-600">Hội viên</div>
           </div>
-          <div className="rounded-2xl bg-white/5 p-4 backdrop-blur-sm">
+          <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm backdrop-blur-sm">
             <div className="text-3xl font-extrabold">200+</div>
-            <div className="mt-1 text-sm text-slate-300">Chương trình</div>
+            <div className="mt-1 text-sm text-slate-600">Chương trình</div>
           </div>
         </div>
       </div>

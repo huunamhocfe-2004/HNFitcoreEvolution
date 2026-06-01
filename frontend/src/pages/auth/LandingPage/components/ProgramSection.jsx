@@ -39,8 +39,8 @@ export default function ProgramSection({
               key={item.title}
               className={`flex flex-col rounded-[22px] p-6 transition-all duration-700 ${
                 item.active
-                  ? "bg-red-600 shadow-xl shadow-red-950/30"
-                  : "bg-[#5a5555] hover:bg-[#655f5f]"
+                  ? "bg-red-600 text-white shadow-xl shadow-red-200/80"
+                  : "border border-slate-200 bg-white text-slate-900 shadow-sm hover:bg-red-50"
               } ${
                 programVisible
                   ? "translate-y-0 opacity-100"
@@ -52,7 +52,7 @@ export default function ProgramSection({
               <h3 className="text-xl font-bold">{item.title}</h3>
               <p
                 className={`mt-4 text-sm leading-7 ${
-                  item.active ? "text-white/90" : "text-slate-200"
+                  item.active ? "text-white/90" : "text-slate-600"
                 }`}
               >
                 {item.desc}
@@ -79,11 +79,11 @@ export default function ProgramSection({
                 }`}
               >
                 <div className="overflow-hidden">
-                  <div className="space-y-3 border-t border-white/15 pt-5 text-sm leading-6 text-white">
+                  <div className="space-y-3 border-t border-slate-200 pt-5 text-sm leading-6 text-black">
                     {(item.details || []).map((detail) => (
                       <div
                         key={detail}
-                        className="rounded-xl bg-black/10 px-4 py-3 backdrop-blur-sm"
+                        className="rounded-xl bg-slate-300 px-4 py-3 backdrop-blur-sm"
                       >
                         {detail}
                       </div>

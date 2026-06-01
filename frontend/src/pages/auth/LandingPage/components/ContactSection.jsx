@@ -185,7 +185,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
       className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-10"
     >
       <div
-        className={`relative overflow-visible rounded-4xl border border-white/10 bg-linear-to-br from-[#4a4545] to-[#2d2a2a] p-8 shadow-2xl transition-all duration-700 sm:p-10 lg:grid lg:grid-cols-2 lg:gap-16 lg:p-14 ${
+        className={`relative overflow-visible rounded-4xl border border-slate-200 bg-white shadow-slate-200/80 p-8 shadow-2xl transition-all duration-700 sm:p-10 lg:grid lg:grid-cols-2 lg:gap-16 lg:p-14 ${
           contactVisible
             ? "translate-y-0 scale-100 opacity-100"
             : "translate-y-20 scale-0 opacity-0"
@@ -205,14 +205,14 @@ export default function ContactSection({ contactRef, contactVisible }) {
             </p>
           </div>
 
-          <h2 className="mt-5 text-4xl font-extrabold leading-tight text-white sm:text-5xl">
+          <h2 className="mt-5 text-4xl font-extrabold leading-tight text-slate-900 sm:text-5xl">
             Đăng ký một buổi tập thử cùng{" "}
             <span className="bg-linear-to-r from-red-400 to-red-600 bg-clip-text text-transparent">
               đội ngũ Fitcore
             </span>
           </h2>
 
-          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-300 italic sm:text-lg">
+          <p className="mt-5 max-w-xl text-base leading-relaxed text-slate-600 italic sm:text-lg">
             Khách vãng lai để lại thông tin, admin hoặc staff sẽ duyệt yêu cầu
             và liên hệ theo số điện thoại đã đăng ký.
           </p>
@@ -230,7 +230,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
         </div>
 
         <div className="relative z-20 mt-12 flex items-center lg:mt-0">
-          <div className="w-full rounded-3xl border border-white/5 bg-black/20 p-6 backdrop-blur-md sm:p-8">
+          <div className="w-full rounded-3xl border border-slate-200 bg-slate-50 p-6 backdrop-blur-md sm:p-8">
             <form onSubmit={submitTrialRequest} className="flex flex-col gap-5">
               <input
                 name="name"
@@ -239,7 +239,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                 onChange={handleChange}
                 placeholder="Họ và tên"
                 required
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-slate-900 transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
 
               <input
@@ -249,7 +249,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                 onChange={handleChange}
                 placeholder="Số điện thoại"
                 required
-                className="w-full rounded-2xl border border-white/10 bg-white/5 px-4 py-3.5 text-white transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
+                className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3.5 text-slate-900 transition-all placeholder:text-slate-400 focus:border-red-500 focus:bg-white/10 focus:outline-none focus:ring-1 focus:ring-red-500"
               />
 
               <div ref={dropdownRef} className="relative">
@@ -262,17 +262,17 @@ export default function ContactSection({ contactRef, contactVisible }) {
                     setGoalOpen((prev) => !prev);
                     setDateOpen(false);
                   }}
-                  className={`group flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-white transition-all ${
+                  className={`group flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-slate-900 transition-all ${
                     goalOpen
-                      ? "border-red-500 bg-[#1f1b1b] ring-1 ring-red-500"
-                      : "border-white/10 bg-white/5 hover:border-red-500/70 hover:bg-white/10"
+                      ? "border-red-500 bg-white ring-1 ring-red-500"
+                      : "border-slate-200 bg-white hover:border-red-500/70 hover:bg-red-50"
                   }`}
                 >
                   <span>
                     <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
                       Mục tiêu
                     </span>
-                    <span className="mt-0.5 block font-semibold text-white">
+                    <span className="mt-0.5 block font-semibold text-slate-900">
                       {form.goal}
                     </span>
                   </span>
@@ -292,7 +292,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                 </button>
 
                 {goalOpen && (
-                  <div className="absolute left-0 right-0 top-[calc(100%+0.6rem)] z-50 overflow-hidden rounded-2xl border border-white/10 bg-[#1f1b1b]/95 p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
+                  <div className="absolute left-0 right-0 top-[calc(100%+0.6rem)] z-50 overflow-hidden rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-black/50 backdrop-blur-xl">
                     <ul role="listbox" className="max-h-72 overflow-auto">
                       {goalOptions.map((goal) => {
                         const selected = form.goal === goal;
@@ -305,7 +305,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                               className={`flex w-full items-center justify-between rounded-xl px-3.5 py-3 text-left text-sm font-semibold transition-all ${
                                 selected
                                   ? "bg-red-600 text-white shadow-lg shadow-red-600/20"
-                                  : "text-slate-200 hover:bg-white/10 hover:text-white"
+                                  : "text-slate-700 hover:bg-red-50 hover:text-red-600"
                               }`}
                             >
                               <span>{goal}</span>
@@ -341,9 +341,9 @@ export default function ContactSection({ contactRef, contactVisible }) {
                   onClick={openDateDropdown}
                   className={`group flex w-full items-center justify-between rounded-2xl border px-4 py-3.5 text-left text-white transition-all ${
                     dateOpen
-                      ? "border-red-500 bg-[#1f1b1b] ring-1 ring-red-500"
-                      : "border-white/10 bg-white/5 hover:border-red-500/70 hover:bg-white/10"
-                  } focus:border-red-500 focus:bg-[#1f1b1b] focus:outline-none focus:ring-1 focus:ring-red-500`}
+                      ? "border-red-500 bg-white ring-1 ring-red-500"
+                      : "border-slate-200 bg-white hover:border-red-500/70 hover:bg-red-50"
+                  } focus:border-red-500 focus:bg-[#fff] focus:outline-none focus:ring-1 focus:ring-red-500`}
                 >
                   <span>
                     <span className="block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400">
@@ -351,7 +351,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                     </span>
                     <span
                       className={`mt-0.5 block font-semibold ${
-                        form.desired_date ? "text-white" : "text-slate-400"
+                        form.desired_date ? "text-black" : "text-slate-400"
                       }`}
                     >
                       {formatDisplayDate(form.desired_date)}
@@ -377,7 +377,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                 </button>
 
                 {dateOpen && (
-                  <div className="absolute left-0 right-0 top-[calc(100%+0.6rem)] z-50 rounded-2xl border border-white/10 bg-[#1f1b1b]/95 p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
+                  <div className="absolute left-0 right-0 top-[calc(100%+0.6rem)] z-50 rounded-2xl border border-slate-200 bg-white p-4 shadow-2xl shadow-black/50 backdrop-blur-xl">
                     <div className="mb-4 flex items-center justify-between">
                       <button
                         type="button"
@@ -399,7 +399,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                       </button>
 
                       <div className="text-center">
-                        <p className="text-sm font-bold text-white">
+                        <p className="text-sm font-bold text-black">
                           {monthNames[visibleMonth.getMonth()]} {visibleMonth.getFullYear()}
                         </p>
                         <p className="mt-0.5 text-xs text-slate-400">
@@ -447,7 +447,7 @@ export default function ContactSection({ contactRef, contactVisible }) {
                               selected
                                 ? "bg-red-600 text-white shadow-lg shadow-red-600/25"
                                 : isCurrentMonth
-                                  ? "bg-white/5 text-slate-100 hover:bg-red-600/15 hover:text-white"
+                                  ? "bg-slate-50 text-slate-700 hover:bg-red-50 hover:text-red-600"
                                   : "text-slate-600 hover:bg-white/5 hover:text-slate-400"
                             } ${today && !selected ? "ring-1 ring-red-500/50" : ""}`}
                           >
@@ -461,14 +461,14 @@ export default function ContactSection({ contactRef, contactVisible }) {
                       <button
                         type="button"
                         onClick={() => handleDateSelect(todayValue)}
-                        className="rounded-xl px-3 py-2 text-xs font-bold text-red-400 transition hover:bg-red-600/10 hover:text-red-300"
+                        className="rounded-xl px-3 py-2 text-xs font-bold text-red cursor-pointer transition hover:bg-red-600/10 hover:text-red-300"
                       >
                         Hôm nay
                       </button>
                       <button
                         type="button"
                         onClick={() => setDateOpen(false)}
-                        className="rounded-xl px-3 py-2 text-xs font-bold text-slate-300 transition hover:bg-white/10 hover:text-white"
+                        className="rounded-xl px-3 py-2 text-xs cursor-pointer font-bold text-slate-700 transition hover:bg-black hover:text-white"
                       >
                         Đóng
                       </button>
