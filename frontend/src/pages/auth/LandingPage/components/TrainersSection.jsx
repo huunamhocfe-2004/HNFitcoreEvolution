@@ -100,7 +100,7 @@ export default function TrainersSection({
                     ))}
                   </div>
 
-                  <p className="mt-6 line-clamp-2 text-center text-sm leading-relaxed text-slate-600 italic">
+                  <p className="mt-6 line-clamp-1 text-center text-sm leading-relaxed text-slate-600 italic">
                     "{trainer.bio}"
                   </p>
                 </div>

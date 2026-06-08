@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { createPortal } from 'react-dom'
 import { Plus, User, Edit2, Trash2, Award, BookOpen, Eye, MapPin, DollarSign, Briefcase, CheckCircle2 } from 'lucide-react'
+import AppDropdown from '../../components/common/AppDropdown'
 
 const EMPTY = { 
     user_id: '', specialization: '', bio: '', experience_years: 0,
     title: '', hourly_rate: '', employment_status: 'HN Fitcore', badge: '', 
     work_address: '', skills: '', certifications: '', teaching: ''
 }
+const stt_Collab = ["Nội bộ (HN Fitcore)", "Freelancer"]
 
 // Hàm hỗ trợ chuyển đổi Array từ DB thành chuỗi để hiển thị trong form
 const joinArray = (data) => {
@@ -55,6 +57,18 @@ export default function TrainersAdmin() {
     useEffect(() => { load() }, [])
 
     const handle = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }))
+    const coachOptions = useMemo(() => {
+        return users.map((m) => ({
+            value: m.id,
+            label: m.name,
+        }))
+    }, [users])
+    const collabOptions = useMemo(() => {
+        return stt_Collab.map((c) => ({
+            value: c,
+            label: c,
+        }))
+    })
 
     const openEdit = (t) => {
         setEditing(t.id)
@@ -393,21 +407,17 @@ export default function TrainersAdmin() {
                         <form onSubmit={submit} className="space-y-4">
                             {!editing && (
                                 <div>
-                                    <label className="mb-1.5 block text-[10px] font-black uppercase tracking-wider text-slate-500">
-                                        Chọn tài khoản người dùng *
-                                    </label>
-                                    <select
-                                        name="user_id"
-                                        required
-                                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 outline-none transition focus:border-red-500 focus:bg-white focus:ring-1 focus:ring-red-500/30"
-                                        value={form.user_id}
-                                        onChange={handle}
-                                    >
-                                        <option value="">-- Chọn thành viên để làm PT --</option>
-                                        {users.map(u => (
-                                            <option key={u.id} value={u.id}>{u.name} ({u.email})</option>
-                                        ))}
-                                    </select>
+                                    <AppDropdown
+                                    label="Chọn HLV"
+                                    name="user_id"
+                                    value={form.user_id}
+                                    onChange={handle}
+                                    options={coachOptions}
+                                    placeholder='Chọn huấn luyện viên'
+                                    loading={loading}
+                                    emptyText='Không có hội viên'
+                                    required
+                                    />
                                 </div>
                             )}
 
@@ -453,8 +463,19 @@ export default function TrainersAdmin() {
                                         onChange={handle}
                                     />
                                 </div>
+                                <AppDropdown
+                                label="Trạng thái công tác"
+                                name="employment_status"
+                                value={form.employment_status}
+                                onChange={handle}
+                                options={collabOptions}
+                                placeholder='Chọn trạng thái công tác'
+                                // loading={loading}
+                                emptyText='Không có dữ liệu'
+                                required
+                                />
 
-                                <div>
+                                {/* <div>
                                     <label className="mb-1.5 block text-[10px] font-black uppercase tracking-wider text-slate-500">
                                         Trạng thái công tác
                                     </label>
@@ -467,7 +488,7 @@ export default function TrainersAdmin() {
                                         <option value="HN Fitcore">HN Fitcore (Nội bộ)</option>
                                         <option value="Freelancer">Freelancer (Tự do)</option>
                                     </select>
-                                </div>
+                                </div> */}
 
                                 <div>
                                     <label className="mb-1.5 block text-[10px] font-black uppercase tracking-wider text-slate-500">

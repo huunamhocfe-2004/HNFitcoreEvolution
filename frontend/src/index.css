@@ -516,3 +516,101 @@ input[type="radio"] {
     transform: scale(1);
   }
 }
+
+/* Date Picker */
+.react-datepicker-popper {
+  z-index: 9999 !important;
+}
+
+.app-calendar {
+  border: none !important;
+  border-radius: 24px !important;
+  padding: 16px !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18) !important;
+  font-family: inherit !important;
+}
+
+.app-calendar .react-datepicker__triangle {
+  display: none;
+}
+
+.app-calendar .react-datepicker__header {
+  border-bottom: none !important;
+  background: white !important;
+  padding: 0 !important;
+}
+
+.app-calendar .react-datepicker__month {
+  margin: 0 !important;
+}
+
+.app-calendar .react-datepicker__day-names {
+  display: grid !important;
+  grid-template-columns: repeat(7, 42px);
+  margin-bottom: 10px;
+}
+
+.app-calendar .react-datepicker__week {
+  display: grid !important;
+  grid-template-columns: repeat(7, 42px);
+}
+
+.app-calendar .react-datepicker__day-name {
+  width: 42px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  margin: 0 !important;
+  color: #94a3b8 !important;
+  font-weight: 700 !important;
+}
+
+.app-calendar .react-datepicker__day {
+  width: 42px !important;
+  height: 42px !important;
+  line-height: 42px !important;
+  margin: 0 !important;
+  border-radius: 14px !important;
+  color: #475569 !important;
+  font-weight: 600 !important;
+}
+
+.app-calendar .react-datepicker__day:hover {
+  background: #f1f5f9 !important;
+}
+
+.app-calendar .react-datepicker__day--selected,
+.app-calendar .react-datepicker__day--keyboard-selected {
+  background: #020617 !important;
+  color: white !important;
+}
+
+.app-calendar .react-datepicker__day--outside-month {
+  color: #cbd5e1 !important;
+}
+
+@keyframes calendarFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.react-datepicker-popper {
+  z-index: 9999 !important;
+  animation: calendarFadeIn 0.18s ease-out;
+  transform-origin: top left;
+}
+
+.app-calendar {
+  border: none !important;
+  border-radius: 24px !important;
+  padding: 16px !important;
+  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18) !important;
+  font-family: inherit !important;
+  animation: calendarFadeIn 0.18s ease-out;
+}

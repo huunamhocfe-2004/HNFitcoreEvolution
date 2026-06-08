@@ -6,6 +6,7 @@ import { createPortal } from "react-dom";
 import toast from "react-hot-toast";
 import SearchInput from "../../components/layout/searchInput";
 import { Plus, Eye, Edit2, Trash2, Download } from "lucide-react";
+import AppDatePicker from "../../components/common/AppDatePicker";
 
 const statusBadge = (s) =>
   ({
@@ -408,7 +409,7 @@ export default function Members() {
       </div>
 
       {/* Add Modal */}
-            {/* Add Modal */}
+      {/* Add Modal */}
       {modal &&
         createPortal(
           <div
@@ -497,6 +498,14 @@ export default function Members() {
                   </div>
 
                   <div>
+                    {/* <AppDatePicker
+                      label="Ngày sinh"
+                      name="birth_date"
+                      value={form.birth_date}
+                      onChange={handle}
+                      placeholder="Chọn ngày sinh"
+                      required
+                    /> */}
                     <label className="mb-1.5 block text-xs font-bold uppercase tracking-wide text-slate-500">
                       Ngày sinh
                     </label>

@@ -25,6 +25,7 @@ import {
   X,
   Bell,
   Camera,
+  TicketPercent,
 } from "lucide-react";
 import toast from "react-hot-toast";
 
@@ -32,6 +33,12 @@ const links = [
   { to: "/admin", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/admin/members", icon: Users, label: "Hội Viên" },
   { to: "/admin/packages", icon: Package, label: "Gói Tập" },
+  {
+    to: "/admin/promotions",
+    icon: TicketPercent,
+    label: "Mã giảm giá",
+    roles: ["admin"],
+  },
   { to: "/admin/subscriptions", icon: CreditCard, label: "Đăng Ký" },
   { to: "/admin/bookings", icon: CalendarDays, label: "Đặt Lịch" },
   {

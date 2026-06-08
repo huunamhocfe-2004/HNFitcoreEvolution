@@ -64,6 +64,9 @@ export default function MemberProfile() {
   const [myFeedbacks, setMyFeedbacks] = useState([]);
   const [renewalActionLoading, setRenewalActionLoading] = useState(false);
   const memberQrRef = useRef(null);
+  const [promoCode, setPromoCode] = useState("");
+  const [promoInfo, setPromoInfo] = useState(null);
+  const [checkingPromo, setCheckingPromo] = useState(false);
 
   const loadProfile = () => {
     if (user?.member_id) {
@@ -130,7 +133,34 @@ export default function MemberProfile() {
 
   const startPurchase = (pkg) => {
     setSelectedPkg(pkg);
+    setPromoCode("");
+    setPromoInfo(null);
     setPurchaseStep(1);
+  };
+
+  const validatePromo = async () => {
+    const code = promoCode.trim().toUpperCase();
+
+    if (!code) return toast.error("Vui lòng nhập mã giảm giá");
+    if (!selectedPkg) return toast.error("Vui lòng chọn gói tập");
+
+    setCheckingPromo(true);
+
+    try {
+      const res = await api.post("/subscriptions/promos/validate", {
+        code,
+        package_id: selectedPkg.id,
+      });
+
+      setPromoInfo(res.data);
+      setPromoCode(code);
+      toast.success("Áp dụng mã giảm giá thành công");
+    } catch (err) {
+      setPromoInfo(null);
+      toast.error(err.response?.data?.message || "Mã giảm giá không hợp lệ");
+    } finally {
+      setCheckingPromo(false);
+    }
   };
 
   const confirmPurchase = async () => {
@@ -140,6 +170,7 @@ export default function MemberProfile() {
         member_id: profile.id,
         package_id: selectedPkg.id,
         is_paid: 0,
+        promo_code: promoInfo?.promo?.code || undefined,
       });
       toast.success(
         "Gửi yêu cầu thành công! Vui lòng đợi quản trị viên xác nhận.",
@@ -214,6 +245,12 @@ export default function MemberProfile() {
     !s.is_paid &&
     !s.trainer_id &&
     ["admin", "staff"].includes(s.created_by_role);
+
+  const discountAmount = Number(promoInfo?.discount || 0);
+
+  const payableAmount = selectedPkg
+    ? Math.max(0, Number(selectedPkg.price || 0) - discountAmount)
+    : 0;
 
   return (
     <div className="mx-auto max-w-4xl space-y-8 pb-10 text-slate-900">
@@ -803,178 +840,212 @@ export default function MemberProfile() {
         </div>
       </div>
 
-      {purchaseModal && 
-      createPortal(
-        <div
-          className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
-          onClick={(e) =>
-            e.target === e.currentTarget && setPurchaseModal(false)
-          }
-        >
-          <div className="flex max-h-[85vh] w-full max-w-[1100px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-2xl">
-            {purchaseStep === 0 ? (
-              <div className="flex max-h-[85vh] flex-col">
-                <div className="border-b border-slate-200 p-8 pb-5">
-                  <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900">
-                    Chọn Gói Tập
-                  </h2>
-                  <p className="mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
-                    Nâng cấp sức mạnh cùng HN Fitcore evolution
-                  </p>
-                </div>
-
-                <div className="flex-1 overflow-y-auto p-8 pt-6">
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {packages.map((p) => (
-                      <div
-                        key={p.id}
-                        className="group flex cursor-pointer flex-col rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-all hover:-translate-y-1 hover:border-red-200 hover:bg-red-50/60 hover:shadow-lg"
-                        onClick={() => startPurchase(p)}
-                      >
-                        <div className="mb-4 flex items-start justify-between">
-                          <div className="rounded-lg bg-red-50 p-2 text-red-600">
-                            <CreditCard size={20} />
-                          </div>
-                          <div className="text-xs font-black uppercase text-slate-400 transition-colors group-hover:text-red-600">
-                            {p.duration_days} ngày
-                          </div>
-                        </div>
-
-                        <div className="mb-1 text-lg font-bold text-slate-900 transition-colors group-hover:text-red-600">
-                          {p.title}
-                        </div>
-
-                        <p className="mb-6 flex-1 text-xs text-slate-500">
-                          {p.description}
-                        </p>
-
-                        <div className="text-2xl font-black italic tracking-tighter text-red-600">
-                          {Number(p.price).toLocaleString("vi-VN")}₫
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="flex justify-end border-t border-slate-200 bg-white p-5">
-                  <button
-                    onClick={() => setPurchaseModal(false)}
-                    className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-red-50 hover:text-red-600"
-                  >
-                    ĐÓNG
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <div className="max-h-[85vh] overflow-y-auto">
-                <div className="flex flex-col md:flex-row">
-                  <div className="flex-1 p-8">
-                    <button
-                      onClick={() => setPurchaseStep(0)}
-                      className="mb-6 flex items-center gap-2 text-xs font-bold text-slate-500 transition-colors hover:text-red-600"
-                    >
-                      <ArrowLeft size={14} /> QUAY LẠI
-                    </button>
-
-                    <h2 className="mb-2 text-2xl font-black uppercase italic tracking-tighter text-slate-900">
-                      Thanh Toán
+      {purchaseModal &&
+        createPortal(
+          <div
+            className="fixed inset-0 z-[1000] flex items-center justify-center bg-slate-900/50 p-4 backdrop-blur-sm"
+            onClick={(e) =>
+              e.target === e.currentTarget && setPurchaseModal(false)
+            }
+          >
+            <div className="flex max-h-[85vh] w-full max-w-[1100px] flex-col overflow-hidden rounded-3xl border border-slate-200 bg-white text-slate-900 shadow-2xl">
+              {purchaseStep === 0 ? (
+                <div className="flex max-h-[85vh] flex-col">
+                  <div className="border-b border-slate-200 p-8 pb-5">
+                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-slate-900">
+                      Chọn Gói Tập
                     </h2>
-                    <p className="mb-8 text-xs font-bold uppercase tracking-widest text-slate-500">
-                      Chuyển khoản QR để kích hoạt nhanh
+                    <p className="mt-1 text-xs font-bold uppercase tracking-widest text-slate-500">
+                      Nâng cấp sức mạnh cùng HN Fitcore evolution
                     </p>
+                  </div>
 
-                    <div className="space-y-6">
-                      <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
-                        <div className="mb-1 text-[10px] font-bold uppercase text-slate-500">
-                          Gói đã chọn
-                        </div>
-                        <div className="font-bold text-slate-900">
-                          {selectedPkg.title}
-                        </div>
-                        <div className="mt-1 text-xl font-black italic tracking-tighter text-red-600">
-                          {Number(selectedPkg.price).toLocaleString("vi-VN")}₫
-                        </div>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold uppercase text-slate-500">
-                            Ngân hàng
-                          </span>
-                          <span className="font-bold uppercase text-slate-900">
-                            {BANK_INFO.ID}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold uppercase text-slate-500">
-                            Số tài khoản
-                          </span>
-                          <span className="font-mono font-bold tracking-wider text-slate-900">
-                            {BANK_INFO.ACCOUNT_NO}
-                          </span>
-                        </div>
-
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="font-bold uppercase text-slate-500">
-                            Nội dung
-                          </span>
-                          <span className="font-bold text-red-600">
-                            FC {profile.qr_code} {selectedPkg.id}
-                          </span>
-                        </div>
-                      </div>
-
-                      <div className="border-t border-slate-200 pt-4">
-                        <button
-                          onClick={confirmPurchase}
-                          disabled={submitting}
-                          className="group flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  <div className="flex-1 overflow-y-auto p-8 pt-6">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {packages.map((p) => (
+                        <div
+                          key={p.id}
+                          className="group flex cursor-pointer flex-col rounded-2xl border border-slate-200 bg-slate-50 p-6 transition-all hover:-translate-y-1 hover:border-red-200 hover:bg-red-50/60 hover:shadow-lg"
+                          onClick={() => startPurchase(p)}
                         >
-                          {submitting ? (
-                            "ĐANG XỬ LÝ..."
-                          ) : (
-                            <>
-                              <Check size={18} /> TÔI ĐÃ CHUYỂN KHOẢN
-                            </>
-                          )}
-                        </button>
+                          <div className="mb-4 flex items-start justify-between">
+                            <div className="rounded-lg bg-red-50 p-2 text-red-600">
+                              <CreditCard size={20} />
+                            </div>
+                            <div className="text-xs font-black uppercase text-slate-400 transition-colors group-hover:text-red-600">
+                              {p.duration_days} ngày
+                            </div>
+                          </div>
 
-                        <p className="mt-4 text-center text-[10px] font-bold uppercase italic tracking-widest text-slate-400">
-                          *Gói tập sẽ được kích hoạt ngay sau khi admin xác nhận
-                          giao dịch
-                        </p>
-                      </div>
+                          <div className="mb-1 text-lg font-bold text-slate-900 transition-colors group-hover:text-red-600">
+                            {p.title}
+                          </div>
+
+                          <p className="mb-6 flex-1 text-xs text-slate-500">
+                            {p.description}
+                          </p>
+
+                          <div className="text-2xl font-black italic tracking-tighter text-red-600">
+                            {Number(p.price).toLocaleString("vi-VN")}₫
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </div>
 
-                  <div className="flex w-full flex-col items-center justify-center gap-6 bg-slate-50 p-12 md:w-95">
-                    <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">
-                      Quét mã VietQR
+                  <div className="flex justify-end border-t border-slate-200 bg-white p-5">
+                    <button
+                      onClick={() => setPurchaseModal(false)}
+                      className="rounded-xl border border-slate-200 bg-white px-6 py-2.5 text-xs font-bold text-slate-600 transition hover:bg-red-50 hover:text-red-600"
+                    >
+                      ĐÓNG
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <div className="max-h-[85vh] overflow-y-auto">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="flex-1 p-8">
+                      <button
+                        onClick={() => setPurchaseStep(0)}
+                        className="mb-6 flex items-center gap-2 text-xs font-bold text-slate-500 transition-colors hover:text-red-600"
+                      >
+                        <ArrowLeft size={14} /> QUAY LẠI
+                      </button>
+
+                      <h2 className="mb-2 text-2xl font-black uppercase italic tracking-tighter text-slate-900">
+                        Thanh Toán
+                      </h2>
+                      <p className="mb-8 text-xs font-bold uppercase tracking-widest text-slate-500">
+                        Chuyển khoản QR để kích hoạt nhanh
+                      </p>
+
+                      <div className="space-y-6">
+                        <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                          <div className="mb-1 text-[10px] font-bold uppercase text-slate-500">
+                            Gói đã chọn
+                          </div>
+                          <div className="font-bold text-slate-900">
+                            {selectedPkg.title}
+                          </div>
+                          <div className="mt-1 text-xl font-black italic tracking-tighter text-red-600">
+                            {Number(payableAmount).toLocaleString("vi-VN")}₫
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                            <label className="mb-2 block text-[10px] font-black uppercase tracking-widest text-slate-500">
+                              Mã giảm giá
+                            </label>
+
+                            <div className="flex gap-2">
+                              <input
+                                value={promoCode}
+                                onChange={(e) => {
+                                  setPromoCode(e.target.value);
+                                  setPromoInfo(null);
+                                }}
+                                placeholder="VD: FITCORE10"
+                                className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-bold uppercase tracking-widest text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-red-500 focus:ring-1 focus:ring-red-500/30"
+                              />
+
+                              <button
+                                type="button"
+                                onClick={validatePromo}
+                                disabled={checkingPromo}
+                                className="rounded-xl bg-red-600 px-4 py-3 text-xs font-black uppercase tracking-widest text-white shadow-lg shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                              >
+                                {checkingPromo ? "..." : "Áp dụng"}
+                              </button>
+                            </div>
+
+                            {promoInfo && (
+                              <div className="mt-3 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-xs font-bold text-emerald-600">
+                                Đã giảm{" "}
+                                {Number(discountAmount).toLocaleString("vi-VN")}
+                                ₫
+                              </div>
+                            )}
+                          </div>
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold uppercase text-slate-500">
+                              Ngân hàng
+                            </span>
+                            <span className="font-bold uppercase text-slate-900">
+                              {BANK_INFO.ID}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold uppercase text-slate-500">
+                              Số tài khoản
+                            </span>
+                            <span className="font-mono font-bold tracking-wider text-slate-900">
+                              {BANK_INFO.ACCOUNT_NO}
+                            </span>
+                          </div>
+
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="font-bold uppercase text-slate-500">
+                              Nội dung
+                            </span>
+                            <span className="font-bold text-red-600">
+                              FC {profile.qr_code} {selectedPkg.id}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="border-t border-slate-200 pt-4">
+                          <button
+                            onClick={confirmPurchase}
+                            disabled={submitting}
+                            className="group flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 py-4 text-xs font-black uppercase tracking-widest text-white shadow-xl shadow-red-200 transition hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-60"
+                          >
+                            {submitting ? (
+                              "ĐANG XỬ LÝ..."
+                            ) : (
+                              <>
+                                <Check size={18} /> TÔI ĐÃ CHUYỂN KHOẢN
+                              </>
+                            )}
+                          </button>
+
+                          <p className="mt-4 text-center text-[10px] font-bold uppercase italic tracking-widest text-slate-400">
+                            *Gói tập sẽ được kích hoạt ngay sau khi admin xác
+                            nhận giao dịch
+                          </p>
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_32px_64px_-16px_rgba(15,23,42,0.16)]">
-                      <img
-                        src={`https://img.vietqr.io/image/${BANK_INFO.ID}-${BANK_INFO.ACCOUNT_NO}-compact2.png?amount=${selectedPkg.price}&addInfo=FC%20${profile.qr_code}%20${selectedPkg.id}&accountName=${encodeURIComponent(BANK_INFO.ACCOUNT_NAME)}`}
-                        alt="VietQR"
-                        className="aspect-square w-full object-contain"
-                      />
-                    </div>
+                    <div className="flex w-full flex-col items-center justify-center gap-6 bg-slate-50 p-12 md:w-95">
+                      <div className="text-[11px] font-black uppercase tracking-[0.2em] text-slate-500">
+                        Quét mã VietQR
+                      </div>
 
-                    <div className="flex items-center gap-2">
-                      <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
-                      <span className="text-[10px] font-bold italic text-slate-700">
-                        Mã QR tự động cập nhật số tiền
-                      </span>
+                      <div className="relative rounded-2xl border border-slate-200 bg-white p-4 shadow-[0_32px_64px_-16px_rgba(15,23,42,0.16)]">
+                        <img
+                          src={`https://img.vietqr.io/image/${BANK_INFO.ID}-${BANK_INFO.ACCOUNT_NO}-compact2.png?amount=${payableAmount}&addInfo=FC%20${profile.qr_code}%20${selectedPkg.id}&accountName=${encodeURIComponent(BANK_INFO.ACCOUNT_NAME)}`}
+                          alt="VietQR"
+                          className="aspect-square w-full object-contain"
+                        />
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 animate-pulse rounded-full bg-red-500" />
+                        <span className="text-[10px] font-bold italic text-slate-700">
+                          Mã QR tự động cập nhật số tiền
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>,
-        document.body
-      )}
+              )}
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   );
 }
